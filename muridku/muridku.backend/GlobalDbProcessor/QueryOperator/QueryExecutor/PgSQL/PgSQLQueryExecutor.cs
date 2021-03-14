@@ -162,7 +162,7 @@ namespace QueryOperator.QueryExecutor.PgSQL
                                         queryRequestParam.Uuid
                                         );
 
-            Console.WriteLine("[{0}] query: {1}", Thread.CurrentThread.ManagedThreadId, query);
+            Console.WriteLine("    [{0}] query: {1}", Thread.CurrentThread.ManagedThreadId, query);
 
             if (!queryRequestParam.IsSingleRow)
             {

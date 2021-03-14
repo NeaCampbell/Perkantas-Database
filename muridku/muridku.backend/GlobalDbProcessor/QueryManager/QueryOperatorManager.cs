@@ -14,7 +14,8 @@ namespace QueryManager
     public class QueryOperatorManager : IQueryOperatorManager<DbServiceType>
     {
         public IQueryExecutor<DbServiceType> QueryExecutor { get; private set; }
-        public event QueuedQueryHandler OnQueryExecuted;
+        public event QueryExecutedEventHandler OnQueryExecuted;
+        public event QueuedQueryExecutedEventHandler OnQueuedQueryExecuted;
 
         private readonly IDbConnection _dbConnection;
         private readonly IQueryExecutor _queryExecutor;
@@ -64,7 +65,7 @@ namespace QueryManager
                             taskId++;
                     }
 
-                    Console.WriteLine("task Id = {0}", taskId);
+                    Console.WriteLine("    [{0}] task Id = {1}", Thread.CurrentThread.ManagedThreadId, taskId);
 
                     if (taskId < _queryTasks.Count)
                     {
@@ -75,7 +76,7 @@ namespace QueryManager
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("Error! {0}", e.Message);
+                            Console.WriteLine("    Error! {0}", e.Message);
                         }
                     }
                 }
@@ -84,12 +85,27 @@ namespace QueryManager
             }
         }
 
-        private void ExecuteQueuedQuery()
+        private void DirectlyExecuteQuery(QueryRequestParam reqParam)
         {
             try
             {
-                QueryRequestParam reqParam;
+                QueryResult result = _queryExecutor.ExecuteQuery(reqParam);
+                OnQueryExecuted?.Invoke(this, result);
+                Console.WriteLine("    [{0}] Query executed", Thread.CurrentThread.ManagedThreadId);
+            }
+            catch (Exception e)
+            {
+                OnQueryExecuted?.Invoke(this, new QueryResult(reqParam.RequestCode, false, e.Message));
+                Console.WriteLine("    Error! {0}", e.Message);
+            }
+        }
 
+        private void ExecuteQueuedQuery()
+        {
+            QueryRequestParam reqParam = null;
+
+            try
+            {
                 lock (_lockObject)
                 {
                     Queue tempQueue = Queue.Synchronized(_queueRequest);
@@ -97,12 +113,13 @@ namespace QueryManager
                 }
 
                 QueryResult result = _queryExecutor.ExecuteQuery(reqParam);
-                OnQueryExecuted?.Invoke(this, result);
-                Console.WriteLine("Query executed");
+                OnQueuedQueryExecuted?.Invoke(this, result);
+                Console.WriteLine("    Enqueued query executed");
             }
             catch(Exception e)
             {
-                Console.WriteLine("Error! {0}", e.Message);
+                OnQueuedQueryExecuted?.Invoke(this, new QueryResult((reqParam == null ? "" : reqParam.RequestCode), false, e.Message));
+                Console.WriteLine("    Error! {0}", e.Message);
             }
         }
 
@@ -121,15 +138,17 @@ namespace QueryManager
             }
         }
 
-        public QueryResult ExecuteQuery(QueryRequestParam queryRequestParam)
+        public bool ExecuteQuery(QueryRequestParam queryRequestParam)
         {
             try
             {
-                return _queryExecutor.ExecuteQuery(queryRequestParam);
+                Task.Run(() => DirectlyExecuteQuery(queryRequestParam));
+                Console.WriteLine("    [{0}] Query execution requested", Thread.CurrentThread.ManagedThreadId);
+                return true;
             }
             catch
             {
-                return null;
+                return false;
             }
         }
 
@@ -142,7 +161,8 @@ namespace QueryManager
                     _queueRequest = Queue.Synchronized(_queueRequest);
                     _queueRequest.Enqueue(queryRequestParam);
                 }
-                Console.WriteLine("Query Enqueued!");
+
+                Console.WriteLine("    Query Enqueued");
                 return true;
             }
             catch
