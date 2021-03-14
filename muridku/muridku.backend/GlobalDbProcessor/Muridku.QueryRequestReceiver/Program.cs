@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using QueryManager;
+using QueryOperator.QueryExecutor;
 using System;
 
 namespace Muridku.QueryRequestReceiver
@@ -58,11 +59,21 @@ namespace Muridku.QueryRequestReceiver
         {
             IConfiguration config = CreateConfiguration(AppDomain.CurrentDomain.BaseDirectory);
             IConfigSource dbConfigSource = CreateDbConfigSource(config);
+
             _queryOperatorManager = CreateQueryOperatorManager(config, dbConfigSource);
+            _queryOperatorManager.OnQueuedQueryCancelled += OnQueuedQueryCancelled;
             _queryOperatorManager.OpenDbConnection();
+
             CreateHostBuilder(args).Build().Run();
+
             _queryOperatorManager.CloseDbConnection();
+            _queryOperatorManager.OnQueuedQueryCancelled -= OnQueuedQueryCancelled;
             _queryOperatorManager.Dispose();
+        }
+
+        private static void OnQueuedQueryCancelled(object sender, string reason, QueryRequestParam param)
+        {
+
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

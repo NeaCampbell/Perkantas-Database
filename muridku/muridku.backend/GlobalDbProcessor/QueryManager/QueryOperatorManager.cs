@@ -17,6 +17,7 @@ namespace QueryManager
         public IQueryExecutor<DbServiceType> QueryExecutor { get; private set; }
         public event QueryExecutedEventHandler OnQueryExecuted;
         public event QueuedQueryExecutedEventHandler OnQueuedQueryExecuted;
+        public event QueuedQueryCancelledEventHandler OnQueuedQueryCancelled;
 
         private readonly IDbConnection _dbConnection;
         private readonly IQueryExecutor _queryExecutor;
@@ -181,7 +182,7 @@ namespace QueryManager
                 _queryTaskWatcher.Join();
 
                 while (_queueRequest.Count > 0)
-                    _queueRequest.Dequeue();
+                    OnQueuedQueryCancelled?.Invoke(this, "Database connection is closed", _queueRequest.Dequeue() as QueryRequestParam);
 
                 if (_dbConnection.State == ConnectionState.Open)
                     _dbConnection.Close();

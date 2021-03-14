@@ -7,6 +7,7 @@ namespace QueryManager
     {
         event QueryExecutedEventHandler OnQueryExecuted;
         event QueuedQueryExecutedEventHandler OnQueuedQueryExecuted;
+        event QueuedQueryCancelledEventHandler OnQueuedQueryCancelled;
         IQueryExecutor<TDbServiceType> QueryExecutor { get; }
         bool OpenDbConnection();
         bool ExecuteQuery(QueryRequestParam queryRequestParam);
