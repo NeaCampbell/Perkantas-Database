@@ -1,0 +1,1 @@
+export const ResetApp = () => ({type: 'RESET_APP'});
