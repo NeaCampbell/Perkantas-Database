@@ -17,7 +17,6 @@ namespace Muridku.QueryRequestReceiver.Controllers
     {
         private const string _getAllUserAddr = "getalluser";
         private const string _validateUserAddr = "validateuser";
-        private QueryResult _queryResult;
 
         public UserController(ILogger<UserController> logger
             , IQueryOperatorManager<DbServiceType> queryOperatorManager):
@@ -27,16 +26,19 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
         protected override void OnQueuedQueryExecutedHandler(object sender, QueryResult result)
         {
-            base.OnQueuedQueryExecutedHandler(sender, result);
-            _queryResult = result;
-
-            switch (result.RequestCode)
+            if (RequestId == result.RequestId)
             {
-                case _getAllUserAddr:
-                    Console.WriteLine("    Query Result = {0}", _queryResult.Result);
-                    break;
-                default:
-                    break;
+                base.OnQueuedQueryExecutedHandler(sender, result);
+                Console.WriteLine("    Request id {0}, error msg = {1}", result.RequestId, result.ErrorMessage);
+
+                switch (result.RequestCode)
+                {
+                    case _getAllUserAddr:
+                        Console.WriteLine("    Query Result {0} = {1}", result.RequestId, result.Result);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -49,11 +51,10 @@ namespace Muridku.QueryRequestReceiver.Controllers
         [HttpGet(_validateUserAddr)]
         public async Task<QueryResult> ValidateUser(string email, string password)
         {
-            _queryResult = null;
             string invalidMsg = "invalid email or password";
 
             if (email.Replace(" ", "") != email)
-                return new QueryResult(_validateUserAddr, false, invalidMsg);
+                return new QueryResult("", _validateUserAddr, false, invalidMsg);
 
             QueryResult reqResult = await ExecuteRequest(new List<string>() { email }, ConstRequestType.GET, _validateUserAddr);
 
@@ -63,15 +64,15 @@ namespace Muridku.QueryRequestReceiver.Controllers
             Console.WriteLine("    Query Result = {0}", reqResult.Result);
 
             if(string.IsNullOrEmpty(reqResult.Result))
-                return new QueryResult(_validateUserAddr, false, invalidMsg);
+                return new QueryResult(reqResult.RequestId, _validateUserAddr, false, invalidMsg);
 
             User user = JsonConvert.DeserializeObject<IList<User>>(reqResult.Result)[0];
 
             if (user.password != password)
-                return new QueryResult(_validateUserAddr, false, invalidMsg);
+                return new QueryResult(reqResult.RequestId, _validateUserAddr, false, invalidMsg);
 
             user.password = null;
-            return new QueryResult(reqResult.RequestCode, reqResult.Succeed, reqResult.ErrorMessage, JsonConvert.SerializeObject(user));
+            return new QueryResult(reqResult.RequestId, reqResult.RequestCode, reqResult.Succeed, reqResult.ErrorMessage, JsonConvert.SerializeObject(user));
         }
     }
 }

@@ -73,7 +73,7 @@ namespace Muridku.QueryRequestReceiver
 
         private static void OnQueuedQueryCancelled(object sender, string reason, QueryRequestParam param)
         {
-
+            Console.WriteLine(reason);
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

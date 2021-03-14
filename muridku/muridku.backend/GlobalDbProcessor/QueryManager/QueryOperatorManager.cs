@@ -5,6 +5,7 @@ using QueryOperator.Builder.QueryExecutor;
 using QueryOperator.QueryExecutor;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading;
@@ -21,7 +22,7 @@ namespace QueryManager
 
         private readonly IDbConnection _dbConnection;
         private readonly IQueryExecutor _queryExecutor;
-        private Queue _queueRequest;
+        private ConcurrentQueue<QueryRequestParam> _queueRequest;
         private readonly IList<Task> _queryTasks;
         private readonly object _lockObject;
         private readonly Thread _queryTaskWatcher;
@@ -35,7 +36,7 @@ namespace QueryManager
             _dbConnection = connBuilder.Build();
             _queryExecutor = queryBuilder.Build();
             _queryExecutor.AssignConnection(_dbConnection);
-            _queueRequest = new Queue();
+            _queueRequest = new ConcurrentQueue<QueryRequestParam>();
             _queryTasks = new List<Task>();
 
             for (int i = 0; i < threadCount; i++)
@@ -49,37 +50,33 @@ namespace QueryManager
         {
             while(_shouldWatcherActive)
             {
-                Queue tempQueue;
-
-                lock (_lockObject)
-                    tempQueue = Queue.Synchronized(_queueRequest);
-
-                if(tempQueue.Count > 0)
+                if(_queueRequest.Count > 0)
                 {
-                    bool freeTaskFound = false;
-                    int taskId = 0;
+                    bool[] taskAvailibility = new bool[_queryTasks.Count];
 
-                    while(!freeTaskFound && taskId < _queryTasks.Count)
+                    for(int taskId = 0; taskId < _queryTasks.Count; taskId++)
                     {
-                        freeTaskFound = _queryTasks[taskId].Status != TaskStatus.Running;
+                        if (_queueRequest.Count == 0)
+                            break;
 
-                        if(!freeTaskFound)
-                            taskId++;
-                    }
+                        Console.WriteLine("    [{0}] task {1} status = {2}", Thread.CurrentThread.ManagedThreadId, taskId, _queryTasks[taskId].Status);
+                        bool freeTaskFound = _queryTasks[taskId].Status == TaskStatus.Created ||
+                            _queryTasks[taskId].Status == TaskStatus.RanToCompletion ||
+                            _queryTasks[taskId].Status == TaskStatus.Faulted ||
+                            _queryTasks[taskId].Status == TaskStatus.Canceled;
 
-                    Console.WriteLine("    [{0}] task Id = {1}", Thread.CurrentThread.ManagedThreadId, taskId);
+                        if (freeTaskFound)
+                            try
+                            {
+                                if (_queryTasks[taskId].Status != TaskStatus.Created)
+                                    _queryTasks[taskId] = new Task(() => ExecuteQueuedQuery());
 
-                    if (taskId < _queryTasks.Count)
-                    {
-                        try
-                        {
-                            _queryTasks[taskId] = new Task(() => ExecuteQueuedQuery());
-                            _queryTasks[taskId].Start();
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine("    Error! {0}", e.Message);
-                        }
+                                _queryTasks[taskId].Start();
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("    Error! {0}", e.Message);
+                            }
                     }
                 }
 
@@ -91,13 +88,16 @@ namespace QueryManager
         {
             try
             {
+                if (_dbConnection.State == ConnectionState.Closed)
+                    _dbConnection.Open();
+
                 QueryResult result = _queryExecutor.ExecuteQuery(reqParam);
                 OnQueryExecuted?.Invoke(this, result);
                 Console.WriteLine("    [{0}] Query executed", Thread.CurrentThread.ManagedThreadId);
             }
             catch (Exception e)
             {
-                OnQueryExecuted?.Invoke(this, new QueryResult(reqParam.RequestCode, false, e.Message));
+                OnQueryExecuted?.Invoke(this, new QueryResult(reqParam.Uuid, reqParam.RequestCode, false, e.Message));
                 Console.WriteLine("    Error! {0}", e.Message);
             }
         }
@@ -108,19 +108,21 @@ namespace QueryManager
 
             try
             {
-                lock (_lockObject)
+                if (_queueRequest.TryDequeue(out reqParam))
                 {
-                    Queue tempQueue = Queue.Synchronized(_queueRequest);
-                    reqParam = tempQueue.Dequeue() as QueryRequestParam;
-                }
+                    if (_dbConnection.State == ConnectionState.Closed)
+                        _dbConnection.Open();
 
-                QueryResult result = _queryExecutor.ExecuteQuery(reqParam);
-                OnQueuedQueryExecuted?.Invoke(this, result);
-                Console.WriteLine("    Enqueued query executed");
+                    QueryResult result = _queryExecutor.ExecuteQuery(reqParam);
+                    OnQueuedQueryExecuted?.Invoke(this, result);
+                    Console.WriteLine("    Enqueued query {0} executed, queue residue = {1}", reqParam.Uuid, _queueRequest.Count);
+                }
+                else
+                    Console.WriteLine("    Failed to dequeue query, queue residue = {0}", _queueRequest.Count);
             }
             catch(Exception e)
             {
-                OnQueuedQueryExecuted?.Invoke(this, new QueryResult((reqParam == null ? "" : reqParam.RequestCode), false, e.Message));
+                OnQueuedQueryExecuted?.Invoke(this, new QueryResult((reqParam == null ? "" : reqParam.Uuid), (reqParam == null ? "" : reqParam.RequestCode), false, e.Message));
                 Console.WriteLine("    Error! {0}", e.Message);
             }
         }
@@ -158,12 +160,7 @@ namespace QueryManager
         {
             try
             {
-                lock (_lockObject)
-                {
-                    _queueRequest = Queue.Synchronized(_queueRequest);
-                    _queueRequest.Enqueue(queryRequestParam);
-                }
-
+                _queueRequest.Enqueue(queryRequestParam);
                 Console.WriteLine("    Query Enqueued");
                 return true;
             }
@@ -181,8 +178,10 @@ namespace QueryManager
                 _shouldWatcherActive = false;
                 _queryTaskWatcher.Join();
 
-                while (_queueRequest.Count > 0)
-                    OnQueuedQueryCancelled?.Invoke(this, "Database connection is closed", _queueRequest.Dequeue() as QueryRequestParam);
+                QueryRequestParam param;
+
+                while (_queueRequest.TryDequeue(out param))
+                    OnQueuedQueryCancelled?.Invoke(this, "Database connection is closed", param);
 
                 if (_dbConnection.State == ConnectionState.Open)
                     _dbConnection.Close();

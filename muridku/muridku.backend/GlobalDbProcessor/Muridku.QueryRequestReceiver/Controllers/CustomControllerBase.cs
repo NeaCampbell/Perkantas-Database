@@ -14,6 +14,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     {
         protected ILogger<QueryControllerBase> Logger { get; private set; }
         protected IQueryOperatorManager<DbServiceType> QueryOperatorManager { get; private set; }
+        protected string RequestId { get; private set; }
 
         private readonly object _lockObject;
         private QueryResult _queryResult;
@@ -30,21 +31,21 @@ namespace Muridku.QueryRequestReceiver.Controllers
         protected async virtual Task<QueryResult> ExecuteRequest(IList<string> param, string strProcessType, string requestCode, bool isSingleRow = false)
         {
             ProcessType processType = GetProcessType(strProcessType);
+            RequestId = string.Format("{0}_{1}_{2}", HttpContext.Session.Id, GetType().Name.ToString(), processType);
 
             if (string.IsNullOrEmpty(requestCode))
-                return new QueryResult(requestCode, false, "invalid request code");
+                return new QueryResult(RequestId, requestCode, false, "invalid request code");
 
-            string requestId = string.Format("{0}_{1}_{2}", HttpContext.Session.Id, GetType().Name.ToString(), processType);
             Console.WriteLine();
             Console.WriteLine("================");
-            Console.WriteLine("request id = {0}", requestId);
+            Console.WriteLine("request id = {0}", RequestId);
             QueryOperatorManager.OnQueryExecuted += OnQueryExecutedHandler;
 
             try
             {
-                QueryRequestParam reqParam = new QueryRequestParam(processType, requestCode, param, requestId, isSingleRow);
+                QueryRequestParam reqParam = new QueryRequestParam(processType, requestCode, param, RequestId, isSingleRow);
                 if (!QueryOperatorManager.ExecuteQuery(reqParam))
-                    return new QueryResult(requestCode, false, "internal server error");
+                    return new QueryResult(RequestId, requestCode, false, "internal server error");
 
                 await Task.Run(() =>
                 {
@@ -56,7 +57,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
             }
             catch(Exception ex)
             {
-                return new QueryResult(requestCode, false, ex.Message);
+                return new QueryResult(RequestId, requestCode, false, ex.Message);
             }
             finally
             {
@@ -67,28 +68,28 @@ namespace Muridku.QueryRequestReceiver.Controllers
         protected virtual QueryResult EnqueueRequest(IList<string> param, string strProcessType, string requestCode, bool isSingleRow = false)
         {
             ProcessType processType = GetProcessType(strProcessType);
+            RequestId = string.Format("{0}_{1}_{2}", HttpContext.Session.Id, GetType().Name.ToString(), ProcessType.Select);
 
             if (string.IsNullOrEmpty(requestCode))
-                return new QueryResult(requestCode, false, "invalid request code");
+                return new QueryResult(RequestId, requestCode, false, "invalid request code");
 
-            string requestId = string.Format("{0}_{1}_{2}", HttpContext.Session.Id, GetType().Name.ToString(), ProcessType.Select);
             Console.WriteLine();
             Console.WriteLine("================");
-            Console.WriteLine("request id = {0}", requestId);
+            Console.WriteLine("request id = {0}", RequestId);
             QueryOperatorManager.OnQueuedQueryExecuted += OnQueuedQueryExecutedHandler;
 
             try
             {
-                QueryRequestParam reqParam = new QueryRequestParam(processType, requestCode, param, requestId, isSingleRow);
+                QueryRequestParam reqParam = new QueryRequestParam(processType, requestCode, param, RequestId, isSingleRow);
 
                 if (QueryOperatorManager.EnqueueQuery(reqParam))
-                    return new QueryResult(requestCode, true, "");
+                    return new QueryResult(RequestId, requestCode, true, "");
 
-                return new QueryResult(requestCode, false, "request failed!");
+                return new QueryResult(RequestId, requestCode, false, "request failed!");
             }
             catch (Exception ex)
             {
-                return new QueryResult(requestCode, false, ex.Message);
+                return new QueryResult(RequestId, requestCode, false, ex.Message);
             }
         }
 
@@ -102,7 +103,8 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
         protected virtual void OnQueuedQueryExecutedHandler(object sender, QueryResult result)
         {
-            QueryOperatorManager.OnQueuedQueryExecuted -= OnQueuedQueryExecutedHandler;
+            if(RequestId == result.RequestId)
+                QueryOperatorManager.OnQueuedQueryExecuted -= OnQueuedQueryExecutedHandler;
         }
 
         private ProcessType GetProcessType(string requestType)

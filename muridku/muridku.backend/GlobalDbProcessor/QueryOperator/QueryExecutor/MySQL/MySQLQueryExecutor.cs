@@ -164,7 +164,7 @@ namespace QueryOperator.QueryExecutor.MySQL
                                         _queryConfigSource.GetValue(queryRequestParam.RequestCode, string.Empty)
                                         );
 
-            Console.WriteLine("    [{0}] query: {1}", Thread.CurrentThread.ManagedThreadId, query);
+            Console.WriteLine("    [{0}] query {1}: {2}", Thread.CurrentThread.ManagedThreadId, queryRequestParam.Uuid, query);
 
             if (!queryRequestParam.IsSingleRow)
             {
@@ -173,6 +173,7 @@ namespace QueryOperator.QueryExecutor.MySQL
                 if (result.RawResult != null && result.RawResult.Count > 0)
                     return new QueryResult()
                     {
+                        RequestId = queryRequestParam.Uuid,
                         RequestCode = queryRequestParam.RequestCode,
                         Succeed = result.Succeed,
                         ErrorMessage = result.ErrorMessage,
@@ -181,6 +182,7 @@ namespace QueryOperator.QueryExecutor.MySQL
 
                 return new QueryResult()
                 {
+                    RequestId = queryRequestParam.Uuid,
                     RequestCode = queryRequestParam.RequestCode,
                     Succeed = result.Succeed,
                     ErrorMessage = result.ErrorMessage,
@@ -193,6 +195,7 @@ namespace QueryOperator.QueryExecutor.MySQL
             if (singleResult.RawResult != null && singleResult.RawResult.Count > 0)
                 return new QueryResult()
                 {
+                    RequestId = queryRequestParam.Uuid,
                     RequestCode = queryRequestParam.RequestCode,
                     Succeed = singleResult.Succeed,
                     ErrorMessage = singleResult.ErrorMessage,
@@ -201,6 +204,7 @@ namespace QueryOperator.QueryExecutor.MySQL
 
             return new QueryResult()
             {
+                RequestId = queryRequestParam.Uuid,
                 RequestCode = queryRequestParam.RequestCode,
                 Succeed = singleResult.Succeed,
                 ErrorMessage = singleResult.ErrorMessage,
