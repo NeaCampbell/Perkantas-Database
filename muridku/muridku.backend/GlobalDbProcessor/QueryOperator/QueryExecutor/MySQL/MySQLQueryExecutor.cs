@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.ConfigSource;
 using MySqlConnector;
 using Newtonsoft.Json;
 using System;
@@ -25,7 +26,7 @@ namespace QueryOperator.QueryExecutor.MySQL
             if( queryPath.Equals( string.Empty ) )
                 throw new Exception( "Cannot execute query. Query list path is not found." );
 
-            _queryConfigSource = new FileConfigSource( queryPath, ConfigFileType.Xml );
+            _queryConfigSource = ConfigSourceBuilder.BuildFileConfigSource( queryPath, ConfigFileType.Xml );
         }
 
         private RawQueryResult ExecuteQuerySimple( string query, ProcessType processType, string uuid )

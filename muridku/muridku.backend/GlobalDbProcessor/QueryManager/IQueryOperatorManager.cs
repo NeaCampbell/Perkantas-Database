@@ -1,6 +1,5 @@
 ﻿using QueryOperator.QueryExecutor;
 using System;
-using System.Threading.Tasks;
 
 namespace QueryManager
 {

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Common
+namespace Common.ConfigSource
 {
-    public class FileConfigSource : IConfigSource
+    internal class FileConfigSource : IConfigSource
     {
         private readonly ConfigFileType _fileType;
         private readonly IDictionary<string, string> _configs;

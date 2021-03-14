@@ -1,4 +1,5 @@
 using Common;
+using Common.ConfigSource;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,7 @@ namespace Muridku.QueryRequestReceiver
         private static IConfigSource CreateDbConfigSource(IConfiguration config)
         {
             DatabaseConfig dbConfig = config.GetSection("DatabaseConfig").Get<DatabaseConfig>();
-            IConfigSource configSource = new FileConfigSource(dbConfig.DatabasePath, ConfigFileType.Xml);
+            IConfigSource configSource = ConfigSourceBuilder.BuildFileConfigSource(dbConfig.DatabasePath, ConfigFileType.Xml);
             configSource.SetValue("QueryPath", dbConfig.QueryPath);
             return configSource;
         }

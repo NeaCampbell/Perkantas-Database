@@ -1,4 +1,4 @@
-﻿namespace Common
+﻿namespace Common.ConfigSource
 {
   public enum ConfigFileType
   {

@@ -1,9 +1,8 @@
 ﻿using Common;
-using MySqlConnector;
+using Common.ConfigSource;
 using QueryOperator.QueryExecutor;
 using QueryOperator.QueryExecutor.MySQL;
 using QueryOperator.QueryExecutor.PgSQL;
-using System.Data;
 
 namespace QueryOperator.Builder.QueryExecutor
 {
