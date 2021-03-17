@@ -1,10 +1,10 @@
 ﻿using Common;
-using System.Collections.Generic;
+using System;
 using System.Data;
 
 namespace QueryOperator.QueryExecutor
 {
-    public interface IQueryExecutor
+    public interface IQueryExecutor: IDisposable
     {
         void AssignConnection(IDbConnection dbConnection);
         QueryResult ExecuteQuery(QueryRequestParam queryRequestParam);

@@ -34,7 +34,7 @@ namespace QueryOperator.QueryExecutor.PgSQL
 
             try
             {
-                command = new NpgsqlCommand( query, _dbConnection );
+                command = new NpgsqlCommand( query, _dbConnection, _transaction );
 
                 switch( processType )
                 {
@@ -89,7 +89,7 @@ namespace QueryOperator.QueryExecutor.PgSQL
 
             try
             {
-                command = new NpgsqlCommand( query, _dbConnection );
+                command = new NpgsqlCommand( query, _dbConnection, _transaction);
 
                 switch( processType )
                 {
@@ -238,6 +238,15 @@ namespace QueryOperator.QueryExecutor.PgSQL
         public IQueryExecutor<NpgsqlConnection> Clone()
         {
             return new PgSQLQueryExecutor( _dbConfigSource );
+        }
+
+        public void Dispose()
+        {
+            if (_transaction != null)
+                _transaction.Dispose();
+
+            if (_dbConnection != null)
+                _dbConnection.Dispose();
         }
     }
 }

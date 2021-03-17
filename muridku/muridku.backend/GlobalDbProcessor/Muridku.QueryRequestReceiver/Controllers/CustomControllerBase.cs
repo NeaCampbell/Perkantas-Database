@@ -95,10 +95,13 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
         private void OnQueryExecutedHandler(object sender, QueryResult result)
         {
-            QueryOperatorManager.OnQueryExecuted -= OnQueryExecutedHandler;
+            if (RequestId == result.RequestId)
+            {
+                QueryOperatorManager.OnQueryExecuted -= OnQueryExecutedHandler;
 
-            lock (_lockObject)
-                _queryResult = result;
+                lock (_lockObject)
+                    _queryResult = result;
+            }
         }
 
         protected virtual void OnQueuedQueryExecutedHandler(object sender, QueryResult result)

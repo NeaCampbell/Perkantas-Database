@@ -36,7 +36,7 @@ namespace QueryOperator.QueryExecutor.MySQL
 
             try
             {
-                command = new MySqlCommand( query, _dbConnection );
+                command = new MySqlCommand( query, _dbConnection, _transaction );
 
                 switch( processType )
                 {
@@ -90,7 +90,7 @@ namespace QueryOperator.QueryExecutor.MySQL
 
             try
             {
-                command = new MySqlCommand( query, _dbConnection );
+                command = new MySqlCommand( query, _dbConnection, _transaction);
 
                 switch( processType )
                 {
@@ -229,7 +229,8 @@ namespace QueryOperator.QueryExecutor.MySQL
                     _transaction.Rollback();
                     break;
                 case DbTransactionState.Close:
-                    _dbConnection.Close();
+                    if(_dbConnection.State != ConnectionState.Closed)
+                        _dbConnection.Close();
                     break;
                 default:
                     break;
@@ -239,6 +240,15 @@ namespace QueryOperator.QueryExecutor.MySQL
         public IQueryExecutor<MySqlConnection> Clone()
         {
             return new MySQLQueryExecutor( _dbConfigSource );
+        }
+
+        public void Dispose()
+        {
+            if (_transaction != null)
+                _transaction.Dispose();
+
+            if (_dbConnection != null)
+                _dbConnection.Dispose();
         }
     }
 }
