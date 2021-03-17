@@ -76,13 +76,15 @@ namespace QueryManager
                     if (freeTaskFound)
                         try
                         {
-                            Console.WriteLine("    Executed enqueue query from task {0}, queue residue = {1}", taskId, _queueRequest.Count);
-                            _queryTasks[taskId] = new Task(() => ExecuteQuery(reqParam, taskId, true));
+                            _queryTasks[taskId] = new Task(() => {
+                                ExecuteQuery(reqParam, taskId, true);
+                                Console.WriteLine("    [{0}] Executed enqueue query from task {1}, queue residue = {2}", Thread.CurrentThread.ManagedThreadId, taskId, _queueRequest.Count);
+                            });
                             _queryTasks[taskId].Start();
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("    Error! {0}", e.Message);
+                            Console.WriteLine("    [{0}] Error! {1}", Thread.CurrentThread.ManagedThreadId, e.Message);
                         }
                 }
 
