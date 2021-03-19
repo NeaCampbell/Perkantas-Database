@@ -11,7 +11,7 @@ namespace UnitTest
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            QueryOperatorManager queryManager = new QueryOperatorManager(DbServiceType.MySql, "", null, 4);
+            QueryOperatorManager queryManager = new QueryOperatorManager(null);
             queryManager.OnQueryExecuted += OnQueryExecuted;
             queryManager.EnqueueQuery(new QueryRequestParam(ProcessType.Select, "", null, ""));
             queryManager.EnqueueQuery(new QueryRequestParam(ProcessType.Select, "", null, ""));

@@ -6,7 +6,6 @@ using QueryOperator.QueryExecutor;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +13,7 @@ namespace QueryManager
 {
     public class QueryOperatorManager : IQueryOperatorManager<DbServiceType>
     {
-        public IQueryExecutor<DbServiceType> QueryExecutor { get; private set; }
+        public int RequestWaitingTime { get; private set; }
         public event QueryExecutedEventHandler OnQueryExecuted;
         public event QueuedQueryExecutedEventHandler OnQueuedQueryExecuted;
         public event QueuedQueryCancelledEventHandler OnQueuedQueryCancelled;
@@ -26,12 +25,22 @@ namespace QueryManager
         private readonly Thread _queryTaskWatcher;
         private bool _shouldWatcherActive;
         private readonly object _lockObject;
+        private readonly int _maxQueueCount;
+        private readonly int _threadPoolWaitingTime;
 
-        public QueryOperatorManager(DbServiceType dbServiceType, string connectionString, IConfigSource dbConfigSource, int threadCount)
+        public QueryOperatorManager(IConfigSource dbConfigSource)
         {
+            DbServiceType dbServiceType = dbConfigSource.GetValue("DbServiceType", default(DbServiceType));
+            string connectionString = dbConfigSource.GetValue("ConnectionString", string.Empty);
+            Console.WriteLine(connectionString);
+            _maxQueueCount = dbConfigSource.GetValue("MaxQueueCount", 0);
+            int threadCount = dbConfigSource.GetValue("ThreadCount", 0);
+            _threadPoolWaitingTime = dbConfigSource.GetValue("ThreadPoolWaitingTime", 0);
+            RequestWaitingTime = dbConfigSource.GetValue("RequestWaitingTime", 0);
+
             IDbConnectionBuilder<DbServiceType> connBuilder = new DbConnectionBuilder(dbServiceType, connectionString);
             IQueryExecutorBuilder<DbServiceType> queryExecutorBuilder = new QueryExecutorBuilder(dbServiceType, dbConfigSource);
-            Console.WriteLine(connectionString);
+
             _queryExecutor = queryExecutorBuilder.Build();
             _queryExecutor.AssignConnection(connBuilder.Build());
             _queueRequest = new ConcurrentQueue<QueryRequestParam>();
@@ -55,7 +64,7 @@ namespace QueryManager
             {
                 if (_queueRequest.Count == 0)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(_threadPoolWaitingTime);
                     continue;
                 }
 
@@ -88,7 +97,7 @@ namespace QueryManager
                         }
                 }
 
-                Thread.Sleep(100);
+                Thread.Sleep(_threadPoolWaitingTime);
             }
         }
 
@@ -127,7 +136,7 @@ namespace QueryManager
             }
         }
 
-        public bool OpenDbConnection()
+        public IRequestResult OpenDbConnection()
         {
             try
             {
@@ -138,46 +147,51 @@ namespace QueryManager
 
                 _shouldWatcherActive = true;
                 _queryTaskWatcher.Start();
-                return true;
+                return new RequestResult(true, "success");
             }
-            catch
+            catch(Exception e)
             {
-                return false;
+                return new RequestResult(false, e.Message);
             }
         }
 
-        public bool ExecuteQuery(QueryRequestParam queryRequestParam)
+        public IRequestResult ExecuteQuery(QueryRequestParam queryRequestParam)
         {
             try
             {
                 Task.Run(() => ExecuteQuery(queryRequestParam, -1));
                 Console.WriteLine("    [{0}] Query execution requested", Thread.CurrentThread.ManagedThreadId);
-                return true;
+                return new RequestResult(true, "success");
             }
-            catch
+            catch(Exception e)
             {
-                return false;
+                return new RequestResult(false, e.Message);
             }
         }
 
-        public bool EnqueueQuery(QueryRequestParam queryRequestParam)
+        public IRequestResult EnqueueQuery(QueryRequestParam queryRequestParam)
         {
             try
             {
                 lock (_lockObject)
+                {
+                    if (_queueRequest.Count == _maxQueueCount)
+                        return new RequestResult(true, "exceed queue max count");
+
                     _queueRequest.Enqueue(queryRequestParam);
+                }
 
                 Console.WriteLine("    Query Enqueued");
-                return true;
+                return new RequestResult(true, "success");
             }
-            catch
+            catch(Exception e)
             {
-                return false;
+                return new RequestResult(false, e.Message);
             }
 
         }
 
-        public bool CloseDbConnection()
+        public IRequestResult CloseDbConnection()
         {
             try
             {
@@ -189,16 +203,16 @@ namespace QueryManager
                 while (_queueRequest.TryDequeue(out param))
                     OnQueuedQueryCancelled?.Invoke(this, "Database connection is closed", param);
 
-                QueryExecutor.ChangeDbTransState(DbTransactionState.Close);
+                _queryExecutor.ChangeDbTransState(DbTransactionState.Close);
 
                 foreach(IQueryExecutor qryExec in _queueQueryExecutors)
                     qryExec.ChangeDbTransState(DbTransactionState.Close);
 
-                return true;
+                return new RequestResult(true, "success");
             }
-            catch
+            catch(Exception e)
             {
-                return false;
+                return new RequestResult(false, e.Message);
             }
         }
 

@@ -8,10 +8,10 @@ namespace QueryManager
         event QueryExecutedEventHandler OnQueryExecuted;
         event QueuedQueryExecutedEventHandler OnQueuedQueryExecuted;
         event QueuedQueryCancelledEventHandler OnQueuedQueryCancelled;
-        IQueryExecutor<TDbServiceType> QueryExecutor { get; }
-        bool OpenDbConnection();
-        bool ExecuteQuery(QueryRequestParam queryRequestParam);
-        bool EnqueueQuery(QueryRequestParam queryRequestParam);
-        bool CloseDbConnection();
+        int RequestWaitingTime { get; }
+        IRequestResult OpenDbConnection();
+        IRequestResult ExecuteQuery(QueryRequestParam queryRequestParam);
+        IRequestResult EnqueueQuery(QueryRequestParam queryRequestParam);
+        IRequestResult CloseDbConnection();
     }
 }

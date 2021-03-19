@@ -23,36 +23,38 @@ namespace Muridku.QueryRequestReceiver
             return builder.Build();
         }
 
-        private static IConfigSource CreateDbConfigSource(IConfiguration config)
+        private static string CreateConnectionString(IConfigSource dbConfigSource)
         {
-            DatabaseConfig dbConfig = config.GetSection("DatabaseConfig").Get<DatabaseConfig>();
-            IConfigSource configSource = ConfigSourceBuilder.BuildFileConfigSource(dbConfig.DatabasePath, ConfigFileType.Xml);
-            configSource.SetValue("QueryPath", dbConfig.QueryPath);
-            return configSource;
-        }
-
-        private static IQueryOperatorManager<DbServiceType> CreateQueryOperatorManager(IConfiguration config, IConfigSource dbConfigSource)
-        {
-            DbServiceType dbServiceType = config.GetSection("DbServiceType").Get<DbServiceType>();
-            Console.WriteLine("Database Service Type = {0}", dbServiceType.ToString());
-            int threadCount = config.GetSection("ThreadCount").Get<int>();
-            Console.WriteLine("Total thread allowed = {0}", threadCount);
-
             string serverAddress = dbConfigSource.GetValue("ServerAddress", string.Empty);
             string portNumber = dbConfigSource.GetValue("PortNumber", string.Empty);
             string username = dbConfigSource.GetValue("Username", string.Empty);
             string password = dbConfigSource.GetValue("Password", string.Empty);
             string dbName = dbConfigSource.GetValue("DbName", string.Empty);
 
-            string connectionString = string.Format("Host={0};Port={1};User ID={2};Password={3};Database={4};Pooling=true;",
+            return string.Format("Host={0};Port={1};User ID={2};Password={3};Database={4};Pooling=true;",
                 serverAddress,
                 portNumber,
                 username,
                 password,
                 dbName
-              );
+            );
+        }
 
-            return new QueryOperatorManager(dbServiceType, connectionString, dbConfigSource, threadCount);
+        private static IConfigSource CreateDbConfigSource(IConfiguration config)
+        {
+            DatabaseConfig dbConfig = config.GetSection("DatabaseConfig").Get<DatabaseConfig>();
+            ThreadConfig threadConfig = config.GetSection("ThreadConfig").Get<ThreadConfig>();
+
+            IConfigSource configSource = ConfigSourceBuilder.BuildFileConfigSource(dbConfig.DatabasePath, ConfigFileType.Xml);
+            configSource.SetValue("DbServiceType", dbConfig.DbServiceType);
+            configSource.SetValue("ConnectionString", CreateConnectionString(configSource));
+            configSource.SetValue("QueryPath", dbConfig.QueryPath);
+            configSource.SetValue("MaxQueueCount", threadConfig.MaxQueueCount);
+            configSource.SetValue("ThreadCount", threadConfig.ThreadCount);
+            configSource.SetValue("ThreadPoolWaitingTime", threadConfig.ThreadPoolWaitingTime);
+            configSource.SetValue("RequestWaitingTime", threadConfig.RequestWaitingTime);
+
+            return configSource;
         }
 
         public static void Main(string[] args)
@@ -60,7 +62,7 @@ namespace Muridku.QueryRequestReceiver
             IConfiguration config = CreateConfiguration(AppDomain.CurrentDomain.BaseDirectory);
             IConfigSource dbConfigSource = CreateDbConfigSource(config);
 
-            _queryOperatorManager = CreateQueryOperatorManager(config, dbConfigSource);
+            _queryOperatorManager = new QueryOperatorManager(dbConfigSource);
             _queryOperatorManager.OnQueuedQueryCancelled += OnQueuedQueryCancelled;
             _queryOperatorManager.OpenDbConnection();
 

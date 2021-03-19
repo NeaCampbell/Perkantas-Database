@@ -18,13 +18,14 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
         private readonly object _lockObject;
         private QueryResult _queryResult;
-        private const int _queryExecutionWaitingTime = 10;
+        private readonly int _requestWaitingTime;
 
         public QueryControllerBase(ILogger<QueryControllerBase> logger
             , IQueryOperatorManager<DbServiceType> queryOperatorManager)
         {
             Logger = logger;
             QueryOperatorManager = queryOperatorManager;
+            _requestWaitingTime = queryOperatorManager.RequestWaitingTime;
             _lockObject = new object();
         }
 
@@ -44,13 +45,16 @@ namespace Muridku.QueryRequestReceiver.Controllers
             try
             {
                 QueryRequestParam reqParam = new QueryRequestParam(processType, requestCode, param, RequestId, isSingleRow);
-                if (!QueryOperatorManager.ExecuteQuery(reqParam))
-                    return new QueryResult(RequestId, requestCode, false, "internal server error");
+
+                IRequestResult reqResult = QueryOperatorManager.ExecuteQuery(reqParam);
+
+                if (!reqResult.Result)
+                    return new QueryResult(RequestId, requestCode, false, reqResult.Message);
 
                 await Task.Run(() =>
                 {
                     while (_queryResult == null)
-                        Thread.Sleep(_queryExecutionWaitingTime);
+                        Thread.Sleep(_requestWaitingTime);
                 });
 
                 return _queryResult;
@@ -81,11 +85,12 @@ namespace Muridku.QueryRequestReceiver.Controllers
             try
             {
                 QueryRequestParam reqParam = new QueryRequestParam(processType, requestCode, param, RequestId, isSingleRow);
+                IRequestResult reqResult = QueryOperatorManager.EnqueueQuery(reqParam);
 
-                if (QueryOperatorManager.EnqueueQuery(reqParam))
-                    return new QueryResult(RequestId, requestCode, true, "");
+                if (!reqResult.Result)
+                    return new QueryResult(RequestId, requestCode, false, reqResult.Message);
 
-                return new QueryResult(RequestId, requestCode, false, "request failed!");
+                return new QueryResult(RequestId, requestCode, true, "");
             }
             catch (Exception ex)
             {
@@ -123,7 +128,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
                 case ConstRequestType.DELETE:
                     return ProcessType.Delete;
                 default:
-                    return default(ProcessType);
+                    return default;
             }
         }
     }
