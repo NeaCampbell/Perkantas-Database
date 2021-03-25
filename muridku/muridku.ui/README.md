@@ -2,7 +2,7 @@
 
 Mobile App untuk PKTB.
 
-## Dependencies
+## Dependencies list
 
 1. React Native
 2. Expo
@@ -23,3 +23,18 @@ Mobile App untuk PKTB.
 17. expo-constants
 18. react-native-vector-icons
 19. react-bootstrap-icons
+
+## Dependencies installation (*NIX, macOS)
+
+```sh
+#!/bin/sh
+
+NPMINSTALL="npm install"
+NPMAUDIT="npm audit fix --force"
+
+${NPMINSTALL} react-native
+${NPMINSTALL} expo
+${NPMINSTALL} react-native-vector-icons
+${NPMINSTALL} react-bootstrap-icons
+${NPMAUDIT}
+```
