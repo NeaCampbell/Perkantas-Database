@@ -4,9 +4,9 @@ using System.Text;
 
 namespace QueryManager
 {
-    public interface IRequestResult
-    {
-        bool Result { get; }
-        string Message { get; }
-    }
+  public interface IRequestResult
+  {
+    bool Result { get; }
+    string Message { get; }
+  }
 }

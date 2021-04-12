@@ -1,10 +1,10 @@
 ﻿namespace Common.ConfigSource
 {
-    public static class ConfigSourceBuilder
+  public static class ConfigSourceBuilder
+  {
+    public static IConfigSource BuildFileConfigSource( string fileName, ConfigFileType fileType )
     {
-        public static IConfigSource BuildFileConfigSource(string fileName, ConfigFileType fileType)
-        {
-            return new FileConfigSource(fileName, fileType);
-        }
+      return new FileConfigSource( fileName, fileType );
     }
+  }
 }

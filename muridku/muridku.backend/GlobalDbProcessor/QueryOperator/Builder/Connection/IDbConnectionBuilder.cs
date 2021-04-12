@@ -2,8 +2,8 @@
 
 namespace QueryOperator.Builder.Connection
 {
-    public interface IDbConnectionBuilder<TDbServiceType>
-    {
-        IDbConnection Build();
-    }
+  public interface IDbConnectionBuilder<TDbServiceType>
+  {
+    IDbConnection Build();
+  }
 }

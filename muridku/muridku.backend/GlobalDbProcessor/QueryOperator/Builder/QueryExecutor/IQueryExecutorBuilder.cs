@@ -2,8 +2,8 @@
 
 namespace QueryOperator.Builder.QueryExecutor
 {
-    public interface IQueryExecutorBuilder<TDbServiceType>
-    {
-        IQueryExecutor Build();
-    }
+  public interface IQueryExecutorBuilder<TDbServiceType>
+  {
+    IQueryExecutor Build();
+  }
 }

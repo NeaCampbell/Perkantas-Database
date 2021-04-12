@@ -2,10 +2,10 @@
 
 namespace QueryOperator.QueryExecutor
 {
-    internal class RawSingleQueryResult
-    {
-        public bool Succeed { get; set; }
-        public string ErrorMessage { get; set; }
-        public IDictionary<string, object> RawResult { get; set; }
-    }
+  internal class RawSingleQueryResult
+  {
+    public bool Succeed { get; set; }
+    public string ErrorMessage { get; set; }
+    public IDictionary<string, object> RawResult { get; set; }
+  }
 }
