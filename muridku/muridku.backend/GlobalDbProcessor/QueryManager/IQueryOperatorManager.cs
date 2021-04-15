@@ -9,6 +9,7 @@ namespace QueryManager
     event QueuedQueryExecutedEventHandler OnQueuedQueryExecuted;
     event QueuedQueryCancelledEventHandler OnQueuedQueryCancelled;
     int RequestWaitingTime { get; }
+    int MaxRequestTimeout { get; }
     IRequestResult OpenDbConnection();
     IRequestResult ExecuteQuery( QueryRequestParam queryRequestParam );
     IRequestResult EnqueueQuery( QueryRequestParam queryRequestParam );

@@ -54,6 +54,7 @@ namespace Muridku.QueryRequestReceiver
       configSource.SetValue( "ThreadCount", threadConfig.ThreadCount );
       configSource.SetValue( "ThreadPoolWaitingTime", threadConfig.ThreadPoolWaitingTime );
       configSource.SetValue( "RequestWaitingTime", threadConfig.RequestWaitingTime );
+      configSource.SetValue( "MaxRequestTimeout", threadConfig.MaxRequestTimeout );
       configSource.SetValue( "HeaderToken", config.GetSection( "HeaderToken" ) );
 
       return configSource;

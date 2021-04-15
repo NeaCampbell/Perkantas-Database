@@ -6,5 +6,6 @@
     public int ThreadCount { get; set; }
     public int ThreadPoolWaitingTime { get; set; }
     public int RequestWaitingTime { get; set; }
+    public int MaxRequestTimeout { get; set; }
   }
 }

@@ -49,27 +49,22 @@ namespace Muridku.QueryRequestReceiver.Controllers
     }
 
     [HttpGet( _validateUserAddr )]
-    public async Task<Response<User>> ValidateUser( string email, string password )
+    public Response<User> ValidateUser( string email, string password )
     {
       string invalidMsg = "invalid email or password";
 
       if( email.Replace( " ", "" ) != email )
         return new Response<User>( string.Empty, _validateUserAddr, false, invalidMsg );
 
-      QueryResult reqResult = await ExecuteRequest( new List<string>() { email }, ConstRequestType.GET, _validateUserAddr );
+      QueryResult reqResult = ExecuteRequest( new List<string>() { email }, ConstRequestType.GET, _validateUserAddr );
 
       if( !reqResult.Succeed )
-        return new Response<User>( reqResult.RequestId, reqResult.RequestCode, reqResult.Succeed, reqResult.ErrorMessage );
+        return GetResponseBlankSingleModel<User>( reqResult, reqResult.Succeed );
 
-      Console.WriteLine( "    Query Result = {0}", reqResult.Result );
-
-      if( string.IsNullOrEmpty( reqResult.Result ) )
-        return new Response<User>( reqResult.RequestId, reqResult.RequestCode, false, invalidMsg );
-
-      User user = JsonConvert.DeserializeObject<IList<User>>( reqResult.Result )[ 0 ];
+      User user = GetModelFromQueryResult<User>( reqResult );
 
       if( user.password != password )
-        return new Response<User>( reqResult.RequestId, reqResult.RequestCode, false, invalidMsg );
+        return GetResponseBlankSingleModel<User>( reqResult, false, false );
 
       user.password = null;
       return new Response<User>( reqResult.RequestId, reqResult.RequestCode, reqResult.Succeed, reqResult.ErrorMessage, user );

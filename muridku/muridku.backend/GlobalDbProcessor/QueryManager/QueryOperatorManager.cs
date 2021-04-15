@@ -14,6 +14,7 @@ namespace QueryManager
   public class QueryOperatorManager : IQueryOperatorManager<DbServiceType>
   {
     public int RequestWaitingTime { get; private set; }
+    public int MaxRequestTimeout { get; private set; }
     public event QueryExecutedEventHandler OnQueryExecuted;
     public event QueuedQueryExecutedEventHandler OnQueuedQueryExecuted;
     public event QueuedQueryCancelledEventHandler OnQueuedQueryCancelled;
@@ -37,6 +38,7 @@ namespace QueryManager
       int threadCount = dbConfigSource.GetValue( "ThreadCount", 0 );
       _threadPoolWaitingTime = dbConfigSource.GetValue( "ThreadPoolWaitingTime", 0 );
       RequestWaitingTime = dbConfigSource.GetValue( "RequestWaitingTime", 0 );
+      MaxRequestTimeout = dbConfigSource.GetValue( "MaxRequestTimeout", 0 );
 
       IDbConnectionBuilder<DbServiceType> connBuilder = new DbConnectionBuilder( dbServiceType, connectionString );
       IQueryExecutorBuilder<DbServiceType> queryExecutorBuilder = new QueryExecutorBuilder( dbServiceType, dbConfigSource );

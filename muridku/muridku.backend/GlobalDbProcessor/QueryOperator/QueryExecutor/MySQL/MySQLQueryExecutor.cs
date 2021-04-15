@@ -75,10 +75,16 @@ namespace QueryOperator.QueryExecutor.MySQL
         };
       }
 
+      bool succeed = selectResult != null && selectResult.Count > 0;
+      string errorMsg = string.Empty;
+
+      if( !succeed )
+        errorMsg = "data not found!";
+
       return new RawQueryResult()
       {
-        Succeed = true,
-        ErrorMessage = string.Empty,
+        Succeed = succeed,
+        ErrorMessage = errorMsg,
         RawResult = selectResult
       };
     }
@@ -126,10 +132,16 @@ namespace QueryOperator.QueryExecutor.MySQL
         };
       }
 
+      bool succeed = selectResult != null && selectResult.Count > 0;
+      string errorMsg = string.Empty;
+
+      if( !succeed )
+        errorMsg = "data not found!";
+
       return new RawSingleQueryResult()
       {
-        Succeed = true,
-        ErrorMessage = string.Empty,
+        Succeed = succeed,
+        ErrorMessage = errorMsg,
         RawResult = selectResult
       };
     }
