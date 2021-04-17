@@ -1,12 +1,16 @@
 ﻿using Common;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Muridku.QueryRequestReceiver.Models;
+using Muridku.QueryRequestReceiver.Models.Params;
 using Newtonsoft.Json;
 using QueryManager;
 using QueryOperator.QueryExecutor;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,9 +18,14 @@ namespace Muridku.QueryRequestReceiver.Controllers
 {
   public abstract class QueryControllerBase : ControllerBase
   {
+    private const string _saveApiLog = "saveapilog";
+    private const string USER_SYSTEM = "SYSTEM";
+    private const string MSG_INVALID_USERNAME = "invalid username";
+    private const string MSG_INVALID_REQUEST_CODE = "invalid request code";
     protected ILogger<QueryControllerBase> Logger { get; private set; }
     protected IQueryOperatorManager<DbServiceType> QueryOperatorManager { get; private set; }
     protected string RequestId { get; private set; }
+    protected string Username { get; private set; }
 
     private QueryResult _queryResult;
     private readonly int _requestWaitingTime;
@@ -33,27 +42,39 @@ namespace Muridku.QueryRequestReceiver.Controllers
       _lockObject = new object();
     }
 
-    protected virtual QueryResult ExecuteRequest( IList<string> param, string strProcessType, string requestCode, bool isSingleRow = false )
+    protected virtual QueryResult ExecuteRequest<TModel>( LogApi logApi, IList<string> param, string strProcessType,
+      string requestCode, bool isSingleRow = false, Func<CheckParam>[] preCheckFuncs = null,
+      Func<TModel, CheckParam>[] postCheckFuncs = null, bool isNeedValidUser = false ) where TModel : class
     {
       ProcessType processType = GetProcessType( strProcessType );
       RequestId = string.Format( "{0}_{1}_{2}", HttpContext.Session.Id, GetType().Name.ToString(), processType );
+      string username = GetUsernameFromHeader( HttpContext );
+      logApi.request_id = RequestId;
+      logApi.usr_crt = username;
 
-      if( string.IsNullOrEmpty( requestCode ) )
-        return new QueryResult( RequestId, requestCode, false, "invalid request code" );
-
-      Console.WriteLine();
       Console.WriteLine( "================" );
       Console.WriteLine( "request id = {0}", RequestId );
+
+      if( isNeedValidUser && username == USER_SYSTEM )
+        return SetResponseForFailedRequest( logApi, 400, MSG_INVALID_USERNAME );
+
+      if( string.IsNullOrEmpty( requestCode ) )
+        return SetResponseForFailedRequest( logApi, 400, MSG_INVALID_REQUEST_CODE );
+
+      CheckParam checkParam = PreExecCheck( preCheckFuncs );
+
+      if( !checkParam.CheckResult )
+        return SetResponseForFailedRequest( logApi, 400, checkParam.Message );
+
       QueryOperatorManager.OnQueryExecuted += OnQueryExecutedHandler;
 
       try
       {
         QueryRequestParam reqParam = new QueryRequestParam( processType, requestCode, param, RequestId, isSingleRow );
-
         IRequestResult reqResult = QueryOperatorManager.ExecuteQuery( reqParam );
 
         if( !reqResult.Result )
-          return new QueryResult( RequestId, requestCode, false, reqResult.Message );
+          return SetResponseForFailedRequest( logApi, 500, reqResult.Message );
 
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         tokenSource.CancelAfter( _maxRequestTimeout );
@@ -67,26 +88,57 @@ namespace Muridku.QueryRequestReceiver.Controllers
          } );
 
         task.Wait( tokenSource.Token );
+        QueryResult result = task.Result;
+        IList<TModel> models = null;
 
-        return task.Result;
+        if( isSingleRow )
+        {
+          TModel model = GetModelFromQueryResult<TModel>( result );
+          models = new List<TModel>() { model };
+        }
+        else
+          models = GetModelListFromQueryResult<TModel>( result );
+
+        checkParam = PostExecCheck( models, isSingleRow, postCheckFuncs );
+
+        if( !checkParam.CheckResult )
+          return SetResponseForFailedRequest( logApi, 400, checkParam.Message, result );
+
+        logApi.param_output = JsonConvert.SerializeObject( result );
+        logApi.response_status = string.IsNullOrEmpty( result.ErrorMessage ) ? 200 : 400;
+        logApi.error_message = result.ErrorMessage;
+        SaveLogApi( logApi );
+        return result;
       }
       catch( Exception ex )
       {
-        return new QueryResult( RequestId, requestCode, false, ex.Message );
+        return SetResponseForFailedRequest( logApi, 500, ex.Message );
       }
     }
 
-    protected virtual QueryResult EnqueueRequest( IList<string> param, string strProcessType, string requestCode, bool isSingleRow = false )
+    protected virtual QueryResult EnqueueRequest( LogApi logApi, IList<string> param, string strProcessType, string requestCode, bool isSingleRow = false,
+      Func<CheckParam>[] preCheckFuncs = null, bool isNeedValidUser = false )
     {
       ProcessType processType = GetProcessType( strProcessType );
       RequestId = string.Format( "{0}_{1}_{2}", HttpContext.Session.Id, GetType().Name.ToString(), ProcessType.Select );
+      string username = GetUsernameFromHeader( HttpContext );
+      logApi.request_id = RequestId;
+      logApi.usr_crt = username;
 
-      if( string.IsNullOrEmpty( requestCode ) )
-        return new QueryResult( RequestId, requestCode, false, "invalid request code" );
-
-      Console.WriteLine();
       Console.WriteLine( "================" );
       Console.WriteLine( "request id = {0}", RequestId );
+
+      if( isNeedValidUser && username == USER_SYSTEM )
+        return SetResponseForFailedRequest( logApi, 400, MSG_INVALID_USERNAME );
+
+      if( string.IsNullOrEmpty( requestCode ) )
+        return SetResponseForFailedRequest( logApi, 500, MSG_INVALID_REQUEST_CODE );
+
+      CheckParam checkParam = PreExecCheck( preCheckFuncs );
+
+      if( !checkParam.CheckResult )
+        return SetResponseForFailedRequest( logApi, 400, checkParam.Message );
+
       QueryOperatorManager.OnQueuedQueryExecuted += OnQueuedQueryExecutedHandler;
 
       try
@@ -95,13 +147,16 @@ namespace Muridku.QueryRequestReceiver.Controllers
         IRequestResult reqResult = QueryOperatorManager.EnqueueQuery( reqParam );
 
         if( !reqResult.Result )
-          return new QueryResult( RequestId, requestCode, false, reqResult.Message );
+          return SetResponseForFailedRequest( logApi, 500, reqResult.Message );
 
-        return new QueryResult( RequestId, requestCode, true, "" );
+        QueryResult result = new QueryResult( RequestId, requestCode, true, "" );
+        logApi.param_output = JsonConvert.SerializeObject( result );
+        SaveLogApi( logApi );
+        return result;
       }
       catch( Exception ex )
       {
-        return new QueryResult( RequestId, requestCode, false, ex.Message );
+        return SetResponseForFailedRequest( logApi, 500, ex.Message );
       }
     }
 
@@ -109,8 +164,8 @@ namespace Muridku.QueryRequestReceiver.Controllers
     {
       if( string.IsNullOrEmpty( result.Result ) )
         return null;
-
-      return JsonConvert.DeserializeObject<IList<TModel>>( result.Result )[ 0 ];
+      Console.WriteLine( result.Result );
+      return JsonConvert.DeserializeObject<TModel>( result.Result );
     }
 
     protected IList<TModel> GetModelListFromQueryResult<TModel>( QueryResult result ) where TModel : class
@@ -121,14 +176,14 @@ namespace Muridku.QueryRequestReceiver.Controllers
       return JsonConvert.DeserializeObject<IList<TModel>>( result.Result );
     }
 
-    protected Response<TModel> GetResponseBlankSingleModel<TModel>( QueryResult result, bool succeed, bool isUseResultSucceedValue = true ) where TModel : class
+    protected Response<TModel> GetResponseBlankSingleModel<TModel>( QueryResult result, bool succeed, string errorMessage = null, bool isUseResultSucceedValue = true ) where TModel : class
     {
-      return new Response<TModel>( result.RequestId, result.RequestCode, isUseResultSucceedValue ? result.Succeed : succeed, result.ErrorMessage, null );
+      return new Response<TModel>( result.RequestId, result.RequestCode, isUseResultSucceedValue ? result.Succeed : succeed, errorMessage ?? result.ErrorMessage, null );
     }
 
-    protected Response<IList<TModel>> GetResponseBlankMultiModels<TModel>( QueryResult result, bool succeed, bool isUseResultSucceedValue = true ) where TModel : class
+    protected Response<IList<TModel>> GetResponseBlankMultiModels<TModel>( QueryResult result, bool succeed, string errorMessage = null, bool isUseResultSucceedValue = true ) where TModel : class
     {
-      return new Response<IList<TModel>>( result.RequestId, result.RequestCode, isUseResultSucceedValue ? result.Succeed : succeed, result.ErrorMessage, null );
+      return new Response<IList<TModel>>( result.RequestId, result.RequestCode, isUseResultSucceedValue ? result.Succeed : succeed, errorMessage ?? result.ErrorMessage, null );
     }
 
     protected Response<TModel> GetResponseSingleModel<TModel>( QueryResult result ) where TModel : class
@@ -136,9 +191,12 @@ namespace Muridku.QueryRequestReceiver.Controllers
       if(string.IsNullOrEmpty( result.Result))
         return new Response<TModel>( result.RequestId, result.RequestCode, false, "data not found!" );
 
-      Console.WriteLine( result.Result );
+      TModel model = JsonConvert.DeserializeObject<TModel>( result.Result );
+      return new Response<TModel>( result.RequestId, result.RequestCode, result.Succeed, result.ErrorMessage, model );
+    }
 
-      TModel model = JsonConvert.DeserializeObject<IList<TModel>>( result.Result )[ 0 ];
+    protected Response<TModel> GetResponseSingleModelCustom<TModel>( QueryResult result, TModel model ) where TModel : class
+    {
       return new Response<TModel>( result.RequestId, result.RequestCode, result.Succeed, result.ErrorMessage, model );
     }
 
@@ -151,17 +209,97 @@ namespace Muridku.QueryRequestReceiver.Controllers
       return new Response<IList<TModel>>( result.RequestId, result.RequestCode, result.Succeed, result.ErrorMessage, models );
     }
 
+    protected Response<IList<TModel>> GetResponseMultiModelsCustom<TModel>( QueryResult result, IList<TModel> models ) where TModel : class
+    {
+      return new Response<IList<TModel>>( result.RequestId, result.RequestCode, result.Succeed, result.ErrorMessage, models );
+    }
+
     private void OnQueryExecutedHandler( object sender, QueryResult result )
     {
       lock( _lockObject )
         _queryResult = result;
 
       QueryOperatorManager.OnQueryExecuted -= OnQueryExecutedHandler;
+
+      Console.WriteLine( "================" );
     }
 
     protected virtual void OnQueuedQueryExecutedHandler( object sender, QueryResult result )
     {
       QueryOperatorManager.OnQueuedQueryExecuted -= OnQueuedQueryExecutedHandler;
+      Console.WriteLine( "================" );
+    }
+
+    protected void SaveLogApi( LogApi logApi )
+    {
+      try
+      {
+        logApi.error_message = logApi.error_message.Replace( "'", "''" );
+
+        IList<string> param = new List<string>()
+        {
+          logApi.request_id.Length > 200 ? logApi.request_id.Substring(0, 200) : logApi.request_id,
+          logApi.url.Length > 500 ? logApi.url.Substring(0, 500) : logApi.url,
+          logApi.method_name.Length > 200 ? logApi.method_name.Substring(0, 200) : logApi.method_name,
+          logApi.param_input.Length > 2000 ? logApi.param_input.Substring(0, 2000) : logApi.param_input,
+          logApi.response_status.ToString(),
+          logApi.param_output.Length > 2000 ? logApi.param_output.Substring(0, 2000) : logApi.param_output,
+          logApi.error_message.Length > 2000 ? logApi.error_message.Substring(0, 2000) : logApi.error_message,
+          logApi.usr_crt.Length > 100 ? logApi.usr_crt.Substring(0, 100) : logApi.usr_crt
+        };
+
+        QueryRequestParam reqParam = new QueryRequestParam( ProcessType.Insert, _saveApiLog, param, RequestId, true );
+        IRequestResult reqResult = QueryOperatorManager.ExecuteQuery( reqParam );
+      }
+      catch( Exception ex )
+      {
+        Console.WriteLine( "error when save interface api log : {0}", ex.Message );
+      }
+    }
+
+    [MethodImpl( MethodImplOptions.NoInlining )]
+    protected string GetCurrentMethod()
+    {
+      var st = new StackTrace();
+      var sf = st.GetFrame( 1 );
+      return sf.GetMethod().Name;
+    }
+
+    protected LogApi CreateLogApiObj( string url, string methodName, string paramInput )
+    {
+      return new LogApi()
+      {
+        url = url,
+        method_name = methodName,
+        param_input = paramInput
+      };
+    }
+
+    protected CheckParam ValidateParamInput( string param, string errorMessage )
+    {
+      if( param.Equals( string.Empty ) )
+        return new CheckParam()
+        {
+          CheckResult = false,
+          Message = errorMessage
+        };
+
+      return new CheckParam()
+      {
+        CheckResult = true,
+        Message = string.Empty
+      };
+    }
+
+    private string GetUsernameFromHeader( HttpContext context )
+    {
+      Console.WriteLine( context.Request );
+      Console.WriteLine( context.Request.Headers );
+
+      if( context.Request.Headers.ContainsKey( "Username" ) )
+        return context.Request.Headers[ "Username" ];
+
+      return USER_SYSTEM;
     }
 
     private ProcessType GetProcessType( string requestType )
@@ -179,6 +317,71 @@ namespace Muridku.QueryRequestReceiver.Controllers
         default:
           return default;
       }
+    }
+
+    private CheckParam PreExecCheck( Func<CheckParam>[] preCheckFuncs )
+    {
+      if( preCheckFuncs != null && preCheckFuncs.Length > 0 )
+        foreach( Func<CheckParam> func in preCheckFuncs )
+        {
+          CheckParam checkParam = func();
+
+          if( !checkParam.CheckResult )
+            return checkParam;
+        }
+
+      return new CheckParam()
+      {
+        CheckResult = true,
+        Message = string.Empty
+      };
+    }
+
+    private CheckParam PostExecCheck<TModel>( IList<TModel> models, bool isSingleRow, Func<TModel, CheckParam>[] postCheckFuncs ) where TModel: class
+    {
+      if( postCheckFuncs != null && postCheckFuncs.Length > 0 )
+        foreach( Func<TModel, CheckParam> func in postCheckFuncs )
+        {
+          if( isSingleRow )
+          {
+            CheckParam checkParam = func( models[ 0 ] );
+
+            if( !checkParam.CheckResult )
+              return checkParam;
+          }
+          else
+          {
+            foreach( TModel model in models )
+            {
+              CheckParam checkParam = func( model );
+
+              if( !checkParam.CheckResult )
+                return checkParam;
+            }
+          }
+        }
+
+      return new CheckParam()
+      {
+        CheckResult = true,
+        Message = string.Empty
+      };
+    }
+
+    private QueryResult SetResponseForFailedRequest(LogApi logApi, int responseStatus, string errorMessage, QueryResult result = null )
+    {
+      logApi.response_status = responseStatus;
+      logApi.error_message = errorMessage;
+      SaveLogApi( logApi );
+      Console.WriteLine( "request failed: {0}", logApi.error_message );
+
+      if( result != null )
+      {
+        result.Succeed = false;
+        result.ErrorMessage = errorMessage;
+      }
+
+      return result ?? new QueryResult( logApi.request_id, logApi.method_name, false, logApi.error_message );
     }
   }
 }

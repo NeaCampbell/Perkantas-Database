@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Muridku.QueryRequestReceiver.Models;
+using Muridku.QueryRequestReceiver.Models.Params;
 using QueryManager;
 using QueryOperator.QueryExecutor;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Muridku.QueryRequestReceiver.Controllers
 {
@@ -15,7 +15,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
   public class MemberController : QueryControllerBase
   {
     private const string _getMemberById = "getmemberbyid";
-    private const string _getMemberByListId = "getmemberbylistid";
+    private const string _getMembersByListId = "getmembersbylistid";
 
     public MemberController( ILogger<QueryControllerBase> logger, IQueryOperatorManager<DbServiceType> queryOperatorManager )
       : base( logger, queryOperatorManager )
@@ -25,7 +25,9 @@ namespace Muridku.QueryRequestReceiver.Controllers
     [HttpGet( _getMemberById )]
     public Response<Member> GetMemberById( int memberid )
     {
-      QueryResult reqResult = ExecuteRequest( new List<string>() { memberid.ToString() }, ConstRequestType.GET, _getMemberById );
+      LogApi logApi = CreateLogApiObj( "localhost", GetCurrentMethod(), string.Format( "memberid={0}", memberid.ToString() ) );
+      QueryResult reqResult = ExecuteRequest<Member>( logApi, new List<string>() { memberid.ToString() }, ConstRequestType.GET,
+        _getMemberById, true );
 
       if( !reqResult.Succeed )
         return GetResponseBlankSingleModel<Member>( reqResult, reqResult.Succeed );
@@ -33,15 +35,33 @@ namespace Muridku.QueryRequestReceiver.Controllers
       return GetResponseSingleModel<Member>( reqResult );
     }
 
-    [HttpPost( _getMemberByListId )]
-    public Response<IList<Member>> GetMembersByListId( [FromBody] IList<int> listid )
+    [HttpGet( _getMembersByListId )]
+    public Response<IList<Member>> GetMembersByListId( [FromQuery] int[] listid )
     {
-      IList<string> paramQuery = new List<string>();
+      LogApi logApi = CreateLogApiObj( "localhost", GetCurrentMethod(), string.Empty );
+      string stringId = string.Empty;
+      Console.WriteLine( listid );
 
       foreach( int id in listid )
-        paramQuery.Add( id.ToString() );
+      {
+        if( stringId.Equals( string.Empty ) )
+        {
+          stringId = string.Format( "{0}", id.ToString() );
+          logApi.param_input = string.Format( "listid={0}", id.ToString() );
+        }
+        else
+        {
+          stringId += string.Format( ",{0}", id.ToString() );
+          logApi.param_input += string.Format( "&listid={0}", id.ToString() );
+        }
+      }
 
-      QueryResult reqResult = ExecuteRequest( paramQuery, ConstRequestType.GET, _getMemberByListId );
+      Func<CheckParam>[] preCheckFuncs = new Func<CheckParam>[ 1 ];
+
+      preCheckFuncs[ 0 ] = ( () => ValidateParamInput( stringId, "parameter is empty" ) );
+
+      IList<string> paramQuery = new List<string>() { string.Format( "({0})", stringId ) };
+      QueryResult reqResult = ExecuteRequest<Member>( logApi, paramQuery, ConstRequestType.GET, _getMembersByListId, preCheckFuncs: preCheckFuncs );
 
       if( !reqResult.Succeed )
         return GetResponseBlankMultiModels<Member>( reqResult, reqResult.Succeed );

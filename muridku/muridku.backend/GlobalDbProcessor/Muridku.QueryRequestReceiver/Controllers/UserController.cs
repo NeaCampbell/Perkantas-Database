@@ -2,12 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Muridku.QueryRequestReceiver.Models;
-using Newtonsoft.Json;
+using Muridku.QueryRequestReceiver.Models.Params;
 using QueryManager;
 using QueryOperator.QueryExecutor;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Muridku.QueryRequestReceiver.Controllers
 {
@@ -45,29 +44,63 @@ namespace Muridku.QueryRequestReceiver.Controllers
     [HttpGet( _getAllUserAddr )]
     public QueryResult GetAllUser()
     {
-      return EnqueueRequest( null, ConstRequestType.GET, _getAllUserAddr );
+      LogApi logApi = CreateLogApiObj( "localhost", GetCurrentMethod(), string.Empty );
+      return EnqueueRequest( logApi, null, ConstRequestType.GET, _getAllUserAddr );
     }
 
     [HttpGet( _validateUserAddr )]
     public Response<User> ValidateUser( string email, string password )
     {
+      LogApi logApi = CreateLogApiObj( "localhost", GetCurrentMethod(), string.Format( "email={0}&password={1}", email, password ) );
       string invalidMsg = "invalid email or password";
 
-      if( email.Replace( " ", "" ) != email )
-        return new Response<User>( string.Empty, _validateUserAddr, false, invalidMsg );
+      Func<CheckParam>[] preCheckFuncs = new Func<CheckParam>[ 1 ];
+      preCheckFuncs[ 0 ] = ( () => ValidateEmail( email, invalidMsg ) );
 
-      QueryResult reqResult = ExecuteRequest( new List<string>() { email }, ConstRequestType.GET, _validateUserAddr );
+      Func<User, CheckParam>[] postCheckFuncs = new Func<User, CheckParam>[ 1 ];
+      postCheckFuncs[ 0 ] = ( ( User user ) => ValidatePassword( user, password, invalidMsg ) );
+
+      QueryResult reqResult = ExecuteRequest( logApi, new List<string>() { email }, ConstRequestType.GET, _validateUserAddr,
+        isSingleRow: true, preCheckFuncs: preCheckFuncs, postCheckFuncs: postCheckFuncs );
 
       if( !reqResult.Succeed )
         return GetResponseBlankSingleModel<User>( reqResult, reqResult.Succeed );
 
       User user = GetModelFromQueryResult<User>( reqResult );
-
-      if( user.password != password )
-        return GetResponseBlankSingleModel<User>( reqResult, false, false );
-
       user.password = null;
-      return new Response<User>( reqResult.RequestId, reqResult.RequestCode, reqResult.Succeed, reqResult.ErrorMessage, user );
+      return GetResponseSingleModelCustom( reqResult, user );
+    }
+
+    private CheckParam ValidateEmail( string email, string errorMessage )
+    {
+      if( email.Replace( " ", "" ) != email )
+        return new CheckParam()
+        {
+          CheckResult = false,
+          Message = errorMessage
+        };
+
+      return new CheckParam()
+      {
+        CheckResult = true,
+        Message = string.Empty
+      };
+    }
+
+    private CheckParam ValidatePassword( User user, string password, string errorMessage )
+    {
+      if( user.password != password )
+        return new CheckParam()
+        {
+          CheckResult = false,
+          Message = errorMessage
+        };
+
+      return new CheckParam()
+      {
+        CheckResult = true,
+        Message = string.Empty
+      };
     }
   }
 }
