@@ -44,14 +44,14 @@ namespace Muridku.QueryRequestReceiver.Controllers
     [HttpGet( _getAllUserAddr )]
     public QueryResult GetAllUser()
     {
-      LogApi logApi = CreateLogApiObj( "localhost", GetCurrentMethod(), string.Empty );
+      LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Empty );
       return EnqueueRequest( logApi, null, ConstRequestType.GET, _getAllUserAddr );
     }
 
     [HttpGet( _validateUserAddr )]
     public Response<User> ValidateUser( string email, string password )
     {
-      LogApi logApi = CreateLogApiObj( "localhost", GetCurrentMethod(), string.Format( "email={0}&password={1}", email, password ) );
+      LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "email={0}&password={1}", email, password ) );
       string invalidMsg = "invalid email or password";
 
       Func<CheckParam>[] preCheckFuncs = new Func<CheckParam>[ 1 ];

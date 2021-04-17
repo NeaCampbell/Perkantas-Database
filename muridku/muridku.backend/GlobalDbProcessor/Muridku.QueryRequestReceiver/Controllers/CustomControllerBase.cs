@@ -10,6 +10,8 @@ using QueryOperator.QueryExecutor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +33,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     private readonly int _requestWaitingTime;
     private readonly int _maxRequestTimeout;
     private readonly object _lockObject;
+    private readonly string _localIpAddress;
 
     public QueryControllerBase( ILogger<QueryControllerBase> logger
         , IQueryOperatorManager<DbServiceType> queryOperatorManager )
@@ -40,6 +43,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       _requestWaitingTime = queryOperatorManager.RequestWaitingTime;
       _maxRequestTimeout = queryOperatorManager.MaxRequestTimeout;
       _lockObject = new object();
+      _localIpAddress = GetLocalIPv4();
     }
 
     protected virtual QueryResult ExecuteRequest<TModel>( LogApi logApi, IList<string> param, string strProcessType,
@@ -258,11 +262,11 @@ namespace Muridku.QueryRequestReceiver.Controllers
       return sf.GetMethod().Name;
     }
 
-    protected LogApi CreateLogApiObj( string url, string methodName, string paramInput )
+    protected LogApi CreateLogApiObj( string methodName, string paramInput )
     {
       return new LogApi()
       {
-        url = url,
+        url = _localIpAddress,
         method_name = methodName,
         param_input = paramInput
       };
@@ -282,6 +286,16 @@ namespace Muridku.QueryRequestReceiver.Controllers
         CheckResult = true,
         Message = string.Empty
       };
+    }
+
+    private string GetLocalIPv4()
+    {
+      foreach( NetworkInterface item in NetworkInterface.GetAllNetworkInterfaces() )
+        foreach( UnicastIPAddressInformation ip in item.GetIPProperties().UnicastAddresses )
+          if( ip.Address.AddressFamily == AddressFamily.InterNetwork )
+            return ip.Address.ToString();
+
+      return "localhost";
     }
 
     private string GetUsernameFromHeader( HttpContext context )
@@ -368,18 +382,22 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
     private QueryResult SetResponseForFailedRequest(LogApi logApi, int responseStatus, string errorMessage, QueryResult result = null )
     {
-      logApi.response_status = responseStatus;
-      logApi.error_message = errorMessage;
-      SaveLogApi( logApi );
-      Logger.LogWarning( "request failed: {0}", logApi.error_message );
-
       if( result != null )
       {
         result.Succeed = false;
         result.ErrorMessage = errorMessage;
+        result.Result = null;
       }
+      else
+        result = new QueryResult( logApi.request_id, logApi.method_name, false, logApi.error_message ); ;
 
-      return result ?? new QueryResult( logApi.request_id, logApi.method_name, false, logApi.error_message );
+      logApi.response_status = responseStatus;
+      logApi.error_message = errorMessage;
+      logApi.param_output = JsonConvert.SerializeObject( result );
+      SaveLogApi( logApi );
+      Logger.LogWarning( "request failed: {0}", logApi.error_message );
+
+      return result;
     }
   }
 }

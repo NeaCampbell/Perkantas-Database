@@ -25,7 +25,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     [HttpGet( _getMemberById )]
     public Response<Member> GetMemberById( int memberid )
     {
-      LogApi logApi = CreateLogApiObj( "localhost", GetCurrentMethod(), string.Format( "memberid={0}", memberid.ToString() ) );
+      LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "memberid={0}", memberid.ToString() ) );
       QueryResult reqResult = ExecuteRequest<Member>( logApi, new List<string>() { memberid.ToString() }, ConstRequestType.GET,
         _getMemberById, true );
 
@@ -38,7 +38,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     [HttpGet( _getMembersByListId )]
     public Response<IList<Member>> GetMembersByListId( [FromQuery] int[] listid )
     {
-      LogApi logApi = CreateLogApiObj( "localhost", GetCurrentMethod(), string.Empty );
+      LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Empty );
       string stringId = string.Empty;
 
       foreach( int id in listid )
