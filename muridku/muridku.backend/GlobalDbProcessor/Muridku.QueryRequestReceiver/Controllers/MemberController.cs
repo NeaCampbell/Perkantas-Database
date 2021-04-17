@@ -40,7 +40,6 @@ namespace Muridku.QueryRequestReceiver.Controllers
     {
       LogApi logApi = CreateLogApiObj( "localhost", GetCurrentMethod(), string.Empty );
       string stringId = string.Empty;
-      Console.WriteLine( listid );
 
       foreach( int id in listid )
       {

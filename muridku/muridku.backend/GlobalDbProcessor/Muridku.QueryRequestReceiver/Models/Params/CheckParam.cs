@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Muridku.QueryRequestReceiver.Models.Params
+﻿namespace Muridku.QueryRequestReceiver.Models.Params
 {
   public class CheckParam
   {

@@ -28,12 +28,12 @@ namespace Muridku.QueryRequestReceiver.Controllers
       if( RequestId == result.RequestId )
       {
         base.OnQueuedQueryExecutedHandler( sender, result );
-        Console.WriteLine( "    Request id {0}, error msg = {1}", result.RequestId, result.ErrorMessage );
+        Logger.LogInformation( "    Request id {0}, error msg = {1}", result.RequestId, result.ErrorMessage );
 
         switch( result.RequestCode )
         {
           case _getAllUserAddr:
-            Console.WriteLine( "    Query Result {0} = {1}", result.RequestId, result.Result );
+            Logger.LogInformation( "    Query Result {0} = {1}", result.RequestId, result.Result );
             break;
           default:
             break;

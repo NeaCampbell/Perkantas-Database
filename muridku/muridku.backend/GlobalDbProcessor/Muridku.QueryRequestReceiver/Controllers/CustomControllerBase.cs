@@ -52,8 +52,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       logApi.request_id = RequestId;
       logApi.usr_crt = username;
 
-      Console.WriteLine( "================" );
-      Console.WriteLine( "request id = {0}", RequestId );
+      Logger.LogInformation( "request id = {0}", RequestId );
 
       if( isNeedValidUser && username == USER_SYSTEM )
         return SetResponseForFailedRequest( logApi, 400, MSG_INVALID_USERNAME );
@@ -89,6 +88,10 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
         task.Wait( tokenSource.Token );
         QueryResult result = task.Result;
+
+        if( !string.IsNullOrEmpty( result.ErrorMessage ) )
+          return SetResponseForFailedRequest( logApi, 500, result.ErrorMessage );
+
         IList<TModel> models = null;
 
         if( isSingleRow )
@@ -104,11 +107,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         if( !checkParam.CheckResult )
           return SetResponseForFailedRequest( logApi, 400, checkParam.Message, result );
 
-        logApi.param_output = JsonConvert.SerializeObject( result );
-        logApi.response_status = string.IsNullOrEmpty( result.ErrorMessage ) ? 200 : 400;
-        logApi.error_message = result.ErrorMessage;
-        SaveLogApi( logApi );
-        return result;
+        return SetResponseForSuceedRequest( logApi, JsonConvert.SerializeObject( result ), result );
       }
       catch( Exception ex )
       {
@@ -125,8 +124,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       logApi.request_id = RequestId;
       logApi.usr_crt = username;
 
-      Console.WriteLine( "================" );
-      Console.WriteLine( "request id = {0}", RequestId );
+      Logger.LogInformation( "request id = {0}", RequestId );
 
       if( isNeedValidUser && username == USER_SYSTEM )
         return SetResponseForFailedRequest( logApi, 400, MSG_INVALID_USERNAME );
@@ -150,9 +148,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
           return SetResponseForFailedRequest( logApi, 500, reqResult.Message );
 
         QueryResult result = new QueryResult( RequestId, requestCode, true, "" );
-        logApi.param_output = JsonConvert.SerializeObject( result );
-        SaveLogApi( logApi );
-        return result;
+        return SetResponseForSuceedRequest( logApi, JsonConvert.SerializeObject( result ), result );
       }
       catch( Exception ex )
       {
@@ -164,7 +160,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     {
       if( string.IsNullOrEmpty( result.Result ) )
         return null;
-      Console.WriteLine( result.Result );
+
       return JsonConvert.DeserializeObject<TModel>( result.Result );
     }
 
@@ -220,14 +216,11 @@ namespace Muridku.QueryRequestReceiver.Controllers
         _queryResult = result;
 
       QueryOperatorManager.OnQueryExecuted -= OnQueryExecutedHandler;
-
-      Console.WriteLine( "================" );
     }
 
     protected virtual void OnQueuedQueryExecutedHandler( object sender, QueryResult result )
     {
       QueryOperatorManager.OnQueuedQueryExecuted -= OnQueuedQueryExecutedHandler;
-      Console.WriteLine( "================" );
     }
 
     protected void SaveLogApi( LogApi logApi )
@@ -253,7 +246,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       }
       catch( Exception ex )
       {
-        Console.WriteLine( "error when save interface api log : {0}", ex.Message );
+        Logger.LogError( "error when save interface api log : {0}", ex.Message );
       }
     }
 
@@ -293,9 +286,6 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
     private string GetUsernameFromHeader( HttpContext context )
     {
-      Console.WriteLine( context.Request );
-      Console.WriteLine( context.Request.Headers );
-
       if( context.Request.Headers.ContainsKey( "Username" ) )
         return context.Request.Headers[ "Username" ];
 
@@ -368,12 +358,20 @@ namespace Muridku.QueryRequestReceiver.Controllers
       };
     }
 
+    private QueryResult SetResponseForSuceedRequest( LogApi logApi, string paramOutput, QueryResult result )
+    {
+      logApi.param_output = paramOutput;
+      SaveLogApi( logApi );
+      Logger.LogInformation( "request succeed! response={0}", logApi.param_output );
+      return result;
+    }
+
     private QueryResult SetResponseForFailedRequest(LogApi logApi, int responseStatus, string errorMessage, QueryResult result = null )
     {
       logApi.response_status = responseStatus;
       logApi.error_message = errorMessage;
       SaveLogApi( logApi );
-      Console.WriteLine( "request failed: {0}", logApi.error_message );
+      Logger.LogWarning( "request failed: {0}", logApi.error_message );
 
       if( result != null )
       {
