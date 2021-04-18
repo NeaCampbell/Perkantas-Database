@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Muridku.QueryRequestReceiver.Models
+namespace Muridku.QueryRequestReceiver.Models.Dbs
 {
   public class LogApi
   {
@@ -11,7 +11,7 @@ namespace Muridku.QueryRequestReceiver.Models
       error_message = string.Empty;
     }
 
-    public int id { get; set; }
+    public long id { get; set; }
     public string request_id { get; set; }
     public string url { get; set; }
     public string method_name { get; set; }

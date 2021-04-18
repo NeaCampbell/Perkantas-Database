@@ -1,7 +1,7 @@
 ﻿using Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Muridku.QueryRequestReceiver.Models;
+using Muridku.QueryRequestReceiver.Models.Dbs;
 using Muridku.QueryRequestReceiver.Models.Params;
 using QueryManager;
 using QueryOperator.QueryExecutor;
@@ -14,9 +14,6 @@ namespace Muridku.QueryRequestReceiver.Controllers
   [Route( "[controller]" )]
   public class UserController : QueryControllerBase
   {
-    private const string _getAllUserAddr = "getalluser";
-    private const string _validateUserAddr = "validateuser";
-
     public UserController( ILogger<UserController> logger
         , IQueryOperatorManager<DbServiceType> queryOperatorManager ) :
         base( logger, queryOperatorManager )
@@ -32,7 +29,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
         switch( result.RequestCode )
         {
-          case _getAllUserAddr:
+          case QueryListKeyMap.GET_ALL_USER:
             Logger.LogInformation( "    Query Result {0} = {1}", result.RequestId, result.Result );
             break;
           default:
@@ -41,26 +38,31 @@ namespace Muridku.QueryRequestReceiver.Controllers
       }
     }
 
-    [HttpGet( _getAllUserAddr )]
+    [HttpGet( QueryListKeyMap.GET_ALL_USER )]
     public QueryResult GetAllUser()
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Empty );
-      return EnqueueRequest( logApi, null, ConstRequestType.GET, _getAllUserAddr );
+      return EnqueueRequest( logApi, null, ConstRequestType.GET, QueryListKeyMap.GET_ALL_USER );
     }
 
-    [HttpGet( _validateUserAddr )]
+    [HttpGet( QueryListKeyMap.VALIDATE_USER )]
     public Response<User> ValidateUser( string email, string password )
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "email={0}&password={1}", email, password ) );
       string invalidMsg = "invalid email or password";
 
-      Func<CheckParam>[] preCheckFuncs = new Func<CheckParam>[ 1 ];
-      preCheckFuncs[ 0 ] = ( () => ValidateEmail( email, invalidMsg ) );
+      IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
+      {
+        () => ValidateParamInput( null, email, password ),
+        () => ValidateEmail( email, invalidMsg )
+      };
 
-      Func<User, CheckParam>[] postCheckFuncs = new Func<User, CheckParam>[ 1 ];
-      postCheckFuncs[ 0 ] = ( ( User user ) => ValidatePassword( user, password, invalidMsg ) );
+      IList<Func<User, CheckParam>> postCheckFuncs = new List<Func<User, CheckParam>>
+      {
+        ( User user ) => ValidatePassword( user, password, invalidMsg )
+      };
 
-      QueryResult reqResult = ExecuteRequest( logApi, new List<string>() { email }, ConstRequestType.GET, _validateUserAddr,
+      QueryResult reqResult = ExecuteRequest( logApi, new List<string>() { email }, ConstRequestType.GET, QueryListKeyMap.VALIDATE_USER,
         isSingleRow: true, preCheckFuncs: preCheckFuncs, postCheckFuncs: postCheckFuncs );
 
       if( !reqResult.Succeed )

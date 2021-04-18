@@ -1,7 +1,8 @@
 ﻿using Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Muridku.QueryRequestReceiver.Models;
+using Muridku.QueryRequestReceiver.Models.Dbs;
+using Muridku.QueryRequestReceiver.Models.Dbs.Combined;
 using Muridku.QueryRequestReceiver.Models.Params;
 using QueryManager;
 using QueryOperator.QueryExecutor;
@@ -14,28 +15,47 @@ namespace Muridku.QueryRequestReceiver.Controllers
   [Route( "[controller]" )]
   public class MemberController : QueryControllerBase
   {
-    private const string _getMemberById = "getmemberbyid";
-    private const string _getMembersByListId = "getmembersbylistid";
-
     public MemberController( ILogger<QueryControllerBase> logger, IQueryOperatorManager<DbServiceType> queryOperatorManager )
       : base( logger, queryOperatorManager )
     {
     }
 
-    [HttpGet( _getMemberById )]
-    public Response<Member> GetMemberById( int memberid )
+    [HttpGet( QueryListKeyMap.GET_MEMBER_BY_ID )]
+    public Response<CombinedMemberInstitutionFaculty> GetMemberById( int memberid )
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "memberid={0}", memberid.ToString() ) );
       QueryResult reqResult = ExecuteRequest<Member>( logApi, new List<string>() { memberid.ToString() }, ConstRequestType.GET,
-        _getMemberById, true );
+        QueryListKeyMap.GET_MEMBER_BY_ID, true );
 
       if( !reqResult.Succeed )
-        return GetResponseBlankSingleModel<Member>( reqResult, reqResult.Succeed );
+        return GetResponseBlankSingleModel<CombinedMemberInstitutionFaculty>( reqResult, reqResult.Succeed );
 
-      return GetResponseSingleModel<Member>( reqResult );
+      CombinedMemberInstitutionFaculty result = new CombinedMemberInstitutionFaculty();
+      Member member = GetModelFromQueryResult<Member>( reqResult );
+      result.Member = member;
+
+      if( member.institution_id.HasValue )
+      {
+        QueryResult reqResultInstitution = ExecuteRequest<Institution>( logApi, new List<string>() { member.institution_id.Value.ToString() }, ConstRequestType.GET,
+          QueryListKeyMap.GET_INSTITUTION_BY_ID, true );
+
+        if( reqResultInstitution.Succeed )
+          result.Institution = GetModelFromQueryResult<Institution>( reqResultInstitution );
+      }
+
+      if( member.faculty_id.HasValue )
+      {
+        QueryResult reqResultFaculty = ExecuteRequest<Institution>( logApi, new List<string>() { member.faculty_id.Value.ToString() }, ConstRequestType.GET,
+          QueryListKeyMap.GET_FACULTY_BY_ID, true );
+
+        if( reqResultFaculty.Succeed )
+          result.Faculty = GetModelFromQueryResult<Faculty>( reqResultFaculty );
+      }
+
+      return GetResponseSingleModelCustom( reqResult, result );
     }
 
-    [HttpGet( _getMembersByListId )]
+    [HttpGet( QueryListKeyMap.GET_MEMBERS_BY_LIST_ID )]
     public Response<IList<Member>> GetMembersByListId( [FromQuery] int[] listid )
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Empty );
@@ -55,12 +75,12 @@ namespace Muridku.QueryRequestReceiver.Controllers
         }
       }
 
-      Func<CheckParam>[] preCheckFuncs = new Func<CheckParam>[ 1 ];
-
-      preCheckFuncs[ 0 ] = ( () => ValidateParamInput( stringId, "parameter is empty" ) );
-
+      IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
+      {
+        () => ValidateParamInput( null, stringId )
+      };
       IList<string> paramQuery = new List<string>() { string.Format( "({0})", stringId ) };
-      QueryResult reqResult = ExecuteRequest<Member>( logApi, paramQuery, ConstRequestType.GET, _getMembersByListId, preCheckFuncs: preCheckFuncs );
+      QueryResult reqResult = ExecuteRequest<Member>( logApi, paramQuery, ConstRequestType.GET, QueryListKeyMap.GET_MEMBERS_BY_LIST_ID, preCheckFuncs: preCheckFuncs );
 
       if( !reqResult.Succeed )
         return GetResponseBlankMultiModels<Member>( reqResult, reqResult.Succeed );

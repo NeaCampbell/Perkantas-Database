@@ -1,4 +1,4 @@
-﻿namespace Muridku.QueryRequestReceiver.Models
+﻿namespace Muridku.QueryRequestReceiver.Models.Params
 {
   public class Response<TModel> where TModel: class
   {
