@@ -90,20 +90,23 @@ namespace Muridku.QueryRequestReceiver.Controllers
         if( !string.IsNullOrEmpty( result.ErrorMessage ) )
           return SetResponseForFailedRequest( logApi, 500, result.ErrorMessage );
 
-        IList<TModel> models = null;
-
-        if( isSingleRow )
+        if( processType == ProcessType.Select )
         {
-          TModel model = GetModelFromQueryResult<TModel>( result );
-          models = new List<TModel>() { model };
+          IList<TModel> models = null;
+
+          if( isSingleRow )
+          {
+            TModel model = GetModelFromQueryResult<TModel>( result );
+            models = new List<TModel>() { model };
+          }
+          else
+            models = GetModelListFromQueryResult<TModel>( result );
+
+          CheckParam checkParam = PostExecCheck( models, isSingleRow, postCheckFuncs );
+
+          if( !checkParam.CheckResult )
+            return SetResponseForFailedRequest( logApi, 400, checkParam.Message, result );
         }
-        else
-          models = GetModelListFromQueryResult<TModel>( result );
-
-        CheckParam checkParam = PostExecCheck( models, isSingleRow, postCheckFuncs );
-
-        if( !checkParam.CheckResult )
-          return SetResponseForFailedRequest( logApi, 400, checkParam.Message, result );
 
         return SetResponseForSuceedRequest( logApi, result );
       }
@@ -271,6 +274,48 @@ namespace Muridku.QueryRequestReceiver.Controllers
       };
     }
 
+    protected CheckParam ValidateStringValue( string valueToCheck, string paramName )
+    {
+      CheckParam result = new CheckParam()
+      {
+        CheckResult = true
+      };
+
+      if( string.IsNullOrEmpty( valueToCheck ) )
+      {
+        result.CheckResult = false;
+        result.Message = string.Format( "{0} cannot be empty.", paramName );
+        return result;
+      }
+
+      return result;
+    }
+
+    protected CheckParam ValidateStringLength( string valueToCheck, int maxLength, string paramName )
+    {
+      CheckParam result = new CheckParam()
+      {
+        CheckResult = true
+      };
+
+      if( valueToCheck.Length > maxLength )
+      {
+        result.CheckResult = false;
+        result.Message = string.Format( "param '{0}' exceed maximum length allowed.", paramName );
+        return result;
+      }
+
+      return result;
+    }
+
+    protected string GetUsernameFromHeader( HttpContext context )
+    {
+      if( context.Request.Headers.ContainsKey( "Username" ) )
+        return context.Request.Headers[ "Username" ];
+
+      return USER_SYSTEM;
+    }
+
     private QueryValidationParam ValidateQueryExecution( HttpContext context, LogApi logApi, string requestCode, string strProcessType, bool isNeedValidUser,
       IList<Func<CheckParam>> preCheckFuncs )
     {
@@ -317,14 +362,6 @@ namespace Muridku.QueryRequestReceiver.Controllers
             return ip.Address.ToString();
 
       return "localhost";
-    }
-
-    private string GetUsernameFromHeader( HttpContext context )
-    {
-      if( context.Request.Headers.ContainsKey( "Username" ) )
-        return context.Request.Headers[ "Username" ];
-
-      return USER_SYSTEM;
     }
 
     private ProcessType GetProcessType( string requestType )

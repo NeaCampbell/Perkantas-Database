@@ -7,6 +7,8 @@
     public const string GET_INSTITUTION_BY_ID = "getinstitutionbyid";
     public const string GET_MEMBER_BY_ID = "getmemberbyid";
     public const string GET_MEMBERS_BY_LIST_ID = "getmembersbylistid";
+    public const string GET_MEMBERS_BY_KTB_ID = "getmembersbyktbid";
+    public const string SAVE_SINGLE_MEMBER = "savesinglemember";
     public const string GET_ALL_FACULTY = "getallfaculty";
     public const string GET_FACULTY_BY_INSTITUTION_ID = "getfacultybyinstitutionid";
     public const string GET_FACULTY_BY_ID = "getfacultybyid";

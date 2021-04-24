@@ -33,6 +33,7 @@ namespace QueryOperator.QueryExecutor.MySQL
     {
       MySqlCommand command;
       IList<IDictionary<string, object>> selectResult = null;
+      bool succeed = true;
 
       try
       {
@@ -41,7 +42,6 @@ namespace QueryOperator.QueryExecutor.MySQL
         switch( processType )
         {
           case ProcessType.Select:
-            command.ExecuteNonQuery();
             command.CommandType = CommandType.Text;
             MySqlDataReader dr = command.ExecuteReader();
 
@@ -58,7 +58,7 @@ namespace QueryOperator.QueryExecutor.MySQL
               selectResult.Add( row );
             }
             dr.Close();
-
+            succeed = selectResult != null && selectResult.Count > 0;
             break;
           default:
             command.ExecuteNonQuery();
@@ -75,7 +75,6 @@ namespace QueryOperator.QueryExecutor.MySQL
         };
       }
 
-      bool succeed = selectResult != null && selectResult.Count > 0;
       string errorMsg = string.Empty;
 
       if( !succeed )
@@ -93,6 +92,7 @@ namespace QueryOperator.QueryExecutor.MySQL
     {
       MySqlCommand command;
       IDictionary<string, object> selectResult = null;
+      bool succeed = true;
 
       try
       {
@@ -101,7 +101,6 @@ namespace QueryOperator.QueryExecutor.MySQL
         switch( processType )
         {
           case ProcessType.Select:
-            command.ExecuteNonQuery();
             command.CommandType = CommandType.Text;
             MySqlDataReader dr = command.ExecuteReader();
 
@@ -115,7 +114,7 @@ namespace QueryOperator.QueryExecutor.MySQL
               break;
             }
             dr.Close();
-
+            succeed = selectResult != null && selectResult.Count > 0;
             break;
           default:
             command.ExecuteNonQuery();
@@ -132,7 +131,6 @@ namespace QueryOperator.QueryExecutor.MySQL
         };
       }
 
-      bool succeed = selectResult != null && selectResult.Count > 0;
       string errorMsg = string.Empty;
 
       if( !succeed )
