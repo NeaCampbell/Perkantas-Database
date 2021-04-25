@@ -31,7 +31,8 @@ namespace Muridku.QueryRequestReceiver.Controllers
       if( !reqResult.Succeed )
         return GetResponseBlankSingleModel<CombinedMemberInstitutionFaculty>( reqResult, reqResult.Succeed );
 
-      CombinedMemberInstitutionFaculty result = GetCompleteMemberData( GetModelFromQueryResult<Member>( reqResult ), logApi );
+      GlobalHelperController helper = new GlobalHelperController( Logger, QueryOperatorManager, HttpContext );
+      CombinedMemberInstitutionFaculty result = helper.GetCompleteMemberData( GetModelFromQueryResult<Member>( reqResult ), logApi );
       return GetResponseSingleModelCustom( reqResult, result );
     }
 
@@ -47,17 +48,16 @@ namespace Muridku.QueryRequestReceiver.Controllers
         {
           stringId = string.Format( "{0}", id.ToString() );
           logApi.param_input = string.Format( "listid={0}", id.ToString() );
+          continue;
         }
-        else
-        {
-          stringId += string.Format( ",{0}", id.ToString() );
-          logApi.param_input += string.Format( "&listid={0}", id.ToString() );
-        }
+
+        stringId += string.Format( ",{0}", id.ToString() );
+        logApi.param_input += string.Format( "&listid={0}", id.ToString() );
       }
 
       IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
       {
-        () => ValidateParamInput( null, stringId )
+        () => ValidateParamInputString( new Tuple<string, string, int>( "listid", stringId, stringId.Length ) )
       };
       IList<string> paramQuery = new List<string>() { string.Format( "({0})", stringId ) };
       QueryResult reqResult = ExecuteRequest<Member>( logApi, paramQuery, ConstRequestType.GET, QueryListKeyMap.GET_MEMBERS_BY_LIST_ID, preCheckFuncs: preCheckFuncs );
@@ -67,9 +67,10 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
       IList<CombinedMemberInstitutionFaculty> result = new List<CombinedMemberInstitutionFaculty>();
       IList<Member> members = GetModelListFromQueryResult<Member>( reqResult );
+      GlobalHelperController helper = new GlobalHelperController( Logger, QueryOperatorManager, HttpContext );
 
       foreach( Member member in members )
-        result.Add( GetCompleteMemberData( member, logApi ) );
+        result.Add( helper.GetCompleteMemberData( member, logApi ) );
 
       return GetResponseMultiModelsCustom( reqResult, result );
     }
@@ -86,9 +87,10 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
       IList<CombinedMemberInstitutionFaculty> result = new List<CombinedMemberInstitutionFaculty>();
       IList<Member> members = GetModelListFromQueryResult<Member>( reqResult );
+      GlobalHelperController helper = new GlobalHelperController( Logger, QueryOperatorManager, HttpContext );
 
       foreach( Member member in members )
-        result.Add( GetCompleteMemberData( member, logApi ) );
+        result.Add( helper.GetCompleteMemberData( member, logApi ) );
 
       return GetResponseMultiModelsCustom( reqResult, result );
     }
@@ -100,10 +102,8 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
       IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>()
       {
-        () => ValidateStringValue( data.name, "name" ),
-        () => ValidateStringLength( data.name, 100, "name" ),
-        () => ValidateStringValue( data.address, "address" ),
-        () => ValidateStringLength( data.address, 200, "address" ),
+        () => ValidateParamInputString( new Tuple<string, string, int>( "name", data.name, 100 ) ),
+        () => ValidateParamInputString( new Tuple<string, string, int>( "address", data.address, 200 ) ),
         () => ValidateStringLength( string.IsNullOrEmpty(data.birth_place) ? string.Empty : data.birth_place, 100, "birth_place" ),
         () => ValidateStringLength( string.IsNullOrEmpty(data.mobile_phn) ? string.Empty : data.mobile_phn, 20, "mobile_phn" )
       };
@@ -112,7 +112,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       {
         data.name,
         data.address,
-        data.birth_dt.HasValue ? data.birth_dt.Value.ToString("yyyy-MM-dd") : string.Empty,
+        data.birth_dt.HasValue ? data.birth_dt.Value.ToString( CommonFormat.YYYY_MM_DD ) : string.Empty,
         data.birth_place,
         data.mobile_phn,
         data.institution_id.HasValue ? data.institution_id.Value.ToString() : string.Empty,
@@ -121,34 +121,6 @@ namespace Muridku.QueryRequestReceiver.Controllers
       };
 
       return ExecuteRequest<Member>( logApi, paramQuery, ConstRequestType.POST, QueryListKeyMap.SAVE_SINGLE_MEMBER, true, preCheckFuncs: preCheckFuncs );
-    }
-
-    private CombinedMemberInstitutionFaculty GetCompleteMemberData( Member member, LogApi logApi )
-    {
-      CombinedMemberInstitutionFaculty result = new CombinedMemberInstitutionFaculty
-      {
-        Member = member
-      };
-
-      if( member.institution_id.HasValue )
-      {
-        QueryResult reqResultInstitution = ExecuteRequest<Institution>( logApi, new List<string>() { member.institution_id.Value.ToString() }, ConstRequestType.GET,
-          QueryListKeyMap.GET_INSTITUTION_BY_ID, true );
-
-        if( reqResultInstitution.Succeed )
-          result.Institution = GetModelFromQueryResult<Institution>( reqResultInstitution );
-      }
-
-      if( member.faculty_id.HasValue )
-      {
-        QueryResult reqResultFaculty = ExecuteRequest<Institution>( logApi, new List<string>() { member.faculty_id.Value.ToString() }, ConstRequestType.GET,
-          QueryListKeyMap.GET_FACULTY_BY_ID, true );
-
-        if( reqResultFaculty.Succeed )
-          result.Faculty = GetModelFromQueryResult<Faculty>( reqResultFaculty );
-      }
-
-      return result;
     }
   }
 }

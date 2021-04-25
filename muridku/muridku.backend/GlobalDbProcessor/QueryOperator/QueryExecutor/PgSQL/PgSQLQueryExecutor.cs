@@ -218,23 +218,30 @@ namespace QueryOperator.QueryExecutor.PgSQL
       {
         case DbTransactionState.Open:
           _dbConnection.Open();
+          ConnectionState = _dbConnection.State;
           break;
         case DbTransactionState.Start:
           _transaction = _dbConnection.BeginTransaction();
+          ConnectionState = _dbConnection.State;
           break;
         case DbTransactionState.Commit:
           _transaction.Commit();
+          ConnectionState = _dbConnection.State;
           break;
         case DbTransactionState.Rollback:
           _transaction.Rollback();
+          ConnectionState = _dbConnection.State;
           break;
         case DbTransactionState.Close:
           _dbConnection.Close();
+          ConnectionState = _dbConnection.State;
           break;
         default:
           break;
       }
     }
+
+    public ConnectionState ConnectionState { get; private set; }
 
     public IQueryExecutor<NpgsqlConnection> Clone()
     {

@@ -41,8 +41,8 @@ namespace Muridku.QueryRequestReceiver.Controllers
     private readonly object _lockObject;
     private readonly string _localIpAddress;
 
-    public QueryControllerBase( ILogger<QueryControllerBase> logger
-        , IQueryOperatorManager<DbServiceType> queryOperatorManager )
+    public QueryControllerBase( ILogger<QueryControllerBase> logger , IQueryOperatorManager<DbServiceType> queryOperatorManager )
+      : base()
     {
       Logger = logger;
       QueryOperatorManager = queryOperatorManager;
@@ -54,15 +54,17 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
     protected virtual QueryResult ExecuteRequest<TModel>( LogApi logApi, IList<string> param, string strProcessType,
       string requestCode, bool isSingleRow = false, IList<Func<CheckParam>> preCheckFuncs = null,
-      IList<Func<TModel, CheckParam>> postCheckFuncs = null, bool isNeedValidUser = false ) where TModel : class
+      IList<Func<TModel, CheckParam>> postCheckFuncs = null, bool isNeedValidUser = false, HttpContext customContext = null ) where TModel : class
     {
-      QueryValidationParam validationParam = ValidateQueryExecution( HttpContext, logApi, requestCode, strProcessType, isNeedValidUser, preCheckFuncs );
+      lock( _lockObject )
+        _queryResult = null;
+
+      QueryValidationParam validationParam = ValidateQueryExecution( customContext ?? HttpContext, logApi, requestCode, strProcessType, isNeedValidUser, preCheckFuncs );
 
       if( !validationParam.QueryValid )
         return validationParam.Result;
 
       ProcessType processType = validationParam.SelectedProcessType;
-
       QueryOperatorManager.OnQueryExecuted += OnQueryExecutedHandler;
 
       try
@@ -71,7 +73,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         IRequestResult reqResult = QueryOperatorManager.ExecuteQuery( reqParam );
 
         if( !reqResult.Result )
-          return SetResponseForFailedRequest( logApi, 500, reqResult.Message );
+          return SetResponseForFailedRequest( logApi, 500, requestCode, reqResult.Message );
 
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         tokenSource.CancelAfter( _maxRequestTimeout );
@@ -88,7 +90,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         QueryResult result = task.Result;
 
         if( !string.IsNullOrEmpty( result.ErrorMessage ) )
-          return SetResponseForFailedRequest( logApi, 500, result.ErrorMessage );
+          return SetResponseForFailedRequest( logApi, 500, requestCode, result.ErrorMessage );
 
         if( processType == ProcessType.Select )
         {
@@ -105,14 +107,14 @@ namespace Muridku.QueryRequestReceiver.Controllers
           CheckParam checkParam = PostExecCheck( models, isSingleRow, postCheckFuncs );
 
           if( !checkParam.CheckResult )
-            return SetResponseForFailedRequest( logApi, 400, checkParam.Message, result );
+            return SetResponseForFailedRequest( logApi, 400, requestCode, checkParam.Message, result );
         }
 
         return SetResponseForSuceedRequest( logApi, result );
       }
       catch( Exception ex )
       {
-        return SetResponseForFailedRequest( logApi, 500, ex.Message );
+        return SetResponseForFailedRequest( logApi, 500, requestCode, ex.Message );
       }
     }
 
@@ -134,13 +136,13 @@ namespace Muridku.QueryRequestReceiver.Controllers
         IRequestResult reqResult = QueryOperatorManager.EnqueueQuery( reqParam );
 
         if( !reqResult.Result )
-          return SetResponseForFailedRequest( logApi, 500, reqResult.Message );
+          return SetResponseForFailedRequest( logApi, 500, requestCode, reqResult.Message );
 
         return SetResponseForSuceedRequest( logApi, new QueryResult( RequestId, requestCode, true, "" ) );
       }
       catch( Exception ex )
       {
-        return SetResponseForFailedRequest( logApi, 500, ex.Message );
+        return SetResponseForFailedRequest( logApi, 500, requestCode, ex.Message );
       }
     }
 
@@ -173,7 +175,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     protected Response<TModel> GetResponseSingleModel<TModel>( QueryResult result ) where TModel : class
     {
       if(string.IsNullOrEmpty( result.Result))
-        return new Response<TModel>( result.RequestId, result.RequestCode, false, "data not found!" );
+        return new Response<TModel>( result.RequestId, result.RequestCode, false, CommonMessage.DATA_NOT_FOUND );
 
       TModel model = JsonConvert.DeserializeObject<TModel>( result.Result );
       return new Response<TModel>( result.RequestId, result.RequestCode, result.Succeed, result.ErrorMessage, model );
@@ -187,7 +189,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     protected Response<IList<TModel>> GetResponseMultiModels<TModel>( QueryResult result ) where TModel : class
     {
       if( string.IsNullOrEmpty( result.Result ) )
-        return new Response<IList<TModel>>( result.RequestId, result.RequestCode, false, "data not found!" );
+        return new Response<IList<TModel>>( result.RequestId, result.RequestCode, false, CommonMessage.DATA_NOT_FOUND );
 
       IList<TModel> models = JsonConvert.DeserializeObject<IList<TModel>>( result.Result );
       return new Response<IList<TModel>>( result.RequestId, result.RequestCode, result.Succeed, result.ErrorMessage, models );
@@ -230,7 +232,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         };
 
         QueryRequestParam reqParam = new QueryRequestParam( ProcessType.Insert, QueryListKeyMap.SAVE_API_LOG, param, RequestId, true );
-        QueryOperatorManager.ExecuteQuery( reqParam );
+        QueryOperatorManager.ExecuteQuery( reqParam, false );
       }
       catch( Exception ex )
       {
@@ -256,39 +258,31 @@ namespace Muridku.QueryRequestReceiver.Controllers
       };
     }
 
-    protected CheckParam ValidateParamInput( string errorMessage, params string[] param )
+    protected CheckParam ValidateParamInputString( params Tuple<string, string, int>[] param )
     {
       if( param.Length > 0 )
-        foreach( string prm in param )
-          if( string.IsNullOrEmpty( prm ) )
+        foreach( Tuple<string, string, int> prm in param )
+        {
+          if( string.IsNullOrEmpty( prm.Item2 ) )
             return new CheckParam()
             {
               CheckResult = false,
-              Message = errorMessage ?? "parameter is empty"
+              Message = string.Format( "param '{0}' cannot be empty", prm.Item1 )
             };
+
+          if( prm.Item2.Length > prm.Item3 )
+            return new CheckParam()
+            {
+              CheckResult = false,
+              Message = string.Format( "param '{0}' exceed maximum length allowed", prm.Item1 )
+            };
+        }
 
       return new CheckParam()
       {
         CheckResult = true,
         Message = string.Empty
       };
-    }
-
-    protected CheckParam ValidateStringValue( string valueToCheck, string paramName )
-    {
-      CheckParam result = new CheckParam()
-      {
-        CheckResult = true
-      };
-
-      if( string.IsNullOrEmpty( valueToCheck ) )
-      {
-        result.CheckResult = false;
-        result.Message = string.Format( "{0} cannot be empty.", paramName );
-        return result;
-      }
-
-      return result;
     }
 
     protected CheckParam ValidateStringLength( string valueToCheck, int maxLength, string paramName )
@@ -323,22 +317,25 @@ namespace Muridku.QueryRequestReceiver.Controllers
       {
         SelectedProcessType = GetProcessType( strProcessType )
       };
-      RequestId = string.Format( "{0}_{1}_{2}", context.Session.Id, GetType().Name.ToString(), param.SelectedProcessType );
+      RequestId = string.Format( "{0}_{1}_{2}_{3}", context.Session.Id, GetType().Name.ToString(), requestCode, param.SelectedProcessType );
       string username = GetUsernameFromHeader( context );
       logApi.request_id = RequestId;
       logApi.usr_crt = username;
+      logApi.error_message = string.Empty;
+      logApi.response_status = 200;
+      logApi.param_output = string.Empty;
 
       Logger.LogInformation( "request id = {0}", RequestId );
 
       if( isNeedValidUser && username == USER_SYSTEM )
       {
-        param.Result = SetResponseForFailedRequest( logApi, 400, MSG_INVALID_USERNAME );
+        param.Result = SetResponseForFailedRequest( logApi, 400, requestCode, MSG_INVALID_USERNAME );
         return param;
       }
 
       if( string.IsNullOrEmpty( requestCode ) )
       {
-        param.Result = SetResponseForFailedRequest( logApi, 400, MSG_INVALID_REQUEST_CODE );
+        param.Result = SetResponseForFailedRequest( logApi, 400, requestCode, MSG_INVALID_REQUEST_CODE );
         return param;
       }
 
@@ -346,7 +343,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
       if( !checkParam.CheckResult )
       {
-        param.Result = SetResponseForFailedRequest( logApi, 400, checkParam.Message );
+        param.Result = SetResponseForFailedRequest( logApi, 400, requestCode, checkParam.Message );
         return param;
       }
 
@@ -438,7 +435,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       return result;
     }
 
-    private QueryResult SetResponseForFailedRequest(LogApi logApi, int responseStatus, string errorMessage, QueryResult result = null )
+    private QueryResult SetResponseForFailedRequest(LogApi logApi, int responseStatus, string requestCode, string errorMessage, QueryResult result = null )
     {
       if( result != null )
       {
@@ -453,7 +450,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       logApi.error_message = errorMessage;
       logApi.param_output = JsonConvert.SerializeObject( result );
       SaveLogApi( logApi );
-      Logger.LogWarning( "request failed: {0}", logApi.error_message );
+      Logger.LogWarning( "request with code {0} failed: {1}", requestCode, logApi.error_message );
 
       return result;
     }

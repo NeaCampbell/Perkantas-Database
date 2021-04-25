@@ -6,6 +6,7 @@ using QueryOperator.QueryExecutor;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,6 +16,9 @@ namespace QueryManager
   {
     public int RequestWaitingTime { get; private set; }
     public int MaxRequestTimeout { get; private set; }
+    public string EncryptMD5HashFormat { get; private set; }
+    public string EncryptMD5HashCultureInfo { get; private set; }
+
     public event QueryExecutedEventHandler OnQueryExecuted;
     public event QueuedQueryExecutedEventHandler OnQueuedQueryExecuted;
     public event QueuedQueryCancelledEventHandler OnQueuedQueryCancelled;
@@ -39,6 +43,8 @@ namespace QueryManager
       _threadPoolWaitingTime = dbConfigSource.GetValue( "ThreadPoolWaitingTime", 0 );
       RequestWaitingTime = dbConfigSource.GetValue( "RequestWaitingTime", 0 );
       MaxRequestTimeout = dbConfigSource.GetValue( "MaxRequestTimeout", 0 );
+      EncryptMD5HashFormat = dbConfigSource.GetValue( "HashFormat", string.Empty );
+      EncryptMD5HashCultureInfo = dbConfigSource.GetValue( "HashCultureInfo", string.Empty );
 
       IDbConnectionBuilder<DbServiceType> connBuilder = new DbConnectionBuilder( dbServiceType, connectionString );
       IQueryExecutorBuilder<DbServiceType> queryExecutorBuilder = new QueryExecutorBuilder( dbServiceType, dbConfigSource );
@@ -104,37 +110,70 @@ namespace QueryManager
       }
     }
 
-    private void ExecuteQuery( QueryRequestParam reqParam, int taskId, bool isFromQueue = false )
+    private void ExecuteQuery( QueryRequestParam reqParam, int taskId, bool isNeedReturnValue, bool isFromQueue = false )
     {
       IQueryExecutor queryExecutor = _queryExecutor;
 
       if( taskId > -1 )
         queryExecutor = _queueQueryExecutors[ taskId ];
 
-      queryExecutor.ChangeDbTransState( DbTransactionState.Start );
+      int retryCounter = 0;
+
+      while( queryExecutor.ConnectionState != ConnectionState.Open && retryCounter < 10 )
+      {
+        Thread.Sleep( 100 );
+        retryCounter++;
+      }
 
       try
       {
-        QueryResult result = queryExecutor.ExecuteQuery( reqParam );
-        queryExecutor.ChangeDbTransState( DbTransactionState.Commit );
+        if( queryExecutor.ConnectionState != ConnectionState.Open )
+        {
+          InvokeEvent( reqParam, null, new Exception( "unable to start transaction" ), isNeedReturnValue, isFromQueue );
+          return;
+        }
 
-        if( isFromQueue )
-          OnQueuedQueryExecuted?.Invoke( this, result );
-        else
-          OnQueryExecuted?.Invoke( this, result );
+        QueryResult result = null;
 
+        lock( _lockObject )
+        {
+          queryExecutor.ChangeDbTransState( DbTransactionState.Start );
+          result = queryExecutor.ExecuteQuery( reqParam );
+          queryExecutor.ChangeDbTransState( DbTransactionState.Commit );
+        }
+
+        InvokeEvent( reqParam, result, null, isNeedReturnValue, isFromQueue );
         Console.WriteLine( "    [{0}] Query executed", Thread.CurrentThread.ManagedThreadId );
       }
       catch( Exception e )
       {
         queryExecutor.ChangeDbTransState( DbTransactionState.Rollback );
+        InvokeEvent( reqParam, null, e, isNeedReturnValue, isFromQueue );
+        Console.WriteLine( "    [{0}] Error! {1}", Thread.CurrentThread.ManagedThreadId, e.Message );
+      }
+    }
 
+    private void InvokeEvent( QueryRequestParam reqParam, QueryResult result, Exception e, bool isNeedReturnValue, bool isFromQueue )
+    {
+      if( !isNeedReturnValue )
+        return;
+
+      if(e == null && result != null)
+      {
+        if( isFromQueue )
+          OnQueuedQueryExecuted?.Invoke( this, result );
+        else
+          OnQueryExecuted?.Invoke( this, result );
+
+        return;
+      }
+
+      if( e != null )
+      {
         if( isFromQueue )
           OnQueuedQueryExecuted?.Invoke( this, new QueryResult( ( reqParam == null ? "" : reqParam.Uuid ), ( reqParam == null ? "" : reqParam.RequestCode ), false, e.Message ) );
         else
           OnQueryExecuted?.Invoke( this, new QueryResult( ( reqParam == null ? "" : reqParam.Uuid ), ( reqParam == null ? "" : reqParam.RequestCode ), false, e.Message ) );
-
-        Console.WriteLine( "    Error! {0}", e.Message );
       }
     }
 
@@ -149,7 +188,7 @@ namespace QueryManager
 
         _shouldWatcherActive = true;
         _queryTaskWatcher.Start();
-        return new RequestResult( true, "success" );
+        return new RequestResult( true, CommonMessage.SUCCESS );
       }
       catch( Exception e )
       {
@@ -157,13 +196,13 @@ namespace QueryManager
       }
     }
 
-    public IRequestResult ExecuteQuery( QueryRequestParam queryRequestParam )
+    public IRequestResult ExecuteQuery( QueryRequestParam queryRequestParam, bool isNeedReturnValue = true )
     {
       try
       {
-        Task.Run( () => ExecuteQuery( queryRequestParam, -1 ) );
+        Task.Run( () => ExecuteQuery( queryRequestParam, -1, isNeedReturnValue ) );
         Console.WriteLine( "    [{0}] Query execution requested", Thread.CurrentThread.ManagedThreadId );
-        return new RequestResult( true, "success" );
+        return new RequestResult( true, CommonMessage.SUCCESS );
       }
       catch( Exception e )
       {
@@ -184,7 +223,7 @@ namespace QueryManager
         }
 
         Console.WriteLine( "    Query Enqueued" );
-        return new RequestResult( true, "success" );
+        return new RequestResult( true, CommonMessage.SUCCESS );
       }
       catch( Exception e )
       {
@@ -208,7 +247,7 @@ namespace QueryManager
         foreach( IQueryExecutor qryExec in _queueQueryExecutors )
           qryExec.ChangeDbTransState( DbTransactionState.Close );
 
-        return new RequestResult( true, "success" );
+        return new RequestResult( true, CommonMessage.SUCCESS );
       }
       catch( Exception e )
       {

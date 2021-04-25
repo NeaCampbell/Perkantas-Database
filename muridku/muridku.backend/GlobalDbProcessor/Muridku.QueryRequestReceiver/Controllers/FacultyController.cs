@@ -48,12 +48,9 @@ namespace Muridku.QueryRequestReceiver.Controllers
     public Response<Faculty> GetFacultyByInstitutionId( int institutionid )
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "institutionid={0}", institutionid.ToString() ) );
-      IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
-      {
-        () => ValidateParamInput( null, institutionid.ToString() )
-      };
+
       QueryResult reqResult = ExecuteRequest<Faculty>( logApi, new List<string>() { institutionid.ToString() }, ConstRequestType.GET,
-        QueryListKeyMap.GET_FACULTY_BY_INSTITUTION_ID, true, preCheckFuncs: preCheckFuncs );
+        QueryListKeyMap.GET_FACULTY_BY_INSTITUTION_ID, true );
 
       if( !reqResult.Succeed )
         return GetResponseBlankSingleModel<Faculty>( reqResult, reqResult.Succeed );
@@ -65,12 +62,9 @@ namespace Muridku.QueryRequestReceiver.Controllers
     public Response<Faculty> GetFacultyById( int id )
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "id={0}", id.ToString() ) );
-      IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
-      {
-        () => ValidateParamInput( null, id.ToString() )
-      };
+
       QueryResult reqResult = ExecuteRequest<Faculty>( logApi, new List<string>() { id.ToString() }, ConstRequestType.GET,
-        QueryListKeyMap.GET_FACULTY_BY_ID, true, preCheckFuncs: preCheckFuncs );
+        QueryListKeyMap.GET_FACULTY_BY_ID, true );
 
       if( !reqResult.Succeed )
         return GetResponseBlankSingleModel<Faculty>( reqResult, reqResult.Succeed );

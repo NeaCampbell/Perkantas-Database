@@ -30,12 +30,9 @@ namespace Muridku.QueryRequestReceiver.Controllers
     public Response<Institution> GetInstitutionById( int id )
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "id={0}", id.ToString() ) );
-      IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
-      {
-        () => ValidateParamInput( null, id.ToString() )
-      };
+
       QueryResult reqResult = ExecuteRequest<Institution>( logApi, new List<string>() { id.ToString() }, ConstRequestType.GET,
-        QueryListKeyMap.GET_INSTITUTION_BY_ID, true, preCheckFuncs: preCheckFuncs );
+        QueryListKeyMap.GET_INSTITUTION_BY_ID, true );
 
       if( !reqResult.Succeed )
         return GetResponseBlankSingleModel<Institution>( reqResult, reqResult.Succeed );

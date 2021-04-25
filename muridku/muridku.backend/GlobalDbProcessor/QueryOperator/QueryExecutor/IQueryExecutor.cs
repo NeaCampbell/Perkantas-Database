@@ -9,6 +9,7 @@ namespace QueryOperator.QueryExecutor
     void AssignConnection( IDbConnection dbConnection );
     QueryResult ExecuteQuery( QueryRequestParam queryRequestParam );
     void ChangeDbTransState( DbTransactionState transState );
+    ConnectionState ConnectionState { get; }
   }
 
   public interface IQueryExecutor<TDbConnection> : IQueryExecutor
