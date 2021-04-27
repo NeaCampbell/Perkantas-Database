@@ -23,6 +23,7 @@ Mobile App untuk PKTB.
 17. expo-constants
 18. react-native-vector-icons
 19. react-bootstrap-icons
+20. follow-redirects
 
 ## Dependencies installation (*NIX, macOS)
 

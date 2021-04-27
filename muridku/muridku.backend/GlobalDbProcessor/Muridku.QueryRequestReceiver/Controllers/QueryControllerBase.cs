@@ -202,6 +202,9 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
     private void OnQueryExecutedHandler( object sender, QueryResult result )
     {
+      if( result.RequestId != RequestId )
+        return;
+
       lock( _lockObject )
         _queryResult = result;
 
@@ -210,6 +213,9 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
     protected virtual void OnQueuedQueryExecutedHandler( object sender, QueryResult result )
     {
+      if( result.RequestId != RequestId )
+        return;
+
       QueryOperatorManager.OnQueuedQueryExecuted -= OnQueuedQueryExecutedHandler;
     }
 

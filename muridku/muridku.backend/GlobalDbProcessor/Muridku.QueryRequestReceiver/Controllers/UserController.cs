@@ -135,7 +135,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       if( user.is_logged_in == 1 )
       {
         reqResult.RequestCode = QueryListKeyMap.LOGIN;
-        return GetResponseBlankSingleModel<User>( reqResult, false, "user is still logged in" );
+        return GetResponseBlankSingleModel<User>( reqResult, false, "user is still logged in", false );
       }
 
       QueryResult loginResult = ExecuteRequest<User>( logApi, new List<string>() { email }, ConstRequestType.PUT, QueryListKeyMap.LOGIN, isSingleRow: true );
@@ -171,7 +171,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       if( user.is_logged_in == 0 )
       {
         reqResult.RequestCode = QueryListKeyMap.LOGOUT;
-        return GetResponseBlankSingleModel<User>( reqResult, false, "user already logged out" );
+        return GetResponseBlankSingleModel<User>( reqResult, false, "user already logged out", false );
       }
 
       QueryResult logoutResult = ExecuteRequest<User>( logApi, new List<string>() { email }, ConstRequestType.PUT, QueryListKeyMap.LOGOUT, isSingleRow: true );
@@ -187,22 +187,6 @@ namespace Muridku.QueryRequestReceiver.Controllers
     private CheckParam ValidateEmail( string email, string errorMessage )
     {
       if( email.Replace( " ", "" ) != email )
-        return new CheckParam()
-        {
-          CheckResult = false,
-          Message = errorMessage
-        };
-
-      return new CheckParam()
-      {
-        CheckResult = true,
-        Message = string.Empty
-      };
-    }
-
-    private CheckParam ValidateFreeUser( User user, string errorMessage )
-    {
-      if( user.is_logged_in != 0 )
         return new CheckParam()
         {
           CheckResult = false,
