@@ -55,22 +55,19 @@ namespace Muridku.QueryRequestReceiver
     public void Configure( IApplicationBuilder app, IWebHostEnvironment env )
     {
       if( env.IsDevelopment() )
-      {
         app.UseDeveloperExceptionPage();
-      }
+      else
+        app.UseHsts();
+
+      //app.UseHttpsRedirection();
+      app.UseSession();
+      app.UseCors();
+      app.UseRouting();
+      app.UseAuthorization();
 
       app.UseSecurityMiddleware( new SecurityMiddlewarePolicyBuilder()
         .AddDefaultSecurePolicy()
         .AddTokenHeader( _headerToken, _hashFormat, _hashCultureInfo ) );
-
-      app.UseHttpsRedirection();
-      app.UseSession();
-
-      app.UseRouting();
-
-      app.UseAuthorization();
-
-      app.UseCors();
 
       app.UseEndpoints( endpoints =>
       {

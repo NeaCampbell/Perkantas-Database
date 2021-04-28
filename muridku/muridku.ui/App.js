@@ -31,7 +31,7 @@ const App = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="ViewAllKTBScreen">
+          <Stack.Navigator initialRouteName="SplashScreen">
             {/* SplashScreen to wait for loading app data */}
             <Stack.Screen
               name="SplashScreen"

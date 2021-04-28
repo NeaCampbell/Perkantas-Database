@@ -25,6 +25,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import BodyBaseScreen from './BodyBaseScreen';
 import PasswordToggle from './component/PasswordToggle';
 
+const loginapi = require('../api/out/login');
+
 const LoginScreen = (props) => {
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
@@ -50,53 +52,22 @@ const LoginScreen = (props) => {
     }
 
     setLoading(true);
-    let dataToSend = {
-          user_email: userEmail,
-          user_password: userPassword
-        };
-    let formBody = [];
-    for (let key in dataToSend) {
-      let encodedKey = encodeURIComponent(key);
-      let encodedValue = encodeURIComponent(dataToSend[key]);
-      formBody.push(encodedKey + '=' + encodedValue);
-    }
-    formBody = formBody.join('&');
+    const callback = (result) => {
+      setLoading(false);
 
-    fetch('https://aboutreact.herokuapp.com/login.php', {
-      method: 'POST',
-      body: formBody,
-      headers: {
-        //Header Defination
-        'Content-Type':
-          'application/x-www-form-urlencoded;charset=UTF-8',
-      },
-    })
-    .then((response) => response.json())
-    .then((responseJson) => {
-      //Hide Loader
-      setLoading(false);
-      console.log(responseJson);
-      // If server response message same as Data Matched
-      if (responseJson.status == 1) {
-        AsyncStorage.setItem(
-          'user_id',
-            responseJson.data[0].user_id
-        );
-        console.log(responseJson.data[0].user_id);
-        navigation.replace('DrawerNavigationRoutes');
-      } else {
-        setErrortext('Email atau password tidak sesuai. Mohon periksa kembali.');
-        console.log('Email atau password tidak sesuai. Mohon periksa kembali.');
-        emailInputRef.current.focus();
+      if(!result.succeed) {
+        setErrortext(`failed to login! ${result.errorMessage}.`);
+        return;
       }
-    })
-    .catch((error) => {
-      //Hide Loader
-      setLoading(false);
-      // setErrortext('Internal server error.\n Mohon kontak tim support.');
-      // console.error(error);
-      navigation.replace('UserScreen');
-    });
+      
+      AsyncStorage.setItem(
+        'user_id',
+          responseJson.data[0].user_id
+      );
+      navigation.replace('ViewAllKTBScreen');
+    }
+
+    loginapi.login(userEmail, userPassword, callback);
   };
 
   const { globalFontStyle, titleInputStyle, basicInputStyle, inputStyle, passwordInputStyle } = props.PageStyles.BasicStyles;
