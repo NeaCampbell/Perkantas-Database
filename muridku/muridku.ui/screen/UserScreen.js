@@ -146,7 +146,7 @@ const UserScreen = (props) => {
         <KeyboardAvoidingView enabled>
           <View style={bodyImageStyle}>
             <Image
-              source={require('../asset/img/Logo.png')}
+              source={require('../asset/img/logo.png')}
               style={imageLogoStyle}
             />
           </View>

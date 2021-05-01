@@ -41,7 +41,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     public QueryResult GetAllFaculty()
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Empty );
-      return EnqueueRequest( logApi, null, ConstRequestType.GET, QueryListKeyMap.GET_ALL_FACULTY );
+      return EnqueueRequest( logApi, null, ConstRequestType.GET, QueryListKeyMap.GET_ALL_FACULTY, QueryListKeyMap.GET_ALL_FACULTY );
     }
 
     [HttpGet( QueryListKeyMap.GET_FACULTY_BY_INSTITUTION_ID )]
@@ -50,7 +50,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "institutionid={0}", institutionid.ToString() ) );
 
       QueryResult reqResult = ExecuteRequest<Faculty>( logApi, new List<string>() { institutionid.ToString() }, ConstRequestType.GET,
-        QueryListKeyMap.GET_FACULTY_BY_INSTITUTION_ID, true );
+        QueryListKeyMap.GET_FACULTY_BY_INSTITUTION_ID, QueryListKeyMap.GET_FACULTY_BY_INSTITUTION_ID, true );
 
       if( !reqResult.Succeed )
         return GetResponseBlankSingleModel<Faculty>( reqResult, reqResult.Succeed );
@@ -64,7 +64,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "id={0}", id.ToString() ) );
 
       QueryResult reqResult = ExecuteRequest<Faculty>( logApi, new List<string>() { id.ToString() }, ConstRequestType.GET,
-        QueryListKeyMap.GET_FACULTY_BY_ID, true );
+        QueryListKeyMap.GET_FACULTY_BY_ID, QueryListKeyMap.GET_FACULTY_BY_ID, true );
 
       if( !reqResult.Succeed )
         return GetResponseBlankSingleModel<Faculty>( reqResult, reqResult.Succeed );

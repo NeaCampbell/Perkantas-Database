@@ -24,7 +24,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "memberid={0}", memberid.ToString() ) );
       QueryResult reqResult = ExecuteRequest<Member>( logApi, new List<string>() { memberid.ToString() }, ConstRequestType.GET,
-        QueryListKeyMap.GET_KTBS_BY_PKTB_ID );
+        QueryListKeyMap.GET_KTBS_BY_PKTB_ID, QueryListKeyMap.GET_KTBS_BY_PKTB_ID );
 
       if( !reqResult.Succeed )
         return GetResponseBlankMultiModels<CombinedKtbMember>( reqResult, reqResult.Succeed );
@@ -34,7 +34,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       GlobalHelperController helper = new GlobalHelperController( Logger, QueryOperatorManager, HttpContext );
 
       foreach( Ktb ktb in ktbs )
-        result.Add( helper.GetAktbsByKtbId( ktb, logApi ) );
+        result.Add( helper.GetAktbsByKtbId( ktb, logApi, QueryListKeyMap.GET_KTBS_BY_PKTB_ID ) );
 
       return GetResponseMultiModelsCustom( reqResult, result );
     }

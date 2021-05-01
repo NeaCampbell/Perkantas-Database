@@ -30,7 +30,7 @@ const MenuBurger = (props) => {
         <View style={bodySectionTitleStyle}>
           <View style={styles.BurgerHead}>
             <Image
-            source={require('../asset/img/Logo.png')}
+            source={require('../asset/img/logo.png')}
             style={styles.Logosmall}
             />
             <Image

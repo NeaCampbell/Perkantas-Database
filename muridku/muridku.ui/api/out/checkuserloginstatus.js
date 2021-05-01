@@ -1,12 +1,12 @@
 const apiconst = require('../apiconst');
 const template = require('./requesttemplate');
 
-const logout = (email, callback) => {
+const checkuserloginstatus = (email, callback) => {
   const options = {
     hostname: apiconst.URL,
     port: apiconst.PORT,
-    path: `/user/logout?email=${email}`,
-    method: apiconst.PUT,
+    path: `/user/checkuserloginstatus?email=${email}`,
+    method: apiconst.GET,
     headers: {
       'Token': apiconst.TOKEN
     }
@@ -16,5 +16,5 @@ const logout = (email, callback) => {
 };
 
 module.exports = {
-  logout: logout
+  checkuserloginstatus: checkuserloginstatus
 };

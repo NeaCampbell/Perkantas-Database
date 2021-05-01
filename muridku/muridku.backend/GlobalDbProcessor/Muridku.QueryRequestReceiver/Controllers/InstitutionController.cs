@@ -23,7 +23,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     public QueryResult GetAllInstitution()
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Empty );
-      return EnqueueRequest( logApi, null, ConstRequestType.GET, QueryListKeyMap.GET_ALL_INSTITUTION );
+      return EnqueueRequest( logApi, null, ConstRequestType.GET, QueryListKeyMap.GET_ALL_INSTITUTION, QueryListKeyMap.GET_ALL_INSTITUTION );
     }
 
     [HttpGet( QueryListKeyMap.GET_INSTITUTION_BY_ID )]
@@ -32,7 +32,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "id={0}", id.ToString() ) );
 
       QueryResult reqResult = ExecuteRequest<Institution>( logApi, new List<string>() { id.ToString() }, ConstRequestType.GET,
-        QueryListKeyMap.GET_INSTITUTION_BY_ID, true );
+        QueryListKeyMap.GET_INSTITUTION_BY_ID, QueryListKeyMap.GET_INSTITUTION_BY_ID, true );
 
       if( !reqResult.Succeed )
         return GetResponseBlankSingleModel<Institution>( reqResult, reqResult.Succeed );

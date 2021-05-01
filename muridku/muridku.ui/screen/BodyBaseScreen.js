@@ -1,34 +1,17 @@
 import React from 'react';
 import {
-  View,
-  ImageBackground,
+  View
 } from 'react-native';
-
-// Import linear gradient component
-import { LinearGradient } from 'expo-linear-gradient';
-  
-// Import reducer dependencies
-import { connect } from 'react-redux';
+import { BasicStyles } from '../asset/style-template/BasicStyles';
 
 const BodyBaseScreen = (props) => {
-  const { mainBodyStyle, mainBodyImageStyle, mainBodyImageCoverStyle } = props.PageStyles.BasicStyles;
-  const { ContainerImageCoverColor } = props.PageStyles;
+  const { mainBodyStyle } = BasicStyles;
 
   return (
     <View style={mainBodyStyle}>
-      <ImageBackground source={require('../asset/img/bg-vector.png')} style={mainBodyImageStyle}>
-        <LinearGradient colors={ContainerImageCoverColor} style={mainBodyImageCoverStyle}>
-          {props.items}
-        </LinearGradient>
-      </ImageBackground>
+      {props.items}
     </View>
   );
 }
 
-const mapStateToProps = state => {
-  console.log(state);
-  const { PageStyles } = state;
-  return { PageStyles };
-};
-
-export default connect(mapStateToProps)(BodyBaseScreen);
+export default BodyBaseScreen;

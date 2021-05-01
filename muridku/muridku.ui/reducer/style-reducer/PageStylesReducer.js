@@ -4,10 +4,10 @@ import {
   LoadingViewSize,
   ContainerImageCoverColor,
   InputWrapperColor,
-  PlaceholderTextColor } from './style-template/BasicStyles';
-import { SplashStyles } from './style-template/SplashStyles';
-import { LoginStyles } from './style-template/LoginStyles';
-import { UserStyles } from './style-template/UserStyles';
+  PlaceholderTextColor } from '../../asset/style-template/BasicStyles';
+import { SplashStyles } from '../../asset/style-template/SplashStyles';
+import { LoginStyles } from '../../asset/style-template/LoginStyles';
+import { UserStyles } from '../../asset/style-template/UserStyles';
 
 const PageStylesReducer = (state = {
   BasicStyles,

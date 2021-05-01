@@ -2,7 +2,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-export const BasicColor = '#E37550';
+export const BasicColor = '#F59873';
 
 export const BasicStyles = StyleSheet.create({
   mainBodyStyle: {
@@ -12,7 +12,7 @@ export const BasicStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   globalFontStyle: {
-    fontFamily: 'montserrat',
+    fontFamily: 'arial',
   },
   mainBodyImageStyle: {
     position: 'absolute',
@@ -33,25 +33,16 @@ export const BasicStyles = StyleSheet.create({
   },
   basicInputStyle: {
     flex: 1,
-    color: '#000',
+    color: '#F4F8FC',
     outlineWidth: 0,
-    borderColor: BasicColor,
-    backgroundColor: 'white',
+    backgroundColor: '#555671',
     width: '100%',
     fontSize: 12,
   },
   inputStyle: {
     paddingLeft: 15,
     paddingRight: 15,
-    borderWidth: 2,
-    borderRadius: 5,
-    height: 35,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowColor: 'black',
-    shadowOpacity: 0.2,
+    height: 35
   },
   passwordInputStyle: {
     height: 30,

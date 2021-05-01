@@ -16,17 +16,16 @@ import {createStackNavigator} from '@react-navigation/stack';
 // Import Screens
 import SplashScreen from './screen/SplashScreen';
 import LoginScreen from './screen/LoginScreen';
+import RegisterScreen from './screen/RegisterScreen';
 import UserScreen from './screen/UserScreen';
 import ViewAllKTBScreen from './screen/ViewAllKTBScreen';
 import EditKTBScreen from './screen/EditKTBScreen';
 import MenuBurgerScreen from './screen/MenuBurgerScreen';
-// import RegisterScreen from './screen/RegisterScreen';
 // import DrawerNavigationRoutes from './screen/DrawerNavigationRoutes';
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const style = store.getState();
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -44,6 +43,13 @@ const App = () => {
               name="LoginScreen"
               component={LoginScreen}
               // Hiding header for Login Screen
+              options={{headerShown: false}}
+            />
+            {/* Register Screen */}
+            <Stack.Screen
+              name="RegisterScreen"
+              component={RegisterScreen}
+              // Hiding header for Register Screen
               options={{headerShown: false}}
             />
             {/* User Screen */}

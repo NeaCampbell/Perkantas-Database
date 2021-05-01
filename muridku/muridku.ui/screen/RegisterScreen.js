@@ -14,28 +14,40 @@ import { connect } from 'react-redux';
 import BodyBaseScreen from './BodyBaseScreen';
 import PasswordToggle from './component/PasswordToggle';
 import { BasicStyles, BasicColor, LoadingViewSize, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
-import { LoginStyles } from '../asset/style-template/LoginStyles';
+import { RegisterStyles } from '../asset/style-template/RegisterStyles';
 
-const loginapi = require('../api/out/login');
+const registerapi = require('../api/out/registeruser');
 
-const LoginScreen = (props) => {
+const RegisterScreen = (props) => {
   const { navigation } = props;
-  const [userEmail, setUserEmail] = useState(props.User.email);
+  const [userFullname, setUserFullname] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
+  const [userPasswordConfirm, setUserPasswordConfirm] = useState('');
   const [loading, setLoading] = useState(false);
   const [errortext, setErrorText] = useState('');
+  const fullnameInputRef = createRef();
   const emailInputRef = createRef();
   const passwordInputRef = createRef();
+  const passwordConfirmInputRef = createRef();
   
   const resetState = () => {
-    setUserEmail(props.User.email);
+    setUserFullname('');
+    setUserEmail('');
     setUserPassword('');
+    setUserPasswordConfirm('');
     setLoading(false);
     setErrorText('');
   };
 
   const handleSubmitPress = () => {
     setErrorText('');
+    
+    if (!userFullname) {
+      setErrorText('Nama lengkap belum diisi.');
+      fullnameInputRef.current.focus();
+      return;
+    }
     
     if (!userEmail) {
       setErrorText('Email belum diisi.');
@@ -49,21 +61,27 @@ const LoginScreen = (props) => {
       return;
     }
 
+    if (!userPasswordConfirm) {
+      setErrorText('Konfirmasi password belum diisi.');
+      passwordConfirmInputRef.current.focus();
+      return;
+    }
+
     setLoading(true);
     const callback = (result) => {
       setLoading(false);
 
       if(!result.succeed) {
-        setErrorText(`login gagal! ${result.errorMessage}.`);
+        setErrorText(`failed to login! ${result.errorMessage}.`);
         return;
       }
 
       props.dispatch({ type: SET_USER, email: userEmail });
       resetState();
-      navigation.replace('ViewAllKTBScreen');
+      navigation.replace('LoginScreen');
     }
 
-    loginapi.login(userEmail, userPassword, callback);
+    registerapi.registeruser(userFullname, userEmail, userPassword, callback);
   };
 
   const { globalFontStyle, basicInputStyle, inputStyle, passwordInputStyle } = BasicStyles;
@@ -76,13 +94,12 @@ const LoginScreen = (props) => {
     errorTextStyle,
     buttonStyle,
     buttonTextStyle,
-    forgotPwdTextStyle,
     signupTextStyle,
     signupTextButtonStyle,
     techProblemDescStyle,
     techProblemStyle,
     customActivityIndicatorStyle
-  } = LoginStyles;
+  } = RegisterStyles;
 
   const baseScreenItems = (
     <ScrollView
@@ -98,26 +115,40 @@ const LoginScreen = (props) => {
         <View style={[bodySectionStyle, {flex: 2}]}>
           <TextInput
             style={[globalFontStyle, basicInputStyle, inputStyle]}
+            onChangeText={(UserFullname) => setUserFullname(UserFullname)}
+            placeholder="Nama lengkap"
+            placeholderTextColor={PlaceholderTextColor}
+            autoCapitalize="sentences"
+            returnKeyType="next"
+            underlineColorAndroid="#f000"
+            blurOnSubmit={false}
+            ref={emailInputRef}
+            value={userFullname}
+          />
+        </View>
+        <View style={[bodySectionStyle, {flex: 2}]}>
+          <TextInput
+            style={[globalFontStyle, basicInputStyle, inputStyle]}
             onChangeText={(UserEmail) => setUserEmail(UserEmail)}
-            placeholder="Masukkan email anda"
+            placeholder="Email"
             placeholderTextColor={PlaceholderTextColor}
             autoCapitalize="none"
             keyboardType="email-address"
             returnKeyType="next"
             underlineColorAndroid="#f000"
             blurOnSubmit={false}
-            ref={emailInputRef}
+            ref={fullnameInputRef}
             value={userEmail}
           />
         </View>
-        <View style={[bodySectionStyle, {flex: 5}]}>
+        <View style={[bodySectionStyle, {flex: 2}]}>
           <PasswordToggle
             containerStyle={[globalFontStyle, basicInputStyle, inputStyle]}
             inputStyle={[globalFontStyle, basicInputStyle, passwordInputStyle]}
             onChangeText={
               (UserPassword) => setUserPassword(UserPassword)
             }
-            placeholder="Masukkan password anda"
+            placeholder="Password"
             placeholderTextColor={PlaceholderTextColor}
             keyboardType="default"
             onSubmitEditing={Keyboard.dismiss}
@@ -125,60 +156,62 @@ const LoginScreen = (props) => {
             underlineColorAndroid="#f000"
             returnKeyType="next"
             refChild={passwordInputRef}
-            value={userPassword}
+          />
+        </View>
+        <View style={[bodySectionStyle, {flex: 5}]}>
+          <PasswordToggle
+            containerStyle={[globalFontStyle, basicInputStyle, inputStyle]}
+            inputStyle={[globalFontStyle, basicInputStyle, passwordInputStyle]}
+            onChangeText={
+              (UserPassword) => setUserPasswordConfirm(UserPassword)
+            }
+            placeholder="Konfirmasi password"
+            placeholderTextColor={PlaceholderTextColor}
+            keyboardType="default"
+            onSubmitEditing={Keyboard.dismiss}
+            blurOnSubmit={false}
+            underlineColorAndroid="#f000"
+            returnKeyType="next"
+            refChild={passwordConfirmInputRef}
           />
         </View>
         {(errortext != '') ? (
-          <View style={[bodySectionStyle, {flex: 0.5}]}>
+          <View style={[bodySectionStyle, {flex: 1}]}>
             <Text style={[globalFontStyle, errorTextStyle]}>
               {errortext}
             </Text>
           </View>
         ) : null}
-        <View style={[bodySectionStyle, {flex: 2.5}]}>
+        <View style={[bodySectionStyle, {flex: 3}]}>
           <TouchableOpacity
             style={buttonStyle}
             activeOpacity={0.5}
             onPress={handleSubmitPress}
             >
             <Text style={[globalFontStyle, buttonTextStyle]}>
-              Masuk
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={[bodySectionStyle, {flex: 0.7}]}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => {
-              resetState();
-              // navigation.navigate('UserScreen');
-            }}
-            >
-            <Text
-              style={[globalFontStyle, forgotPwdTextStyle]}>
-              Lupa Password?
+              Daftar
             </Text>
           </TouchableOpacity>
         </View>
         <View style={[bodySectionStyle, {flex: 8}]}>
           <Text
             style={[globalFontStyle, signupTextStyle]}>
-            Belum memiliki akun?
+            Sudah memiliki akun?
           </Text>
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {
               resetState();
-              navigation.navigate('RegisterScreen');
+              navigation.navigate('LoginScreen');
             }}
             >
             <Text
               style={[globalFontStyle, signupTextButtonStyle]}>
-              &nbsp;Sign Up
+              &nbsp;Login
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={[bodySectionStyle, {flex: 0.7}]}>
+        <View style={[bodySectionStyle, {flex: 1}]}>
           <Text style={[globalFontStyle, techProblemDescStyle]}>Kesulitan mengakses akun MURIDKU?</Text>
         </View>
         <View style={[bodySectionStyle, {flex: 3}]}>
@@ -212,4 +245,4 @@ const mapStateToProps = state => {
   return { User };
 };
 
-export default connect(mapStateToProps)(LoginScreen);
+export default connect(mapStateToProps)(RegisterScreen);

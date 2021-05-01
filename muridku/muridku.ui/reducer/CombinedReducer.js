@@ -1,7 +1,9 @@
 import { combineReducers } from 'redux';
+import UserReducer from './UserReducer';
 import PageStylesReducer from './style-reducer/PageStylesReducer';
 
 const tmpCombinedReducer = combineReducers({
+  User: UserReducer,
   PageStyles: PageStylesReducer
 });
 

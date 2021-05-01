@@ -1,5 +1,6 @@
 ﻿using Common;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Muridku.QueryRequestReceiver.Models.Dbs;
 using Muridku.QueryRequestReceiver.Models.Dbs.Combined;
@@ -19,7 +20,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       _customContext = context;
     }
 
-    public CombinedKtbMember GetAktbsByKtbId( Ktb ktb, LogApi logApi )
+    public CombinedKtbMember GetAktbsByKtbId( Ktb ktb, LogApi logApi, string requestCode )
     {
       CombinedKtbMember result = new CombinedKtbMember
       {
@@ -27,7 +28,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       };
 
       QueryResult reqResultMember = ExecuteRequest<Member>( logApi, new List<string>() { ktb.id.ToString() }, ConstRequestType.GET,
-        QueryListKeyMap.GET_AKTBS_BY_KTB_ID, customContext : _customContext );
+        requestCode, QueryListKeyMap.GET_AKTBS_BY_KTB_ID, customContext : _customContext );
 
       if( reqResultMember.Succeed )
         result.Members = GetModelListFromQueryResult<Member>( reqResultMember );
@@ -35,7 +36,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       return result;
     }
 
-    public CombinedMemberInstitutionFaculty GetCompleteMemberData( Member member, LogApi logApi )
+    public CombinedMemberInstitutionFaculty GetCompleteMemberData( Member member, LogApi logApi, string requestCode )
     {
       CombinedMemberInstitutionFaculty result = new CombinedMemberInstitutionFaculty
       {
@@ -45,7 +46,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       if( member.institution_id.HasValue )
       {
         QueryResult reqResultInstitution = ExecuteRequest<Institution>( logApi, new List<string>() { member.institution_id.Value.ToString() }, ConstRequestType.GET,
-          QueryListKeyMap.GET_INSTITUTION_BY_ID, isSingleRow: true, customContext: _customContext );
+          requestCode, QueryListKeyMap.GET_INSTITUTION_BY_ID, isSingleRow: true, customContext: _customContext );
 
         if( reqResultInstitution.Succeed )
           result.Institution = GetModelFromQueryResult<Institution>( reqResultInstitution );
@@ -54,7 +55,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       if( member.faculty_id.HasValue )
       {
         QueryResult reqResultFaculty = ExecuteRequest<Institution>( logApi, new List<string>() { member.faculty_id.Value.ToString() }, ConstRequestType.GET,
-          QueryListKeyMap.GET_FACULTY_BY_ID, isSingleRow: true, customContext: _customContext );
+          requestCode, QueryListKeyMap.GET_FACULTY_BY_ID, isSingleRow: true, customContext: _customContext );
 
         if( reqResultFaculty.Succeed )
           result.Faculty = GetModelFromQueryResult<Faculty>( reqResultFaculty );

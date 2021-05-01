@@ -1,7 +1,7 @@
 const apiconst = require('../apiconst');
 const template = require('./requesttemplate');
 
-const activateuser = (email) => {
+const activateuser = (email, callback) => {
   const options = {
     hostname: apiconst.URL,
     port: apiconst.PORT,
@@ -12,7 +12,7 @@ const activateuser = (email) => {
     }
   };
 
-  template.requesttemplate(options);
+  template.requesttemplate(options, callback);
 };
 
 module.exports = {

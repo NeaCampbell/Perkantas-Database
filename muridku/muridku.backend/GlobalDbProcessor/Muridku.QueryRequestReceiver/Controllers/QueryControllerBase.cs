@@ -53,6 +53,16 @@ namespace Muridku.QueryRequestReceiver.Controllers
     }
 
     protected virtual QueryResult ExecuteRequest<TModel>( LogApi logApi, IList<string> param, string strProcessType,
+      string requestCode, string requestCodeDetail, bool isSingleRow = false, IList<Func<CheckParam>> preCheckFuncs = null,
+      IList<Func<TModel, CheckParam>> postCheckFuncs = null, bool isNeedValidUser = false, HttpContext customContext = null ) where TModel : class
+    {
+      QueryResult result = ExecuteRequest( logApi, param, strProcessType, requestCodeDetail, isSingleRow, preCheckFuncs,
+        postCheckFuncs, isNeedValidUser, customContext );
+      result.RequestCode = requestCode;
+      return result;
+    }
+
+    private QueryResult ExecuteRequest<TModel>( LogApi logApi, IList<string> param, string strProcessType,
       string requestCode, bool isSingleRow = false, IList<Func<CheckParam>> preCheckFuncs = null,
       IList<Func<TModel, CheckParam>> postCheckFuncs = null, bool isNeedValidUser = false, HttpContext customContext = null ) where TModel : class
     {
@@ -118,7 +128,15 @@ namespace Muridku.QueryRequestReceiver.Controllers
       }
     }
 
-    protected virtual QueryResult EnqueueRequest( LogApi logApi, IList<string> param, string strProcessType, string requestCode, bool isSingleRow = false,
+    protected virtual QueryResult EnqueueRequest( LogApi logApi, IList<string> param, string strProcessType, string requestCode, string requestCodeDetail, bool isSingleRow = false,
+      IList<Func<CheckParam>> preCheckFuncs = null, bool isNeedValidUser = false )
+    {
+      QueryResult result = EnqueueRequest( logApi, param, strProcessType, requestCodeDetail, isSingleRow, preCheckFuncs, isNeedValidUser );
+      result.RequestCode = requestCode;
+      return result;
+    }
+
+    private QueryResult EnqueueRequest( LogApi logApi, IList<string> param, string strProcessType, string requestCode, bool isSingleRow = false,
       IList<Func<CheckParam>> preCheckFuncs = null, bool isNeedValidUser = false )
     {
       QueryValidationParam validationParam = ValidateQueryExecution( HttpContext, logApi, requestCode, strProcessType, isNeedValidUser, preCheckFuncs );

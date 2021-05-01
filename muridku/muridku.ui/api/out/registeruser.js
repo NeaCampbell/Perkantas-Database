@@ -1,7 +1,7 @@
 const apiconst = require('../apiconst');
 const template = require('./requesttemplate');
 
-const registeruser = (fullname, address, email, password) => {
+const registeruser = (fullname, address, email, password, callback) => {
   const paraminput = JSON.stringify({
     fullname: fullname,
     address: address,
@@ -20,7 +20,7 @@ const registeruser = (fullname, address, email, password) => {
     }
   };
 
-  template.requesttemplate(options, null, paraminput);
+  template.requesttemplate(options, callback, paraminput);
 };
 
 module.exports = {

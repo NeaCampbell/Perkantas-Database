@@ -2,32 +2,35 @@ import {
   StyleSheet,
 } from 'react-native';
 
+const BackgroundColor = "#2A2C4E";
+
 export const SplashStyles = StyleSheet.create({
   containerStyle: {
     flex: 1,
-    flexDirection: 'row',
-    position: 'absolute',
-    width: '100%',
+    backgroundColor: BackgroundColor,
+  },
+  imgStyle: {
     height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: '100%',
+    resizeMode: 'cover',
+    aspectRatio: 1,
+    position: 'absolute'
   },
   logoStyle: {
     height: '100%',
     width: '100%',
-    maxWidth: 300,
-    resizeMode: 'contain',
+    resizeMode: 'center',
     position: 'absolute'
   },
   versionTextStyle: {
-    color: '#E37550',
+    color: '#CCC',
     textAlign: 'center',
-    fontFamily: 'montserrat',
+    height: '100%',
+    width: '100%',
+    fontFamily: 'arial',
     fontStyle: 'normal',
-    fontSize: 14,
+    fontSize: 12,
     lineHeight: 17,
-    alignSelf: 'flex-end',
-    marginBottom: 20,
-    fontWeight: 'bold',
+    alignSelf: 'flex-end'
   },
 });

@@ -26,13 +26,13 @@ namespace Muridku.QueryRequestReceiver.Controllers
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "memberid={0}", memberid.ToString() ) );
       QueryResult reqResult = ExecuteRequest<Member>( logApi, new List<string>() { memberid.ToString() }, ConstRequestType.GET,
-        QueryListKeyMap.GET_MEMBER_BY_ID, true );
+        QueryListKeyMap.GET_MEMBER_BY_ID, QueryListKeyMap.GET_MEMBER_BY_ID, true );
 
       if( !reqResult.Succeed )
         return GetResponseBlankSingleModel<CombinedMemberInstitutionFaculty>( reqResult, reqResult.Succeed );
 
       GlobalHelperController helper = new GlobalHelperController( Logger, QueryOperatorManager, HttpContext );
-      CombinedMemberInstitutionFaculty result = helper.GetCompleteMemberData( GetModelFromQueryResult<Member>( reqResult ), logApi );
+      CombinedMemberInstitutionFaculty result = helper.GetCompleteMemberData( GetModelFromQueryResult<Member>( reqResult ), logApi, QueryListKeyMap.GET_MEMBER_BY_ID );
       return GetResponseSingleModelCustom( reqResult, result );
     }
 
@@ -60,7 +60,8 @@ namespace Muridku.QueryRequestReceiver.Controllers
         () => ValidateParamInputString( new Tuple<string, string, int>( "listid", stringId, stringId.Length ) )
       };
       IList<string> paramQuery = new List<string>() { string.Format( "({0})", stringId ) };
-      QueryResult reqResult = ExecuteRequest<Member>( logApi, paramQuery, ConstRequestType.GET, QueryListKeyMap.GET_MEMBERS_BY_LIST_ID, preCheckFuncs: preCheckFuncs );
+      QueryResult reqResult = ExecuteRequest<Member>( logApi, paramQuery, ConstRequestType.GET,
+        QueryListKeyMap.GET_MEMBERS_BY_LIST_ID, QueryListKeyMap.GET_MEMBERS_BY_LIST_ID, preCheckFuncs: preCheckFuncs );
 
       if( !reqResult.Succeed )
         return GetResponseBlankMultiModels<CombinedMemberInstitutionFaculty>( reqResult, reqResult.Succeed );
@@ -70,7 +71,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       GlobalHelperController helper = new GlobalHelperController( Logger, QueryOperatorManager, HttpContext );
 
       foreach( Member member in members )
-        result.Add( helper.GetCompleteMemberData( member, logApi ) );
+        result.Add( helper.GetCompleteMemberData( member, logApi, QueryListKeyMap.GET_MEMBERS_BY_LIST_ID ) );
 
       return GetResponseMultiModelsCustom( reqResult, result );
     }
@@ -80,7 +81,8 @@ namespace Muridku.QueryRequestReceiver.Controllers
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), ktbid.ToString() );
       IList<string> paramQuery = new List<string>() { ktbid.ToString() };
-      QueryResult reqResult = ExecuteRequest<Member>( logApi, paramQuery, ConstRequestType.GET, QueryListKeyMap.GET_MEMBERS_BY_KTB_ID );
+      QueryResult reqResult = ExecuteRequest<Member>( logApi, paramQuery, ConstRequestType.GET, QueryListKeyMap.GET_MEMBERS_BY_KTB_ID,
+        QueryListKeyMap.GET_MEMBERS_BY_KTB_ID );
 
       if( !reqResult.Succeed )
         return GetResponseBlankMultiModels<CombinedMemberInstitutionFaculty>( reqResult, reqResult.Succeed );
@@ -90,7 +92,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       GlobalHelperController helper = new GlobalHelperController( Logger, QueryOperatorManager, HttpContext );
 
       foreach( Member member in members )
-        result.Add( helper.GetCompleteMemberData( member, logApi ) );
+        result.Add( helper.GetCompleteMemberData( member, logApi, QueryListKeyMap.GET_MEMBERS_BY_KTB_ID ) );
 
       return GetResponseMultiModelsCustom( reqResult, result );
     }
@@ -120,7 +122,8 @@ namespace Muridku.QueryRequestReceiver.Controllers
         GetUsernameFromHeader( HttpContext )
       };
 
-      return ExecuteRequest<Member>( logApi, paramQuery, ConstRequestType.POST, QueryListKeyMap.SAVE_SINGLE_MEMBER, true, preCheckFuncs: preCheckFuncs );
+      return ExecuteRequest<Member>( logApi, paramQuery, ConstRequestType.POST, QueryListKeyMap.SAVE_SINGLE_MEMBER,
+        QueryListKeyMap.SAVE_SINGLE_MEMBER, true, preCheckFuncs: preCheckFuncs );
     }
   }
 }
