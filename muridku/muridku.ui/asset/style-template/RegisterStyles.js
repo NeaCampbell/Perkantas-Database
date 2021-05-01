@@ -21,6 +21,17 @@ export const RegisterStyles = StyleSheet.create({
     height: 100,
     resizeMode: 'center'
   },
+  titleContainerStyle: {
+    width: '100%',
+    height: '100%',
+    marginTop: 50,
+  },
+  titleStyle: {
+    color: '#000000',
+    fontStyle: 'normal',
+    fontSize: 20,
+    textAlign: 'center'
+  },
   bodySectionStyle: {
     flexDirection: 'row',
     height: 40,
@@ -30,8 +41,26 @@ export const RegisterStyles = StyleSheet.create({
     justifyContent: 'center',
     outlineWidth: 0,
   },
+  customInputStyle: {
+    flex: 1,
+    color: '#000000',
+    outlineWidth: 1,
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    fontSize: 12,
+    borderWidth: 1,
+    borderColor: '#DDDDDD'
+  },
+  customInputPasswordStyle: {
+    flex: 1,
+    color: '#000000',
+    outlineWidth: 1,
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    fontSize: 12
+  },
   buttonStyle: {
-    backgroundColor: '#E37550',
+    backgroundColor: BackgroundColor,
     color: '#FFFFFF',
     height: 35,
     width: '100%',
@@ -45,16 +74,8 @@ export const RegisterStyles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 17,
   },
-  forgotPwdTextStyle: {
-    color: '#E37550',
-    textAlign: 'center',
-    fontStyle: 'normal',
-    fontSize: 12,
-    alignSelf: 'center',
-    outlineWidth: 0
-  },
   signupTextStyle: {
-    color: '#FFFFFF',
+    color: '#000000',
     textAlign: 'center',
     fontSize: 12
   },

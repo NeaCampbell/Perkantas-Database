@@ -21,6 +21,7 @@ const registerapi = require('../api/out/registeruser');
 const RegisterScreen = (props) => {
   const { navigation } = props;
   const [userFullname, setUserFullname] = useState('');
+  const [userAddress, setUserAddress] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [userPasswordConfirm, setUserPasswordConfirm] = useState('');
@@ -33,6 +34,7 @@ const RegisterScreen = (props) => {
   
   const resetState = () => {
     setUserFullname('');
+    setUserAddress('');
     setUserEmail('');
     setUserPassword('');
     setUserPasswordConfirm('');
@@ -67,12 +69,18 @@ const RegisterScreen = (props) => {
       return;
     }
 
+    if (userPassword !== userPasswordConfirm) {
+      setErrorText('Konfirmasi password berbeda dengan password.');
+      passwordConfirmInputRef.current.focus();
+      return;
+    }
+
     setLoading(true);
     const callback = (result) => {
       setLoading(false);
 
       if(!result.succeed) {
-        setErrorText(`failed to login! ${result.errorMessage}.`);
+        setErrorText(result.errorMessage);
         return;
       }
 
@@ -81,17 +89,21 @@ const RegisterScreen = (props) => {
       navigation.replace('LoginScreen');
     }
 
-    registerapi.registeruser(userFullname, userEmail, userPassword, callback);
+    registerapi.registeruser(userFullname, userAddress, userEmail, userPassword, callback);
   };
 
-  const { globalFontStyle, basicInputStyle, inputStyle, passwordInputStyle } = BasicStyles;
+  const { globalFontStyle, inputStyle, passwordInputStyle } = BasicStyles;
   
   const {
     bodyContainerStyle,
     logoContainerStyle,
     logoStyle,
+    titleContainerStyle,
+    titleStyle,
     bodySectionStyle,
     errorTextStyle,
+    customInputStyle,
+    customInputPasswordStyle,
     buttonStyle,
     buttonTextStyle,
     signupTextStyle,
@@ -106,110 +118,129 @@ const RegisterScreen = (props) => {
       keyboardShouldPersistTaps="handled"
       contentContainerStyle={bodyContainerStyle}>
       <View style={{flexDirection: 'column', flex: 1}}>
-        <View style={[logoContainerStyle, {flex: 12}]}>
+        <View style={[logoContainerStyle, {flex: 5}]}>
           <Image
             source={require('../asset/img/logo.png')}
             style={logoStyle}
           />
         </View>
-        <View style={[bodySectionStyle, {flex: 2}]}>
-          <TextInput
-            style={[globalFontStyle, basicInputStyle, inputStyle]}
-            onChangeText={(UserFullname) => setUserFullname(UserFullname)}
-            placeholder="Nama lengkap"
-            placeholderTextColor={PlaceholderTextColor}
-            autoCapitalize="sentences"
-            returnKeyType="next"
-            underlineColorAndroid="#f000"
-            blurOnSubmit={false}
-            ref={emailInputRef}
-            value={userFullname}
-          />
-        </View>
-        <View style={[bodySectionStyle, {flex: 2}]}>
-          <TextInput
-            style={[globalFontStyle, basicInputStyle, inputStyle]}
-            onChangeText={(UserEmail) => setUserEmail(UserEmail)}
-            placeholder="Email"
-            placeholderTextColor={PlaceholderTextColor}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            returnKeyType="next"
-            underlineColorAndroid="#f000"
-            blurOnSubmit={false}
-            ref={fullnameInputRef}
-            value={userEmail}
-          />
-        </View>
-        <View style={[bodySectionStyle, {flex: 2}]}>
-          <PasswordToggle
-            containerStyle={[globalFontStyle, basicInputStyle, inputStyle]}
-            inputStyle={[globalFontStyle, basicInputStyle, passwordInputStyle]}
-            onChangeText={
-              (UserPassword) => setUserPassword(UserPassword)
-            }
-            placeholder="Password"
-            placeholderTextColor={PlaceholderTextColor}
-            keyboardType="default"
-            onSubmitEditing={Keyboard.dismiss}
-            blurOnSubmit={false}
-            underlineColorAndroid="#f000"
-            returnKeyType="next"
-            refChild={passwordInputRef}
-          />
-        </View>
-        <View style={[bodySectionStyle, {flex: 5}]}>
-          <PasswordToggle
-            containerStyle={[globalFontStyle, basicInputStyle, inputStyle]}
-            inputStyle={[globalFontStyle, basicInputStyle, passwordInputStyle]}
-            onChangeText={
-              (UserPassword) => setUserPasswordConfirm(UserPassword)
-            }
-            placeholder="Konfirmasi password"
-            placeholderTextColor={PlaceholderTextColor}
-            keyboardType="default"
-            onSubmitEditing={Keyboard.dismiss}
-            blurOnSubmit={false}
-            underlineColorAndroid="#f000"
-            returnKeyType="next"
-            refChild={passwordConfirmInputRef}
-          />
-        </View>
-        {(errortext != '') ? (
-          <View style={[bodySectionStyle, {flex: 1}]}>
-            <Text style={[globalFontStyle, errorTextStyle]}>
-              {errortext}
-            </Text>
+        <View style={{flex: 23, backgroundColor: "#FFFFFF"}}>
+          <View style={[titleContainerStyle, {flex: 2}]}>
+            <Text style={titleStyle}>Buat Akun</Text>
           </View>
-        ) : null}
-        <View style={[bodySectionStyle, {flex: 3}]}>
-          <TouchableOpacity
-            style={buttonStyle}
-            activeOpacity={0.5}
-            onPress={handleSubmitPress}
-            >
-            <Text style={[globalFontStyle, buttonTextStyle]}>
-              Daftar
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={[bodySectionStyle, {flex: 8}]}>
-          <Text
-            style={[globalFontStyle, signupTextStyle]}>
-            Sudah memiliki akun?
-          </Text>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => {
-              resetState();
-              navigation.navigate('LoginScreen');
-            }}
-            >
+          <View style={[bodySectionStyle, {flex: 2}]}>
+            <TextInput
+              style={[globalFontStyle, customInputStyle, inputStyle]}
+              onChangeText={(UserFullname) => setUserFullname(UserFullname)}
+              placeholder="Nama lengkap"
+              placeholderTextColor={PlaceholderTextColor}
+              autoCapitalize="sentences"
+              returnKeyType="next"
+              underlineColorAndroid="#f000"
+              blurOnSubmit={false}
+              ref={emailInputRef}
+              value={userFullname}
+            />
+          </View>
+          <View style={[bodySectionStyle, {flex: 2}]}>
+            <TextInput
+              style={[globalFontStyle, customInputStyle, inputStyle]}
+              onChangeText={(addr) => setUserAddress(addr)}
+              placeholder="Alamat"
+              placeholderTextColor={PlaceholderTextColor}
+              autoCapitalize="none"
+              returnKeyType="next"
+              underlineColorAndroid="#f000"
+              blurOnSubmit={false}
+              ref={fullnameInputRef}
+              value={userAddress}
+            />
+          </View>
+          <View style={[bodySectionStyle, {flex: 2}]}>
+            <TextInput
+              style={[globalFontStyle, customInputStyle, inputStyle]}
+              onChangeText={(UserEmail) => setUserEmail(UserEmail)}
+              placeholder="Email"
+              placeholderTextColor={PlaceholderTextColor}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              returnKeyType="next"
+              underlineColorAndroid="#f000"
+              blurOnSubmit={false}
+              ref={fullnameInputRef}
+              value={userEmail}
+            />
+          </View>
+          <View style={[bodySectionStyle, {flex: 2}]}>
+            <PasswordToggle
+              containerStyle={[globalFontStyle, customInputStyle, inputStyle]}
+              inputStyle={[globalFontStyle, customInputPasswordStyle, passwordInputStyle]}
+              onChangeText={
+                (UserPassword) => setUserPassword(UserPassword)
+              }
+              placeholder="Password"
+              placeholderTextColor={PlaceholderTextColor}
+              keyboardType="default"
+              onSubmitEditing={Keyboard.dismiss}
+              blurOnSubmit={false}
+              underlineColorAndroid="#f000"
+              returnKeyType="next"
+              refChild={passwordInputRef}
+            />
+          </View>
+          <View style={[bodySectionStyle, {flex: 5}]}>
+            <PasswordToggle
+              containerStyle={[globalFontStyle, customInputStyle, inputStyle]}
+              inputStyle={[globalFontStyle, customInputPasswordStyle, passwordInputStyle]}
+              onChangeText={
+                (UserPassword) => setUserPasswordConfirm(UserPassword)
+              }
+              placeholder="Konfirmasi password"
+              placeholderTextColor={PlaceholderTextColor}
+              keyboardType="default"
+              onSubmitEditing={Keyboard.dismiss}
+              blurOnSubmit={false}
+              underlineColorAndroid="#f000"
+              returnKeyType="next"
+              refChild={passwordConfirmInputRef}
+            />
+          </View>
+          {(errortext != '') ? (
+            <View style={[bodySectionStyle, {flex: 1}]}>
+              <Text style={[globalFontStyle, errorTextStyle]}>
+                {errortext}
+              </Text>
+            </View>
+          ) : null}
+          <View style={[bodySectionStyle, {flex: 3}]}>
+            <TouchableOpacity
+              style={buttonStyle}
+              activeOpacity={0.5}
+              onPress={handleSubmitPress}
+              >
+              <Text style={[globalFontStyle, buttonTextStyle]}>
+                Daftar
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={[bodySectionStyle, {flex: 8}]}>
             <Text
-              style={[globalFontStyle, signupTextButtonStyle]}>
-              &nbsp;Login
+              style={[globalFontStyle, signupTextStyle]}>
+              Sudah memiliki akun?
             </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => {
+                resetState();
+                navigation.navigate('LoginScreen');
+              }}
+              >
+              <Text
+                style={[globalFontStyle, signupTextButtonStyle]}>
+                &nbsp;Login
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
         <View style={[bodySectionStyle, {flex: 1}]}>
           <Text style={[globalFontStyle, techProblemDescStyle]}>Kesulitan mengakses akun MURIDKU?</Text>

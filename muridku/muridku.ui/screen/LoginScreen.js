@@ -54,7 +54,7 @@ const LoginScreen = (props) => {
       setLoading(false);
 
       if(!result.succeed) {
-        setErrorText(`login gagal! ${result.errorMessage}.`);
+        setErrorText(result.errorMessage);
         return;
       }
 
