@@ -34,7 +34,6 @@ export const BasicStyles = StyleSheet.create({
   basicInputStyle: {
     flex: 1,
     color: '#F4F8FC',
-    outlineWidth: 0,
     backgroundColor: '#555671',
     width: '100%',
     fontSize: 12,

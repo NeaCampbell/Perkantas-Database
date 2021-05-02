@@ -1,12 +1,13 @@
-const registeruser = require('./out/registeruser');
-const activateuser = require('./out/activateuser');
-const login = require('./out/login');
-const logout = require('./out/logout');
-const checkuser = require('./out/checkuserloginstatus');
+import registeruser from './out/registeruser';
+import activateuser from './out/activateuser';
+import login from './out/login';
+import { logout } from './out/logout';
+import checkuser from './out/checkuserloginstatus';
 
 // registeruser.registeruser('Swari', null, 'swari.a.siburian.com', 'bwakakaka');
 // activateuser.activateuser('swari.a.siburian.com');
 // login.login('swari.a.siburian.com', 'bwakakaka');
 // checkuser.checkuserloginstatus('huajuinggg@gmail.com');
-logout.logout('huajuinggg@gmail.com');
-logout.logout('swari.a.siburian@gmail.com');
+logout('huajuinggg@gmail.com');
+logout('swari.a.siburian@gmail.com');
+logout('dimas@gmail.com');

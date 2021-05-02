@@ -45,7 +45,6 @@ export const UserStyles = StyleSheet.create({
     marginRight: 15,
     marginBottom: 5,
     justifyContent: 'center',
-    outlineWidth: 0,
   },
   buttonStyle: {
     backgroundColor: '#E37550',
@@ -109,7 +108,6 @@ export const UserStyles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     justifyContent: 'center',
-    outlineWidth: 0,
   },
   saveOptionTitleStyle: {
     color: '#FFF',

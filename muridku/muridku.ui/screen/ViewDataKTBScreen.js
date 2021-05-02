@@ -302,7 +302,6 @@ const styles = StyleSheet.create({
   basicInputStyle: {
     flex: 1,
     color: '#000',
-    outlineWidth: 0,
     borderColor: BasicColor,
     backgroundColor: 'white',
     width: '100%',
@@ -368,7 +367,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: '../asset/fonts/MontserratAlternates-Bold.ttf',
     fontWeight: 'bold',
-    letterSpacing: '0.05em',
+    letterSpacing: 0.05,
     color: BasicColor,
     flex: 1,
     top: 14,
@@ -382,7 +381,7 @@ const styles = StyleSheet.create({
     fontSize: 21,
     fontFamily: '../asset/fonts/MontserratAlternates-Bold.ttf',
     fontWeight: 'bold',
-    letterSpacing: '0.05em',
+    letterSpacing: 0.05,
     color: 'white',
     flex: 1,
     top: 18,
@@ -396,29 +395,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: '../asset/fonts/MontserratAlternates-Bold.ttf',
     fontWeight: 'bold',
-    letterSpacing: '0.05em',
+    letterSpacing: 0.05,
     color: BasicColor,
     marginLeft: 10,
     display: 'flex',
-    marginTop: '0.15em'
+    marginTop: 0.15
   },
   PaddingAtas:{
     fontSize: 14,
-    letterSpacing: '0.05em',
+    letterSpacing: 0.05,
     color: '#ffffff',
     marginLeft: 30,
     display: 'flex',
-    marginTop: '0.15em'
+    marginTop: 0.15
   },
   lblText:{
     fontSize: 14,
     fontFamily: '../asset/fonts/MontserratAlternates-Bold.ttf',
     fontWeight: 'bold',
-    letterSpacing: '0.05em',
+    letterSpacing: 0.05,
     color: BasicColor,
     marginLeft: 10,
     display: 'flex',
-    marginTop: '0.15em'
+    marginTop: 0.15
   },
 });
 

@@ -1,20 +1,16 @@
-const apiconst = require('../apiconst');
-const template = require('./requesttemplate');
+import { URL, PORT, PUT, TOKEN, IS_HTTP } from '../apiconst';
+import { requesttemplate } from './requesttemplate';
 
-const logout = (email, callback) => {
+export const logout = (email, callback) => {
   const options = {
-    hostname: apiconst.URL,
-    port: apiconst.PORT,
+    hostname: URL,
+    port: PORT,
     path: `/user/logout?email=${email}`,
-    method: apiconst.PUT,
+    method: PUT,
     headers: {
-      'Token': apiconst.TOKEN
+      'Token': TOKEN
     }
   };
 
-  template.requesttemplate(options, callback);
-};
-
-module.exports = {
-  logout: logout
+  requesttemplate(options, callback, IS_HTTP);
 };

@@ -4,26 +4,29 @@ Mobile App untuk PKTB.
 
 ## Dependencies list
 
-1. React Native
+1. React Native (CREATE NEW APP ENVIRONMENT USING npx react-native init)
 2. Expo
-3. Android Studio
-4. redux
-5. react-redux
-6. redux-persist
-7. @react-navigation/native
-8. react-native-reanimated
-9. react-native-gesture-handler
-10. react-native-screens
-11. react-native-safe-area-context
-12. @react-native-community/masked-view
-13. @react-navigation/drawer
-14. @react-navigation/stack
-15. @react-native-community/async-storage
-16. expo-linear-gradient
-17. expo-constants
-18. react-native-vector-icons
-19. react-bootstrap-icons
-20. follow-redirects
+3. expo-cli
+4. Android Studio
+5. JDK & JRE v1.8.0_219
+6. redux
+7. react-redux
+8. redux-persist
+9. @react-navigation/native
+10. react-native-gesture-handler
+11. react-native-screens
+12. react-native-safe-area-context
+13. @react-native-community/masked-view
+14. @react-navigation/drawer
+15. @react-navigation/stack
+16. @react-native-community/async-storage
+17. expo-linear-gradient
+18. expo-constants
+19. react-native-vector-icons
+20. react-bootstrap-icons
+21. follow-redirects
+22. gradle (https://gradle.org/releases/) -- add to Environment Variables PATH
+23. maven (http://maven.apache.org/download.cgi) -- add to Environment Variables PATH
 
 ## Dependencies installation (*NIX, macOS)
 

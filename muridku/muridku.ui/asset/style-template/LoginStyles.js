@@ -28,7 +28,6 @@ export const LoginStyles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     justifyContent: 'center',
-    outlineWidth: 0,
   },
   buttonStyle: {
     backgroundColor: '#E37550',
@@ -50,8 +49,7 @@ export const LoginStyles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'normal',
     fontSize: 12,
-    alignSelf: 'center',
-    outlineWidth: 0
+    alignSelf: 'center'
   },
   signupTextStyle: {
     color: '#FFFFFF',
@@ -79,7 +77,6 @@ export const LoginStyles = StyleSheet.create({
     lineHeight: 17,
     color: '#FF4D05',
     cursor: 'pointer',
-    outlineWidth: 0,
     textDecorationLine: 'underline',
   },
   customActivityIndicatorStyle: {

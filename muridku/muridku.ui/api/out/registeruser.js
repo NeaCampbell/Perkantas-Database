@@ -1,7 +1,7 @@
-const apiconst = require('../apiconst');
-const template = require('./requesttemplate');
+import { URL, PORT, POST, TOKEN, IS_HTTP } from '../apiconst';
+import { requesttemplate } from './requesttemplate';
 
-const registeruser = (fullname, address, email, password, callback) => {
+export const registeruser = (fullname, address, email, password, callback) => {
   const paraminput = JSON.stringify({
     fullname: fullname,
     address: address,
@@ -10,19 +10,15 @@ const registeruser = (fullname, address, email, password, callback) => {
   });
 
   const options = {
-    hostname: apiconst.URL,
-    port: apiconst.PORT,
+    hostname: URL,
+    port: PORT,
     path: '/user/registermuridkuuser',
-    method: apiconst.POST,
+    method: POST,
     headers: {
-      'Token': apiconst.TOKEN,
+      'Token': TOKEN,
       'Content-Type': 'application/json'
     }
   };
 
-  template.requesttemplate(options, callback, paraminput);
-};
-
-module.exports = {
-  registeruser: registeruser
+  requesttemplate(options, callback, paraminput, IS_HTTP);
 };

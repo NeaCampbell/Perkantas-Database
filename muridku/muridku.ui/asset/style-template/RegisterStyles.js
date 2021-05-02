@@ -39,12 +39,10 @@ export const RegisterStyles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     justifyContent: 'center',
-    outlineWidth: 0,
   },
   customInputStyle: {
     flex: 1,
     color: '#000000',
-    outlineWidth: 1,
     backgroundColor: '#FFFFFF',
     width: '100%',
     fontSize: 12,
@@ -54,7 +52,6 @@ export const RegisterStyles = StyleSheet.create({
   customInputPasswordStyle: {
     flex: 1,
     color: '#000000',
-    outlineWidth: 1,
     backgroundColor: '#FFFFFF',
     width: '100%',
     fontSize: 12
@@ -100,7 +97,6 @@ export const RegisterStyles = StyleSheet.create({
     lineHeight: 17,
     color: '#FF4D05',
     cursor: 'pointer',
-    outlineWidth: 0,
     textDecorationLine: 'underline',
   },
   customActivityIndicatorStyle: {

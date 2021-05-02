@@ -1,12 +1,4 @@
 {
-  "name": "muridku.ui",
-  "displayName": "muridku.ui",
-  "expo": {
-    "name": "muridku.ui",
-    "slug": "muridku-ui",
-    "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ]
-  }
+  "name": "muridku",
+  "displayName": "muridku"
 }

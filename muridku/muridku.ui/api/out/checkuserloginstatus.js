@@ -1,20 +1,16 @@
-const apiconst = require('../apiconst');
-const template = require('./requesttemplate');
+import { URL, PORT, GET, TOKEN, IS_HTTP } from '../apiconst';
+import { requesttemplate } from './requesttemplate';
 
-const checkuserloginstatus = (email, callback) => {
+export const checkuserloginstatus = (email, callback) => {
   const options = {
-    hostname: apiconst.URL,
-    port: apiconst.PORT,
+    hostname: URL,
+    port: PORT,
     path: `/user/checkuserloginstatus?email=${email}`,
-    method: apiconst.GET,
+    method: GET,
     headers: {
-      'Token': apiconst.TOKEN
+      'Token': TOKEN
     }
   };
 
-  template.requesttemplate(options, callback);
-};
-
-module.exports = {
-  checkuserloginstatus: checkuserloginstatus
+  requesttemplate(options, callback, IS_HTTP);
 };

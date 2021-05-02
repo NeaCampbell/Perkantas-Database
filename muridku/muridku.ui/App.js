@@ -21,6 +21,7 @@ import UserScreen from './screen/UserScreen';
 import ViewAllKTBScreen from './screen/ViewAllKTBScreen';
 import EditKTBScreen from './screen/EditKTBScreen';
 import MenuBurgerScreen from './screen/MenuBurgerScreen';
+import AddKTBHistoryScreen from './screen/AddKTBHistoryScreen';
 // import DrawerNavigationRoutes from './screen/DrawerNavigationRoutes';
 
 const Stack = createStackNavigator();
@@ -77,6 +78,13 @@ const App = () => {
             <Stack.Screen
               name="MenuBurgerScreen"
               component={MenuBurgerScreen}
+              // Hiding header for User Screen
+              options={{headerShown: false}}
+            />
+            {/* Menu Add KTB History Screen */}
+            <Stack.Screen
+              name="AddKTBHistoryScreen"
+              component={AddKTBHistoryScreen}
               // Hiding header for User Screen
               options={{headerShown: false}}
             />
