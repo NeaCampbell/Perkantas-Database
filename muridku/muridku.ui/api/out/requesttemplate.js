@@ -19,6 +19,9 @@ export const requesttemplate = (options, callback, paraminput, ishttp) => {
       callback(json);
   })
   .catch((error) => {
+    console.log(url);
+    console.log(options);
+    console.log(paraminput ?? "no param input");
     console.error(error);
   })
 };

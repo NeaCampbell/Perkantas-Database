@@ -1,11 +1,11 @@
 import { createStore } from 'redux';
 import CombinedReducer from '../reducer/CombinedReducer';
-import { persistStore, persistReducer, createMigrate } from 'redux-persist';
-import localStorage from 'redux-persist/lib/storage';
+import { persistStore, persistReducer } from 'redux-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const persistConfig = {
   key: 'root',
-  storage: localStorage,
+  storage: AsyncStorage,
   // version: 0,
   // migrate: createMigrate({ 0: state => initialState }, { debug: false })
 }

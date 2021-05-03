@@ -6,7 +6,6 @@ import {
   Image,
   Text
 } from 'react-native';
-import Constants from 'expo-constants';
 import { BasicStyles } from '../asset/style-template/BasicStyles';
 import { SplashStyles } from '../asset/style-template/SplashStyles';
 import {
@@ -72,7 +71,7 @@ const SplashScreen = (props) => {
           />
         </View>
         <View style={{flex: 1}}>
-          <Text style={[versionTextStyle, {flex: 4}]}>Version {Constants.manifest.version}</Text>
+          <Text style={[versionTextStyle, {flex: 4}]}>Version 1.0.0</Text>
         </View>
       </View>
       <ActivityIndicator

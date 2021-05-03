@@ -17,15 +17,11 @@ import blueburger from '../asset/img/blueburger.png';
 import refreshicon from '../asset/img/refresh.png';
 import * as Icon from 'react-bootstrap-icons';
 
-
-// Import linear gradient component
-import { LinearGradient } from 'expo-linear-gradient';
-
 // Import reducer dependencies
 import { connect } from 'react-redux';
 
 // Import async storage for credential storage
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Import needed views
 import BodyBaseScreen from './BodyBaseScreen';

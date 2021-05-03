@@ -12,14 +12,11 @@ import {
   KeyboardAvoidingView
 } from 'react-native';
 
-// Import linear gradient component
-import { LinearGradient } from 'expo-linear-gradient';
-
 // Import reducer dependencies
 import { connect } from 'react-redux';
 
 // Import async storage for credential storage
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Import needed views
 import BodyBaseScreen from './BodyBaseScreen';
@@ -150,7 +147,7 @@ const UserScreen = (props) => {
               style={imageLogoStyle}
             />
           </View>
-          <LinearGradient colors={InputWrapperColor} style={bodyWrapperStyle}>
+          <View>
             <View style={bodySectionTitleStyle}>
               <Text style={titleInputStyle}>Email</Text>
             </View>
@@ -215,7 +212,7 @@ const UserScreen = (props) => {
                 </Text>
               </View>
             ) : null}
-          </LinearGradient>
+          </View>
           <View style={bodySectionStyle}>
             <TouchableOpacity
               style={buttonInvertStyle}

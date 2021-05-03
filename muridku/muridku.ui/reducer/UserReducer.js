@@ -5,9 +5,6 @@ const user = {
 }
 
 const UserReducer = (state = user, action) => {
-    console.log("action");
-    console.log(action.email);
-    console.log(state);
     switch (action.type) {
       case SET_USER:
         state.email = action;

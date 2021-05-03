@@ -76,7 +76,6 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 17,
     color: '#FF4D05',
-    cursor: 'pointer',
     textDecorationLine: 'underline',
   },
   customActivityIndicatorStyle: {
