@@ -1,43 +1,50 @@
 import {
   StyleSheet,
 } from 'react-native';
+import {
+  HeightPercentageToDP
+} from '../../helper/CommonHelper';
 
-const BackgroundColor = "#2A2C4E";
+export const BackgroundColor = "#2A2C4E";
 
 export const RegisterStyles = StyleSheet.create({
   bodyContainerStyle: {
     position: 'absolute',
     width: '100%',
     height: '100%',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: BackgroundColor
   },
   logoContainerStyle: {
     width: '100%',
-    height: '100%'
+    height: HeightPercentageToDP(125),
+    alignItems: 'center',
+    position: 'absolute'
   },
   logoStyle: {
-    width: '100%',
-    height: 100,
-    resizeMode: 'center'
+    width: '60%',
+    height: '60%',
+    resizeMode: 'contain',
+    alignSelf: 'center'
   },
   titleContainerStyle: {
-    width: '100%',
-    height: '100%',
-    marginTop: 50,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: HeightPercentageToDP(10),
+    borderTopRightRadius: HeightPercentageToDP(10),
+    marginTop: HeightPercentageToDP(120)
   },
   titleStyle: {
     color: '#000000',
     fontStyle: 'normal',
-    fontSize: 20,
+    fontSize: HeightPercentageToDP(20),
     textAlign: 'center'
   },
   bodySectionStyle: {
     flexDirection: 'row',
-    height: 40,
-    marginTop: 5,
-    marginLeft: 15,
-    marginRight: 15,
+    height: HeightPercentageToDP(40),
+    marginTop: HeightPercentageToDP(5),
+    marginLeft: HeightPercentageToDP(15),
+    marginRight: HeightPercentageToDP(15),
     justifyContent: 'center',
   },
   customInputStyle: {
@@ -45,8 +52,8 @@ export const RegisterStyles = StyleSheet.create({
     color: '#000000',
     backgroundColor: '#FFFFFF',
     width: '100%',
-    fontSize: 12,
-    borderWidth: 1,
+    fontSize: HeightPercentageToDP(12),
+    borderWidth: HeightPercentageToDP(1),
     borderColor: '#DDDDDD'
   },
   customInputPasswordStyle: {
@@ -54,47 +61,47 @@ export const RegisterStyles = StyleSheet.create({
     color: '#000000',
     backgroundColor: '#FFFFFF',
     width: '100%',
-    fontSize: 12
+    fontSize: HeightPercentageToDP(12)
   },
   buttonStyle: {
-    backgroundColor: BackgroundColor,
+    backgroundColor: '#E37550',
     color: '#FFFFFF',
-    height: 35,
+    height: HeightPercentageToDP(35),
     width: '100%',
     alignItems: 'center',
-    marginTop: 10
+    marginTop: HeightPercentageToDP(10)
   },
   buttonTextStyle: {
     color: '#FFFFFF',
-    paddingVertical: 8,
+    paddingVertical: HeightPercentageToDP(8),
     fontStyle: 'normal',
-    fontSize: 14,
-    lineHeight: 17,
+    fontSize: HeightPercentageToDP(14),
+    lineHeight: HeightPercentageToDP(17),
   },
   signupTextStyle: {
     color: '#000000',
     textAlign: 'center',
-    fontSize: 12
+    fontSize: HeightPercentageToDP(12)
   },
   signupTextButtonStyle: {
     color: '#E37550',
     textAlign: 'center',
-    fontSize: 12
+    fontSize: HeightPercentageToDP(12)
   },
   errorTextStyle: {
     color: '#FF4D05',
     textAlign: 'center',
-    fontSize: 12,
+    fontSize: HeightPercentageToDP(12),
     fontStyle: 'italic',
   },
   techProblemDescStyle: {
-    fontSize: 12,
-    lineHeight: 17,
-    color: 'white',
+    fontSize: HeightPercentageToDP(12),
+    lineHeight: HeightPercentageToDP(17),
+    color: '#000000',
   },
   techProblemStyle: {
-    fontSize: 12,
-    lineHeight: 17,
+    fontSize: HeightPercentageToDP(12),
+    lineHeight: HeightPercentageToDP(17),
     color: '#FF4D05',
     textDecorationLine: 'underline',
   },

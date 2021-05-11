@@ -1,16 +1,21 @@
 import React from 'react';
 import {
-  View
+  SafeAreaView,
+  StatusBar
 } from 'react-native';
 import { BasicStyles } from '../asset/style-template/BasicStyles';
 
 const BodyBaseScreen = (props) => {
   const { mainBodyStyle } = BasicStyles;
+  const backgroundColor = props.statusBarColor ?? "#000";
 
   return (
-    <View style={mainBodyStyle}>
+    <SafeAreaView style={mainBodyStyle}>
+      <StatusBar
+        animated={true}
+        backgroundColor={backgroundColor} />
       {props.items}
-    </View>
+    </SafeAreaView>
   );
 }
 

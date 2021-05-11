@@ -12,5 +12,5 @@ export const checkuserloginstatus = (email, callback) => {
     }
   };
 
-  requesttemplate(options, callback, IS_HTTP);
+  requesttemplate(options, callback, null, IS_HTTP);
 };

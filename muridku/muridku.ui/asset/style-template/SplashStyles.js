@@ -1,6 +1,7 @@
 import {
   StyleSheet,
 } from 'react-native';
+import { HeightPercentageToDP } from '../../helper/CommonHelper';
 
 const BackgroundColor = "#2A2C4E";
 
@@ -19,7 +20,7 @@ export const SplashStyles = StyleSheet.create({
   logoStyle: {
     height: '100%',
     width: '100%',
-    resizeMode: 'center',
+    resizeMode: 'contain',
     position: 'absolute'
   },
   versionTextStyle: {
@@ -29,8 +30,8 @@ export const SplashStyles = StyleSheet.create({
     width: '100%',
     fontFamily: 'arial',
     fontStyle: 'normal',
-    fontSize: 12,
-    lineHeight: 17,
+    fontSize: HeightPercentageToDP(12),
+    lineHeight: HeightPercentageToDP(17),
     alignSelf: 'flex-end'
   },
 });

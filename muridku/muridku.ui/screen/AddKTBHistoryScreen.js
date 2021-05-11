@@ -16,7 +16,34 @@ import PasswordToggle from './component/PasswordToggle';
 import { BasicStyles, BasicColor, LoadingViewSize, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
 import { AddKTBHistoryStyles } from '../asset/style-template/AddKTBHistoryStyles';
 
+const checkuserapi = require("../api/out/checkuserloginstatus");
+
 const AddKTBHistoryScreen = (props) => {
+  const [animating, setAnimating] = useState(true);
+  const [memberName, setMemberName] = useState("");
+
+  useEffect(() => {
+    let result = false;
+
+    const callback = (resultapi) => {
+      result = resultapi.result;
+    }
+
+    if(props.User.email !== undefined && props.User.email !== null && props.User.email !== "")
+      checkuserapi.checkuserloginstatus(props.User.email, callback);
+
+    setTimeout(() => {
+      setAnimating(false);
+      
+      if(!result || result.is_logged_in === 0) {
+        props.navigation.replace('LoginScreen');
+        return;
+      }
+      
+      setMemberName(result)
+    }, 3000);
+  }, []);
+  
   const { globalFontStyle, basicInputStyle, inputStyle, passwordInputStyle } = BasicStyles;
   
   const {

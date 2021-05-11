@@ -53,9 +53,21 @@ ${NPMAUDIT}
 2. register LOCALAPPDATA to Environment Variables (C:\Users\vegi-laptop\AppData\Local)
 3. register ANDROID_HOME to Environment Variables (%LOCALAPPDATA%\Android\Sdk)
 4. register ADB to Environment Variables Path (%ANDROID_HOME%\platform-tools)
-5. 
+5. use gradle plugin version 4.1.3 and gradle version 6.7
+6. manually create android\app\src\main\assets if there is no assets folder
+7. run this script:
 
+```node
 react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+```
+
+8. build the APK from Android Studio
+
+## To test API in local
+1. check the emulator using command:
+	> adb devices
+2. register the port using command:
+	> adb -s emulator-5554 reverse tcp:5000 tcp:5000
 
 ## Github vs Bitbucket compare tools
 FreeFileSync

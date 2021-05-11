@@ -7,14 +7,17 @@ import {
   ScrollView,
   Image,
   Keyboard,
-  TouchableOpacity
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import { SET_USER } from "../reducer/action/ActionConst";
 import { connect } from 'react-redux';
 import BodyBaseScreen from './BodyBaseScreen';
 import PasswordToggle from './component/PasswordToggle';
 import { BasicStyles, BasicColor, LoadingViewSize, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
-import { RegisterStyles } from '../asset/style-template/RegisterStyles';
+import { RegisterStyles, BackgroundColor } from '../asset/style-template/RegisterStyles';
+import { HeightPercentageToDP } from '../helper/CommonHelper';
 
 const registerapi = require('../api/out/registeruser');
 
@@ -113,22 +116,34 @@ const RegisterScreen = (props) => {
     customActivityIndicatorStyle
   } = RegisterStyles;
 
+  // const showScrollBar = Platform.OS === 'web';
+
   const baseScreenItems = (
-    <ScrollView
-      keyboardShouldPersistTaps="handled"
-      contentContainerStyle={bodyContainerStyle}>
-      <View style={{flexDirection: 'column', flex: 1}}>
-        <View style={[logoContainerStyle, {flex: 5}]}>
-          <Image
-            source={require('../asset/img/logo.png')}
-            style={logoStyle}
-          />
-        </View>
-        <View style={{flex: 23, backgroundColor: "#FFFFFF"}}>
-          <View style={[titleContainerStyle, {flex: 2}]}>
-            <Text style={titleStyle}>Buat Akun</Text>
-          </View>
-          <View style={[bodySectionStyle, {flex: 2}]}>
+    <View style={bodyContainerStyle}>
+      <View style={logoContainerStyle}>
+        <Image
+          source={require('../asset/img/logo.png')}
+          style={logoStyle}
+        />
+      </View>
+      <View style={[bodySectionStyle, titleContainerStyle]}>
+        <Text style={[titleStyle, {paddingTop: HeightPercentageToDP(10)}]}>
+          Daftar MURIDKU
+        </Text>
+      </View>
+      <ScrollView
+        // keyboardDismissMode="on-drag"
+        // scrollEnabled={showScrollBar}
+      >
+        <View
+          style={{backgroundColor: "#FFFFFF", paddingTop: HeightPercentageToDP(15)}}
+          // keyboardDismissMode="on-drag"
+          // scrollEnabled={showScrollBar}
+        >
+          <KeyboardAvoidingView
+            style={bodySectionStyle}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
             <TextInput
               style={[globalFontStyle, customInputStyle, inputStyle]}
               onChangeText={(UserFullname) => setUserFullname(UserFullname)}
@@ -141,8 +156,11 @@ const RegisterScreen = (props) => {
               ref={emailInputRef}
               value={userFullname}
             />
-          </View>
-          <View style={[bodySectionStyle, {flex: 2}]}>
+          </KeyboardAvoidingView>
+          <KeyboardAvoidingView
+            style={bodySectionStyle}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
             <TextInput
               style={[globalFontStyle, customInputStyle, inputStyle]}
               onChangeText={(addr) => setUserAddress(addr)}
@@ -155,8 +173,11 @@ const RegisterScreen = (props) => {
               ref={fullnameInputRef}
               value={userAddress}
             />
-          </View>
-          <View style={[bodySectionStyle, {flex: 2}]}>
+          </KeyboardAvoidingView>
+          <KeyboardAvoidingView
+            style={bodySectionStyle}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
             <TextInput
               style={[globalFontStyle, customInputStyle, inputStyle]}
               onChangeText={(UserEmail) => setUserEmail(UserEmail)}
@@ -170,8 +191,11 @@ const RegisterScreen = (props) => {
               ref={fullnameInputRef}
               value={userEmail}
             />
-          </View>
-          <View style={[bodySectionStyle, {flex: 2}]}>
+          </KeyboardAvoidingView>
+          <KeyboardAvoidingView
+            style={bodySectionStyle}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
             <PasswordToggle
               containerStyle={[globalFontStyle, customInputStyle, inputStyle]}
               inputStyle={[globalFontStyle, customInputPasswordStyle, passwordInputStyle]}
@@ -186,9 +210,13 @@ const RegisterScreen = (props) => {
               underlineColorAndroid="#f000"
               returnKeyType="next"
               refChild={passwordInputRef}
+              iconSize={HeightPercentageToDP(20)}
             />
-          </View>
-          <View style={[bodySectionStyle, {flex: 5}]}>
+          </KeyboardAvoidingView>
+          <KeyboardAvoidingView
+            style={bodySectionStyle}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          >
             <PasswordToggle
               containerStyle={[globalFontStyle, customInputStyle, inputStyle]}
               inputStyle={[globalFontStyle, customInputPasswordStyle, passwordInputStyle]}
@@ -203,16 +231,19 @@ const RegisterScreen = (props) => {
               underlineColorAndroid="#f000"
               returnKeyType="next"
               refChild={passwordConfirmInputRef}
+              iconSize={HeightPercentageToDP(20)}
             />
-          </View>
+          </KeyboardAvoidingView>
           {(errortext != '') ? (
-            <View style={[bodySectionStyle, {flex: 1}]}>
+            <View style={bodySectionStyle}>
               <Text style={[globalFontStyle, errorTextStyle]}>
                 {errortext}
               </Text>
             </View>
           ) : null}
-          <View style={[bodySectionStyle, {flex: 3}]}>
+        </View>
+        <View style={{backgroundColor: "#FFFFFF"}}>
+          <View style={bodySectionStyle}>
             <TouchableOpacity
               style={buttonStyle}
               activeOpacity={0.5}
@@ -223,51 +254,53 @@ const RegisterScreen = (props) => {
               </Text>
             </TouchableOpacity>
           </View>
-          <View style={[bodySectionStyle, {flex: 8}]}>
-            <Text
-              style={[globalFontStyle, signupTextStyle]}>
-              Sudah memiliki akun?
-            </Text>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={() => {
-                resetState();
-                navigation.navigate('LoginScreen');
-              }}
-              >
+          <View style={bodySectionStyle, {marginTop: HeightPercentageToDP(10), alignItems: 'center'}}>
+            <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
               <Text
-                style={[globalFontStyle, signupTextButtonStyle]}>
-                &nbsp;Login
+                style={[globalFontStyle, signupTextStyle]}>
+                Sudah memiliki akun?
+              </Text>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => {
+                  resetState();
+                  navigation.navigate('LoginScreen');
+                }}
+                >
+                <Text
+                  style={[globalFontStyle, signupTextButtonStyle]}>
+                  &nbsp;Login
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={[bodySectionStyle, {alignItems: 'flex-end'}]}>
+            <Text style={[globalFontStyle, techProblemDescStyle]}>Kesulitan mengakses akun MURIDKU?</Text>
+          </View>
+          <View style={[bodySectionStyle, {alignItems: 'flex-start'}]}>
+            <TouchableOpacity activeOpacity={0.5}>
+              <Text
+                style={[globalFontStyle, techProblemStyle]}>
+                Laporkan masalah teknis
               </Text>
             </TouchableOpacity>
           </View>
+          {(loading) ? 
+            (<View style={customActivityIndicatorStyle}>
+              <ActivityIndicator
+                animating={loading}
+                color={BasicColor}
+                size={LoadingViewSize}
+              />
+            </View>) : null
+          }
         </View>
-        <View style={[bodySectionStyle, {flex: 1}]}>
-          <Text style={[globalFontStyle, techProblemDescStyle]}>Kesulitan mengakses akun MURIDKU?</Text>
-        </View>
-        <View style={[bodySectionStyle, {flex: 3}]}>
-          <TouchableOpacity activeOpacity={0.5}>
-            <Text
-              style={[globalFontStyle, techProblemStyle]}>
-              Laporkan masalah teknis
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      {(loading) ? 
-        (<View style={customActivityIndicatorStyle}>
-          <ActivityIndicator
-            animating={loading}
-            color={BasicColor}
-            size={LoadingViewSize}
-          />
-        </View>) : null
-      }
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 
   return (
-    <BodyBaseScreen items={baseScreenItems} />
+    <BodyBaseScreen items={baseScreenItems} statusBarColor={BackgroundColor} />
   );
 };
 

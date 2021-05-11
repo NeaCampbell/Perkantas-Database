@@ -1,20 +1,30 @@
-import React, {useState, useEffect, createRef} from 'react';
+import React, { useState, createRef } from 'react';
 import {
   ActivityIndicator,
   TextInput,
   View,
+  KeyboardAvoidingView,
   Text,
-  ScrollView,
   Image,
   Keyboard,
-  TouchableOpacity
+  TouchableOpacity,
+  Platform
 } from 'react-native';
 import { SET_USER } from "../reducer/action/ActionConst";
 import { connect } from 'react-redux';
 import BodyBaseScreen from './BodyBaseScreen';
+import { HeightPercentageToDP } from '../helper/CommonHelper';
 import PasswordToggle from './component/PasswordToggle';
-import { BasicStyles, BasicColor, LoadingViewSize, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
-import { LoginStyles } from '../asset/style-template/LoginStyles';
+import {
+  BasicStyles,
+  BasicColor,
+  LoadingViewSize,
+  PlaceholderTextColor
+} from '../asset/style-template/BasicStyles';
+import {
+  LoginStyles,
+  BackgroundColor
+} from '../asset/style-template/LoginStyles';
 
 const loginapi = require('../api/out/login');
 
@@ -63,7 +73,12 @@ const LoginScreen = (props) => {
       navigation.replace('ViewAllKTBScreen');
     }
 
-    loginapi.login(userEmail, userPassword, callback);
+    const errorHandler = (error) => {
+      setLoading(false);
+      setErrorText(error.message);
+    }
+
+    loginapi.login(userEmail, userPassword, callback, errorHandler);
   };
 
   const { globalFontStyle, basicInputStyle, inputStyle, passwordInputStyle } = BasicStyles;
@@ -85,82 +100,92 @@ const LoginScreen = (props) => {
   } = LoginStyles;
 
   const baseScreenItems = (
-    <ScrollView
-      keyboardShouldPersistTaps="handled"
-      contentContainerStyle={bodyContainerStyle}>
-      <View style={{flexDirection: 'column', flex: 1}}>
-        <View style={[logoContainerStyle, {flex: 12}]}>
-          <Image
-            source={require('../asset/img/logo.png')}
-            style={logoStyle}
-          />
+    <View style={bodyContainerStyle}>
+      <View style={logoContainerStyle}>
+        <Image
+          source={require('../asset/img/logo.png')}
+          style={[logoStyle]}
+        />
+      </View>
+      <KeyboardAvoidingView
+        style={[bodySectionStyle, {marginTop: HeightPercentageToDP(150)}]}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <TextInput style={[globalFontStyle, basicInputStyle, inputStyle]}
+          onChangeText={(UserEmail) => setUserEmail(UserEmail)}
+          placeholder="Masukkan email anda"
+          placeholderTextColor={PlaceholderTextColor}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          returnKeyType="next"
+          underlineColorAndroid="#f000"
+          blurOnSubmit={false}
+          ref={emailInputRef}
+          value={userEmail}
+        />
+      </KeyboardAvoidingView>
+      <KeyboardAvoidingView
+        style={bodySectionStyle}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <PasswordToggle
+          containerStyle={[globalFontStyle, basicInputStyle, inputStyle]}
+          inputStyle={[globalFontStyle, basicInputStyle, passwordInputStyle]}
+          onChangeText={
+            (UserPassword) => setUserPassword(UserPassword)
+          }
+          placeholder="Masukkan password anda"
+          placeholderTextColor={PlaceholderTextColor}
+          keyboardType="default"
+          onSubmitEditing={Keyboard.dismiss}
+          blurOnSubmit={false}
+          underlineColorAndroid="#f000"
+          returnKeyType="next"
+          refChild={passwordInputRef}
+          value={userPassword}
+          iconSize={HeightPercentageToDP(20)}
+        />
+      </KeyboardAvoidingView>
+      {(errortext != '') ? (
+        <View style={[bodySectionStyle, {justifyContent: 'flex-start', alignItems: 'flex-start'}]}>
+          <Text style={[globalFontStyle, errorTextStyle]}>
+            {errortext}
+          </Text>
         </View>
-        <View style={[bodySectionStyle, {flex: 2}]}>
-          <TextInput
-            style={[globalFontStyle, basicInputStyle, inputStyle]}
-            onChangeText={(UserEmail) => setUserEmail(UserEmail)}
-            placeholder="Masukkan email anda"
-            placeholderTextColor={PlaceholderTextColor}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            returnKeyType="next"
-            underlineColorAndroid="#f000"
-            blurOnSubmit={false}
-            ref={emailInputRef}
-            value={userEmail}
-          />
-        </View>
-        <View style={[bodySectionStyle, {flex: 5}]}>
-          <PasswordToggle
-            containerStyle={[globalFontStyle, basicInputStyle, inputStyle]}
-            inputStyle={[globalFontStyle, basicInputStyle, passwordInputStyle]}
-            onChangeText={
-              (UserPassword) => setUserPassword(UserPassword)
-            }
-            placeholder="Masukkan password anda"
-            placeholderTextColor={PlaceholderTextColor}
-            keyboardType="default"
-            onSubmitEditing={Keyboard.dismiss}
-            blurOnSubmit={false}
-            underlineColorAndroid="#f000"
-            returnKeyType="next"
-            refChild={passwordInputRef}
-            value={userPassword}
-          />
-        </View>
-        {(errortext != '') ? (
-          <View style={[bodySectionStyle, {flex: 0.5}]}>
-            <Text style={[globalFontStyle, errorTextStyle]}>
-              {errortext}
-            </Text>
-          </View>
-        ) : null}
-        <View style={[bodySectionStyle, {flex: 2.5}]}>
-          <TouchableOpacity
-            style={buttonStyle}
-            activeOpacity={0.5}
-            onPress={handleSubmitPress}
-            >
-            <Text style={[globalFontStyle, buttonTextStyle]}>
-              Masuk
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={[bodySectionStyle, {flex: 0.7}]}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => {
-              resetState();
-              // navigation.navigate('UserScreen');
-            }}
-            >
-            <Text
-              style={[globalFontStyle, forgotPwdTextStyle]}>
-              Lupa Password?
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={[bodySectionStyle, {flex: 8}]}>
+      ) : null}
+      <KeyboardAvoidingView
+        style={bodySectionStyle}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <TouchableOpacity
+          style={buttonStyle}
+          activeOpacity={0.5}
+          onPress={handleSubmitPress}
+          >
+          <Text style={[globalFontStyle, buttonTextStyle]}>
+            Masuk
+          </Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+      <KeyboardAvoidingView
+        style={[bodySectionStyle, {justifyContent: 'flex-start'}]}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => {
+            resetState();
+            // navigation.navigate('UserScreen');
+          }}
+          >
+          <Text
+            style={[globalFontStyle, forgotPwdTextStyle]}>
+            Lupa Password?
+          </Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+      <View style={[bodySectionStyle, {justifyContent: 'flex-start'}]}>
+        <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
           <Text
             style={[globalFontStyle, signupTextStyle]}>
             Belum memiliki akun?
@@ -178,32 +203,32 @@ const LoginScreen = (props) => {
             </Text>
           </TouchableOpacity>
         </View>
-        <View style={[bodySectionStyle, {flex: 0.7}]}>
-          <Text style={[globalFontStyle, techProblemDescStyle]}>Kesulitan mengakses akun MURIDKU?</Text>
-        </View>
-        <View style={[bodySectionStyle, {flex: 3}]}>
-          <TouchableOpacity activeOpacity={0.5}>
-            <Text
-              style={[globalFontStyle, techProblemStyle]}>
-              Laporkan masalah teknis
-            </Text>
-          </TouchableOpacity>
-        </View>
+      </View>
+      <View style={[bodySectionStyle, {justifyContent: 'flex-end'}]}>
+        <Text style={[globalFontStyle, techProblemDescStyle]}>Kesulitan mengakses akun MURIDKU?</Text>
+      </View>
+      <View style={[bodySectionStyle, {justifyContent: 'flex-start'}]}>
+        <TouchableOpacity activeOpacity={0.5}>
+          <Text
+            style={[globalFontStyle, techProblemStyle]}>
+            Laporkan masalah teknis
+          </Text>
+        </TouchableOpacity>
       </View>
       {(loading) ? 
         (<View style={customActivityIndicatorStyle}>
           <ActivityIndicator
             animating={loading}
             color={BasicColor}
-            size={LoadingViewSize}
+            size={HeightPercentageToDP(LoadingViewSize)}
           />
         </View>) : null
       }
-    </ScrollView>
+    </View>
   );
 
   return (
-    <BodyBaseScreen items={baseScreenItems} />
+    <BodyBaseScreen items={baseScreenItems} statusBarColor={BackgroundColor} />
   );
 };
 

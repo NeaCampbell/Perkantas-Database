@@ -1,5 +1,5 @@
 // Import React and Component
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ActivityIndicator,
   View,

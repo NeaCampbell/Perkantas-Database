@@ -12,8 +12,6 @@ import { connect } from 'react-redux';
 import BodyBaseScreen from './BodyBaseScreen';
 
 const ViewAllKTBScreen = () => {
-  console.log('masoek');
-
   const baseScreenItems = (
     <>
       <MenuBar></MenuBar>

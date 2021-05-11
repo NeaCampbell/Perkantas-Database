@@ -1,8 +1,15 @@
 import {
   StyleSheet,
 } from 'react-native';
+import {
+  WidthPercentageToDP,
+  HeightPercentageToDP
+} from '../../helper/CommonHelper';
 
 export const BasicColor = '#F59873';
+export const DefaultInputFontSize = 12;
+export const DefaultInputHeight = 35;
+export const DefaultPasswordInputHeight = 30;
 
 export const BasicStyles = StyleSheet.create({
   mainBodyStyle: {
@@ -27,24 +34,24 @@ export const BasicStyles = StyleSheet.create({
   titleInputStyle: {
     fontStyle: 'normal',
     fontWeight: 'bold',
-    fontSize: 14,
-    lineHeight: 17,
+    fontSize: HeightPercentageToDP(14),
+    lineHeight: HeightPercentageToDP(17),
     color: BasicColor,
   },
   basicInputStyle: {
-    flex: 1,
     color: '#F4F8FC',
     backgroundColor: '#555671',
     width: '100%',
-    fontSize: 12,
+    fontSize: HeightPercentageToDP(DefaultInputFontSize),
   },
   inputStyle: {
-    paddingLeft: 15,
-    paddingRight: 15,
-    height: 35
+    paddingLeft: HeightPercentageToDP(15),
+    paddingRight: HeightPercentageToDP(15),
+    height: HeightPercentageToDP(DefaultInputHeight),
+    position: 'absolute'
   },
   passwordInputStyle: {
-    height: 30,
+    height: HeightPercentageToDP(DefaultPasswordInputHeight),
   },
   activityIndicatorStyle: {
     alignItems: 'center',

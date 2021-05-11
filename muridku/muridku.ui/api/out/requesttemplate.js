@@ -1,4 +1,4 @@
-export const requesttemplate = (options, callback, paraminput, ishttp) => {
+export const requesttemplate = (options, callback, paraminput, ishttp, errorHandler) => {
   let url = `${options.hostname}:${options.port}${options.path}`;
 
   if(ishttp === false)
@@ -23,5 +23,8 @@ export const requesttemplate = (options, callback, paraminput, ishttp) => {
     console.log(options);
     console.log(paraminput ?? "no param input");
     console.error(error);
+
+    if(errorHandler !== undefined && errorHandler !== null)
+      errorHandler(error);
   })
 };
