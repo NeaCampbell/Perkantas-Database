@@ -59,18 +59,18 @@ export const ViewAllKTBStyles = StyleSheet.create({
   burgerStyle: {
     width: HeightPercentageToDP(15),
     height: HeightPercentageToDP(15),
-    resizeMode: 'left'
+    justifyContent: 'flex-start'
   },
   nextStyle: {
     width: HeightPercentageToDP(15),
     height: HeightPercentageToDP(15),
-    resizeMode: 'right'
+    justifyContent: 'flex-end'
   },
   searchButtonStyle: {
     width: HeightPercentageToDP(41),
     height: HeightPercentageToDP(42),
     marginLeft: HeightPercentageToDP(1),
-    resizeMode: 'right',
+    justifyContent: 'center',
     backgroundColor: '#FAF9FF',
   },
   loginTextStyle: {
@@ -143,7 +143,6 @@ export const ViewAllKTBStyles = StyleSheet.create({
     fontSize: HeightPercentageToDP(12),
     lineHeight: HeightPercentageToDP(17),
     color: '#FF4D05',
-    cursor: 'pointer',
     textDecorationLine: 'underline',
   },
   customActivityIndicatorStyle: {
