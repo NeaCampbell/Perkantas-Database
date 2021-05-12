@@ -7,7 +7,7 @@ import { registerRootComponent } from 'expo';
 import App from './App';
 import {name as appName} from './app.json';
 
-if(Platform.OS === 'android')
+if(Platform.OS !== 'web')
   AppRegistry.registerComponent(appName, () => App);
-else if(Platform.OS === 'web')
+else
   registerRootComponent(App);

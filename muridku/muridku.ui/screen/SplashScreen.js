@@ -6,7 +6,7 @@ import {
   Image,
   Text
 } from 'react-native';
-import { BasicStyles } from '../asset/style-template/BasicStyles';
+import { LoadingViewSize } from '../asset/style-template/BasicStyles';
 import { SplashStyles } from '../asset/style-template/SplashStyles';
 import {
   StyleSheet,
@@ -19,6 +19,7 @@ import { connect } from 'react-redux';
 import BodyBaseScreen from './BodyBaseScreen';
 
 const checkuserapi = require("../api/out/checkuserloginstatus");
+const appJson = require("../app.json");
 
 const SplashScreen = (props) => {
   //State for ActivityIndicator animation
@@ -46,39 +47,45 @@ const SplashScreen = (props) => {
     }, 3000);
   }, []);
 
-  const { activityIndicatorStyle, LoadingViewSize } = BasicStyles;
-  const { containerStyle, imgStyle, logoStyle, versionTextStyle } = SplashStyles;
+  const {
+    containerStyle,
+    imgContainerStyle,
+    imgStyle,
+    logoContainerStyle,
+    logo2ContainerStyle,
+    logoStyle,
+    versionTextStyle
+  } = SplashStyles;
 
   const baseScreenItems = (
     <>
-      <View style={[containerStyle, { flexDirection: "column" }]}>
-        <View style={{flex: 25}}>
+      <View style={containerStyle}>
+        <View style={imgContainerStyle}>
           <Image
             source={require('../asset/img/splash-img.png')}
             style={imgStyle}
           />
         </View>
-        <View style={{flex: 5}}>
+        <View style={logoContainerStyle}>
           <Image
             source={require('../asset/img/logo.png')}
             style={logoStyle}
           />
         </View>
-        <View style={{flex: 2}}>
+        <View style={logo2ContainerStyle}>
           <Image
             source={require('../asset/img/logo-perkantas.png')}
             style={logoStyle}
           />
         </View>
-        <View style={{flex: 1}}>
-          <Text style={[versionTextStyle, {flex: 4}]}>Version 1.0.0</Text>
+        <View>
+          <Text style={versionTextStyle}>Version {appJson.version}</Text>
         </View>
       </View>
       <ActivityIndicator
         animating={animating}
         color="#FFFFFF"
         size={LoadingViewSize}
-        style={activityIndicatorStyle}
       />
     </>
   );

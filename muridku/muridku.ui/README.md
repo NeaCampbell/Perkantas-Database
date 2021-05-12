@@ -22,16 +22,14 @@ Mobile App untuk PKTB.
 16. react-dom
 17. react-native-web
 18. react-native-vector-icons
-19. react-bootstrap-icons
+19. react-native-reanimated
+20. typescript
 
 ## Commands
 
 npx create-react-native-app muridku.ui or npx react-native init muridku.ui
-
 npm install -g expo-cli
-npm install expo
-
-npm install redux react-redux redux-persist @react-navigation/native react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view @react-navigation/drawer @react-navigation/stack @react-native-async-storage/async-storage react-dom react-native-web react-native-vector-icons react-bootstrap-icons
+npm install
 
 ## Dependencies installation (*NIX, macOS)
 

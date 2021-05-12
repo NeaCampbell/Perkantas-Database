@@ -1,8 +1,8 @@
 import {
   StyleSheet,
+  Platform
 } from 'react-native';
 import {
-  WidthPercentageToDP,
   HeightPercentageToDP
 } from '../../helper/CommonHelper';
 
@@ -53,17 +53,9 @@ export const BasicStyles = StyleSheet.create({
   passwordInputStyle: {
     height: HeightPercentageToDP(DefaultPasswordInputHeight),
   },
-  activityIndicatorStyle: {
-    alignItems: 'center',
-    height: '100%',
-    width: '100%',
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
 });
 
-export const LoadingViewSize = 50;
+export const LoadingViewSize = Platform.OS === 'android' ? HeightPercentageToDP(30) : 'large';
 export const ContainerImageCoverColor = ['rgba(255,255,255,0.5)', 'rgba(250,231,224,0.8)'];
 export const InputWrapperColor = ['rgba(255,255,255,0.5)', 'rgba(250,231,224,1)'];
 export const PlaceholderTextColor = '#AAA';

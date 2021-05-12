@@ -1,10 +1,8 @@
 import React from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-// import { Icon } from 'react-native-elements';
-import { BasicStyles } from '../../asset/style-template/BasicStyles';
 
-export default class PasswordToggle extends React.Component {
+export default class SearchToggle extends React.Component {
   constructor(props) {
     super(props);
 
@@ -22,19 +20,14 @@ export default class PasswordToggle extends React.Component {
   render() {
     return (
       <View style={[this.props.containerStyle, styles.container]}>
-        {/* {this.props.icon && <Icon name={this.props.icon} size={this.props.iconSize} color={this.props.iconColor} />} */}
-        <TextInput
-          secureTextEntry={this.state.visible}
-          {...this.props}
-          style={[this.props.inputStyle, BasicStyles.globalFontStyle]}
-          ref={this.props.refChild}
-        />
+        {this.props.icon && <Icon name={this.props.icon} size={this.props.iconSize} color={this.props.iconColor} />}
+        <TextInput {...this.props} style={[this.props.inputStyle]} ref={this.props.refChild}/>
         <TouchableOpacity
           onPress={() => {
             this.setVisible(!this.state.visible);
           }}>
           <Icon
-            name={this.state.visible ? 'thumb-up' : 'thumb-up'}
+            name='search'
             size={this.props.iconSize}
             color={this.state.visible ? this.props.iconInvisibleColor : this.props.iconVisibleColor}
           />
@@ -51,7 +44,7 @@ const styles = StyleSheet.create({
   }
 });
 
-PasswordToggle.defaultProps = {
+SearchToggle.defaultProps = {
   icon: null,
   style: {},
   iconVisibleColor: '#222',
