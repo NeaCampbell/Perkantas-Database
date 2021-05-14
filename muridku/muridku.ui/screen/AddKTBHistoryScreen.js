@@ -1,154 +1,106 @@
-import React, {useState, useEffect, createRef} from 'react';
+import React, {useState, useEffect, createRef, Component} from 'react';
 import {
-  ActivityIndicator,
-  TextInput,
   View,
-  Text,
   ScrollView,
-  Image,
   Keyboard,
-  TouchableOpacity
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator
 } from 'react-native';
-import { SET_USER } from "../reducer/action/ActionConst";
 import { connect } from 'react-redux';
-import BodyBaseScreen from './BodyBaseScreen';
-import PasswordToggle from './component/PasswordToggle';
-import { BasicStyles, BasicColor, LoadingViewSize, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
-import { AddKTBHistoryStyles } from '../asset/style-template/AddKTBHistoryStyles';
+import BodyMenuBaseScreen from './BodyMenuBaseScreen';
+import SearchToggle from './component/SearchToggle';
+import DiscipleshipGroup from './component/DiscipleshipGroup';
+import { BasicStyles, BasicColor, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
+import { ViewAllKTBStyles } from '../asset/style-template/ViewAllKTBStyles';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import {
+  ProportionateScreenSizeValue
+} from '../helper/CommonHelper';
 
-const checkuserapi = require("../api/out/checkuserloginstatus");
+const getktbapi = require('../api/out/getktbsbypktbid');
 
 const AddKTBHistoryScreen = (props) => {
-  const [animating, setAnimating] = useState(true);
-  const [memberName, setMemberName] = useState("");
-
-  useEffect(() => {
-    let result = false;
-
-    const callback = (resultapi) => {
-      result = resultapi.result;
-    }
-
-    if(props.User.email !== undefined && props.User.email !== null && props.User.email !== "")
-      checkuserapi.checkuserloginstatus(props.User.email, callback);
-
-    setTimeout(() => {
-      setAnimating(false);
-      
-      if(!result || result.is_logged_in === 0) {
-        props.navigation.replace('LoginScreen');
-        return;
-      }
-      
-      setMemberName(result)
-    }, 3000);
-  }, []);
-  
-  const { globalFontStyle, basicInputStyle, inputStyle, passwordInputStyle } = BasicStyles;
+  const { globalFontStyle, basicInputStyle } = BasicStyles;
   
   const {
     bodyContainerStyle,
-    logoContainerStyle,
-    logoStyle,
-    bodySectionStyle,
-    errorTextStyle,
+    searchSectionStyle,
+    searchContainerStyle,
+    searchTextStyle,
+    footerButtonStyle,
     buttonStyle,
-    buttonTextStyle,
-    forgotPwdTextStyle,
-    signupTextStyle,
-    signupTextButtonStyle,
-    techProblemDescStyle,
-    techProblemStyle,
     customActivityIndicatorStyle
-  } = AddKTBHistoryStyles;
+  } = ViewAllKTBStyles;
 
-  const baseScreenItems = (
-    <ScrollView
-      keyboardShouldPersistTaps="handled"
-      contentContainerStyle={bodyContainerStyle}>
-      <View style={{flexDirection: 'column', flex: 1}}>
-        <View style={[logoContainerStyle, {flex: 12}]}>
-          <Image
-            source={require('../asset/img/logo.png')}
-            style={logoStyle}
-          />
-        </View>
-        <View style={[bodySectionStyle, {flex: 2}]}>
-          <TextInput
-            style={[globalFontStyle, basicInputStyle, inputStyle]}
-            placeholder="Masukkan email anda"
-            placeholderTextColor={PlaceholderTextColor}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            returnKeyType="next"
-            underlineColorAndroid="#f000"
-            blurOnSubmit={false}
-          />
-        </View>
-        <View style={[bodySectionStyle, {flex: 5}]}>
-          <PasswordToggle
-            containerStyle={[globalFontStyle, basicInputStyle, inputStyle]}
-            inputStyle={[globalFontStyle, basicInputStyle, passwordInputStyle]}
-            placeholder="Masukkan password anda"
+  const setKtbsComp = (groups) => {
+    let comps = [];
+    let idx = 0;
+    groups.forEach(element => {
+      comps.push(
+        <DiscipleshipGroup
+          group={element.ktb}
+          members={element.members}
+          colorHolder={groupColors[idx]}
+          key={idx}
+          navigation={navigation}
+        />
+      );
+
+      idx++;
+    });
+
+    return comps;
+  }
+
+  let groups = undefined;
+
+  const child = (
+    <View style={bodyContainerStyle}>
+      <View style={searchSectionStyle}>
+        <KeyboardAvoidingView style={searchContainerStyle}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}>
+          <SearchToggle
+            containerStyle={[basicInputStyle, searchContainerStyle]}
+            inputStyle={[globalFontStyle, basicInputStyle, searchTextStyle]}
+            placeholder="Cari KTB"
             placeholderTextColor={PlaceholderTextColor}
             keyboardType="default"
             onSubmitEditing={Keyboard.dismiss}
             blurOnSubmit={false}
             underlineColorAndroid="#f000"
             returnKeyType="next"
+            iconSize={ProportionateScreenSizeValue(20)}
           />
-        </View>
-        <View style={[bodySectionStyle, {flex: 2.5}]}>
-          <TouchableOpacity
-            style={buttonStyle}
-            activeOpacity={0.5}
-            >
-            <Text style={[globalFontStyle, buttonTextStyle]}>
-              Masuk
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={[bodySectionStyle, {flex: 0.7}]}>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            >
-            <Text
-              style={[globalFontStyle, forgotPwdTextStyle]}>
-              Lupa Password?
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={[bodySectionStyle, {flex: 8}]}>
-          <Text
-            style={[globalFontStyle, signupTextStyle]}>
-            Belum memiliki akun?
-          </Text>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            >
-            <Text
-              style={[globalFontStyle, signupTextButtonStyle]}>
-              &nbsp;Sign Up
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={[bodySectionStyle, {flex: 0.7}]}>
-          <Text style={[globalFontStyle, techProblemDescStyle]}>Kesulitan mengakses akun MURIDKU?</Text>
-        </View>
-        <View style={[bodySectionStyle, {flex: 3}]}>
-          <TouchableOpacity activeOpacity={0.5}>
-            <Text
-              style={[globalFontStyle, techProblemStyle]}>
-              Laporkan masalah teknis
-            </Text>
-          </TouchableOpacity>
-        </View>
+        </KeyboardAvoidingView>
       </View>
-    </ScrollView>
+    </View>
+  );
+
+  const footer = (
+    <View style={[searchSectionStyle, {flexDirection:'row'}]}>
+      <View style={footerButtonStyle}>
+        <TouchableOpacity
+          style={buttonStyle}
+          activeOpacity={0.5}
+        >
+          <Icon name="add" size={ProportionateScreenSizeValue(25)} color="white"></Icon>
+        </TouchableOpacity>
+      </View>
+      <View style={footerButtonStyle}>
+        <TouchableOpacity
+          style={buttonStyle}
+          activeOpacity={0.5}
+        >
+          <Icon name="edit" size={ProportionateScreenSizeValue(25)} color="white"></Icon>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 
   return (
-    <BodyBaseScreen items={baseScreenItems} />
+    <BodyMenuBaseScreen title="KTB" child={child} footer={footer} />
   );
 };
 

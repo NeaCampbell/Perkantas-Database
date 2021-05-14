@@ -4,13 +4,11 @@ import {
   ActivityIndicator,
   View,
   Image,
+  StyleSheet,
   Text
 } from 'react-native';
 import { LoadingViewSize } from '../asset/style-template/BasicStyles';
 import { SplashStyles } from '../asset/style-template/SplashStyles';
-import {
-  StyleSheet,
-} from 'react-native';
 
 // Import reducer dependencies
 import { connect } from 'react-redux';

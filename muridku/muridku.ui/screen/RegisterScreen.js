@@ -17,7 +17,7 @@ import BodyBaseScreen from './BodyBaseScreen';
 import PasswordToggle from './component/PasswordToggle';
 import { BasicStyles, BasicColor, LoadingViewSize, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
 import { RegisterStyles, BackgroundColor } from '../asset/style-template/RegisterStyles';
-import { HeightPercentageToDP } from '../helper/CommonHelper';
+import { ProportionateScreenSizeValue } from '../helper/CommonHelper';
 
 const registerapi = require('../api/out/registeruser');
 
@@ -127,19 +127,12 @@ const RegisterScreen = (props) => {
         />
       </View>
       <View style={[bodySectionStyle, titleContainerStyle]}>
-        <Text style={[titleStyle, {paddingTop: HeightPercentageToDP(10)}]}>
+        <Text style={[titleStyle, {paddingTop: ProportionateScreenSizeValue(10)}]}>
           Daftar MURIDKU
         </Text>
       </View>
-      <ScrollView
-        // keyboardDismissMode="on-drag"
-        // scrollEnabled={showScrollBar}
-      >
-        <View
-          style={{backgroundColor: "#FFFFFF", paddingTop: HeightPercentageToDP(15)}}
-          // keyboardDismissMode="on-drag"
-          // scrollEnabled={showScrollBar}
-        >
+      <ScrollView>
+        <View style={{backgroundColor: "#FFFFFF", paddingTop: ProportionateScreenSizeValue(15)}}>
           <KeyboardAvoidingView
             style={bodySectionStyle}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -210,7 +203,7 @@ const RegisterScreen = (props) => {
               underlineColorAndroid="#f000"
               returnKeyType="next"
               refChild={passwordInputRef}
-              iconSize={HeightPercentageToDP(20)}
+              iconSize={ProportionateScreenSizeValue(20)}
             />
           </KeyboardAvoidingView>
           <KeyboardAvoidingView
@@ -231,7 +224,7 @@ const RegisterScreen = (props) => {
               underlineColorAndroid="#f000"
               returnKeyType="next"
               refChild={passwordConfirmInputRef}
-              iconSize={HeightPercentageToDP(20)}
+              iconSize={ProportionateScreenSizeValue(20)}
             />
           </KeyboardAvoidingView>
           {(errortext != '') ? (
@@ -254,7 +247,7 @@ const RegisterScreen = (props) => {
               </Text>
             </TouchableOpacity>
           </View>
-          <View style={bodySectionStyle, {marginTop: HeightPercentageToDP(10), alignItems: 'center'}}>
+          <View style={bodySectionStyle, {marginTop: ProportionateScreenSizeValue(10), alignItems: 'center'}}>
             <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
               <Text
                 style={[globalFontStyle, signupTextStyle]}>

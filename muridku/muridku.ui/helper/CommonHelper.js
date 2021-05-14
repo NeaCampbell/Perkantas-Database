@@ -10,12 +10,12 @@ export const WindowSize = {
   maxHeight: 1366,
 }
 
-export const WidthPercentageToDP = (percentage) => {
+export const ProportionateScreenSizePercentage = (percentage) => {
   const result = percentage / 100 * WindowSize.width;
   return result > WindowSize.maxWidth ? WindowSize.maxWidth : result;
 }
 
-export const HeightPercentageToDP = (compHeight) => {
+export const ProportionateScreenSizeValue = (compHeight) => {
   const result = compHeight * WindowSize.height / WindowSize.defaultHeight;
   return result > WindowSize.maxHeight ? WindowSize.maxHeight : result;
 }

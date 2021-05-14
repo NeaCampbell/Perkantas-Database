@@ -2,7 +2,9 @@ import React from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 // import { Icon } from 'react-native-elements';
-import { BasicStyles } from '../../asset/style-template/BasicStyles';
+import {
+  ProportionateScreenSizeValue
+} from '../../helper/CommonHelper';
 
 export default class PasswordToggle extends React.Component {
   constructor(props) {
@@ -22,11 +24,11 @@ export default class PasswordToggle extends React.Component {
   render() {
     return (
       <View style={[this.props.containerStyle, styles.container]}>
-        {/* {this.props.icon && <Icon name={this.props.icon} size={this.props.iconSize} color={this.props.iconColor} />} */}
+        {this.props.icon && <Icon name={this.props.icon} size={this.props.iconSize} color={this.props.iconColor} />}
         <TextInput
           secureTextEntry={this.state.visible}
           {...this.props}
-          style={[this.props.inputStyle, BasicStyles.globalFontStyle]}
+          style={this.props.textInputStyle}
           ref={this.props.refChild}
         />
         <TouchableOpacity
@@ -56,7 +58,7 @@ PasswordToggle.defaultProps = {
   style: {},
   iconVisibleColor: '#222',
   iconInvisibleColor: '#777',
-  iconSize: 20,
+  iconSize: ProportionateScreenSizeValue(20),
   inputStyle:{}
 };
 

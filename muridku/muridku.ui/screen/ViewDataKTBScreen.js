@@ -171,7 +171,7 @@ const MenuBar = () => {
 const KTBName = () => {
   return (
     <View style={styles.KTBName}>      
-      <Text style={styles.namaKTB}>Kelompok Tumbuh Bersama A</Text>
+      <Text style={styles.groupName}>Kelompok Tumbuh Bersama A</Text>
     </View>
   );
 }
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     lineHeight: 25,
   },
-  namaKTB:{
+  groupName:{
     fontSize: 21,
     fontFamily: '../asset/fonts/MontserratAlternates-Bold.ttf',
     fontWeight: 'bold',

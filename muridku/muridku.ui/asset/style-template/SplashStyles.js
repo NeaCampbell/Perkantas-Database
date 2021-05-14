@@ -1,7 +1,7 @@
 import {
   StyleSheet,
 } from 'react-native';
-import { WindowSize, HeightPercentageToDP } from '../../helper/CommonHelper';
+import { WindowSize, ProportionateScreenSizeValue } from '../../helper/CommonHelper';
 
 const BackgroundColor = "#2A2C4E";
 
@@ -15,7 +15,7 @@ export const SplashStyles = StyleSheet.create({
   },
   imgContainerStyle: {
     width: '100%',
-    height: HeightPercentageToDP(WindowSize.width > WindowSize.height ? 350 : 500),
+    height: ProportionateScreenSizeValue(WindowSize.width > WindowSize.height ? 350 : 500),
     alignItems: 'flex-start',
     position: 'absolute'
   },
@@ -27,13 +27,13 @@ export const SplashStyles = StyleSheet.create({
   },
   logoContainerStyle: {
     width: '100%',
-    height: HeightPercentageToDP(125),
+    height: ProportionateScreenSizeValue(125),
     alignItems: 'center',
-    marginTop: HeightPercentageToDP(WindowSize.width > WindowSize.height ? 250 : 300)
+    marginTop: ProportionateScreenSizeValue(WindowSize.width > WindowSize.height ? 250 : 300)
   },
   logo2ContainerStyle: {
     width: '100%',
-    height: HeightPercentageToDP(50),
+    height: ProportionateScreenSizeValue(50),
     justifyContent: 'flex-end',
     alignItems: 'center'
   },
@@ -45,7 +45,7 @@ export const SplashStyles = StyleSheet.create({
   },
   versionContainerStyle: {
     width: '100%',
-    height: HeightPercentageToDP(50),
+    height: ProportionateScreenSizeValue(50),
     justifyContent: 'flex-start',
     alignItems: 'center'
   },
@@ -56,8 +56,8 @@ export const SplashStyles = StyleSheet.create({
     width: '100%',
     fontFamily: 'arial',
     fontStyle: 'normal',
-    fontSize: HeightPercentageToDP(10),
-    lineHeight: HeightPercentageToDP(17),
+    fontSize: ProportionateScreenSizeValue(10),
+    lineHeight: ProportionateScreenSizeValue(17),
     alignSelf: 'flex-end'
   },
 });

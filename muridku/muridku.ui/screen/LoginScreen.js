@@ -13,7 +13,7 @@ import {
 import { SET_USER } from "../reducer/action/ActionConst";
 import { connect } from 'react-redux';
 import BodyBaseScreen from './BodyBaseScreen';
-import { HeightPercentageToDP } from '../helper/CommonHelper';
+import { ProportionateScreenSizeValue } from '../helper/CommonHelper';
 import PasswordToggle from './component/PasswordToggle';
 import {
   BasicStyles,
@@ -67,8 +67,8 @@ const LoginScreen = (props) => {
         setErrorText(result.errorMessage);
         return;
       }
-
-      props.dispatch({ type: SET_USER, email: userEmail });
+      console.log(result.result);
+      props.dispatch({ type: SET_USER, email: userEmail, memberId: result.result.member_id });
       resetState();
       navigation.replace('ViewAllKTBScreen');
     }
@@ -108,7 +108,7 @@ const LoginScreen = (props) => {
         />
       </View>
       <KeyboardAvoidingView
-        style={[bodySectionStyle, {marginTop: HeightPercentageToDP(150)}]}
+        style={[bodySectionStyle, {marginTop: ProportionateScreenSizeValue(150)}]}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <TextInput style={[globalFontStyle, basicInputStyle, inputStyle]}
@@ -129,7 +129,7 @@ const LoginScreen = (props) => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <PasswordToggle
-          containerStyle={[globalFontStyle, basicInputStyle, inputStyle]}
+          containerStyle={[basicInputStyle, inputStyle]}
           inputStyle={[globalFontStyle, basicInputStyle, passwordInputStyle]}
           onChangeText={
             (UserPassword) => setUserPassword(UserPassword)
@@ -143,7 +143,7 @@ const LoginScreen = (props) => {
           returnKeyType="next"
           refChild={passwordInputRef}
           value={userPassword}
-          iconSize={HeightPercentageToDP(20)}
+          iconSize={ProportionateScreenSizeValue(20)}
         />
       </KeyboardAvoidingView>
       {(errortext != '') ? (
@@ -220,7 +220,7 @@ const LoginScreen = (props) => {
           <ActivityIndicator
             animating={loading}
             color={BasicColor}
-            size={HeightPercentageToDP(LoadingViewSize)}
+            size={ProportionateScreenSizeValue(LoadingViewSize)}
           />
         </View>) : null
       }

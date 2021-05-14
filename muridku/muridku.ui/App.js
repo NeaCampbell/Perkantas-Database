@@ -22,6 +22,7 @@ import ViewAllKTBScreen from './screen/ViewAllKTBScreen';
 import EditKTBScreen from './screen/EditKTBScreen';
 import MenuBurgerScreen from './screen/MenuBurgerScreen';
 import AddKTBHistoryScreen from './screen/AddKTBHistoryScreen';
+import BodyMenuBaseScreen from './screen/BodyMenuBaseScreen';
 // import DrawerNavigationRoutes from './screen/DrawerNavigationRoutes';
 
 const Stack = createStackNavigator();

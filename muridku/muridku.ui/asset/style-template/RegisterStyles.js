@@ -2,7 +2,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import {
-  HeightPercentageToDP
+  ProportionateScreenSizeValue
 } from '../../helper/CommonHelper';
 
 export const BackgroundColor = "#2A2C4E";
@@ -17,7 +17,7 @@ export const RegisterStyles = StyleSheet.create({
   },
   logoContainerStyle: {
     width: '100%',
-    height: HeightPercentageToDP(125),
+    height: ProportionateScreenSizeValue(125),
     alignItems: 'center',
     position: 'absolute'
   },
@@ -29,22 +29,22 @@ export const RegisterStyles = StyleSheet.create({
   },
   titleContainerStyle: {
     backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: HeightPercentageToDP(10),
-    borderTopRightRadius: HeightPercentageToDP(10),
-    marginTop: HeightPercentageToDP(120)
+    borderTopLeftRadius: ProportionateScreenSizeValue(10),
+    borderTopRightRadius: ProportionateScreenSizeValue(10),
+    marginTop: ProportionateScreenSizeValue(120)
   },
   titleStyle: {
     color: '#000000',
     fontStyle: 'normal',
-    fontSize: HeightPercentageToDP(20),
+    fontSize: ProportionateScreenSizeValue(20),
     textAlign: 'center'
   },
   bodySectionStyle: {
     flexDirection: 'row',
-    height: HeightPercentageToDP(40),
-    marginTop: HeightPercentageToDP(5),
-    marginLeft: HeightPercentageToDP(15),
-    marginRight: HeightPercentageToDP(15),
+    height: ProportionateScreenSizeValue(40),
+    marginTop: ProportionateScreenSizeValue(5),
+    marginLeft: ProportionateScreenSizeValue(15),
+    marginRight: ProportionateScreenSizeValue(15),
     justifyContent: 'center',
   },
   customInputStyle: {
@@ -52,8 +52,8 @@ export const RegisterStyles = StyleSheet.create({
     color: '#000000',
     backgroundColor: '#FFFFFF',
     width: '100%',
-    fontSize: HeightPercentageToDP(12),
-    borderWidth: HeightPercentageToDP(1),
+    fontSize: ProportionateScreenSizeValue(12),
+    borderWidth: ProportionateScreenSizeValue(1),
     borderColor: '#DDDDDD'
   },
   customInputPasswordStyle: {
@@ -61,47 +61,47 @@ export const RegisterStyles = StyleSheet.create({
     color: '#000000',
     backgroundColor: '#FFFFFF',
     width: '100%',
-    fontSize: HeightPercentageToDP(12)
+    fontSize: ProportionateScreenSizeValue(12)
   },
   buttonStyle: {
     backgroundColor: '#E37550',
     color: '#FFFFFF',
-    height: HeightPercentageToDP(35),
+    height: ProportionateScreenSizeValue(35),
     width: '100%',
     alignItems: 'center',
-    marginTop: HeightPercentageToDP(10)
+    marginTop: ProportionateScreenSizeValue(10)
   },
   buttonTextStyle: {
     color: '#FFFFFF',
-    paddingVertical: HeightPercentageToDP(8),
+    paddingVertical: ProportionateScreenSizeValue(8),
     fontStyle: 'normal',
-    fontSize: HeightPercentageToDP(14),
-    lineHeight: HeightPercentageToDP(17),
+    fontSize: ProportionateScreenSizeValue(14),
+    lineHeight: ProportionateScreenSizeValue(17),
   },
   signupTextStyle: {
     color: '#000000',
     textAlign: 'center',
-    fontSize: HeightPercentageToDP(12)
+    fontSize: ProportionateScreenSizeValue(12)
   },
   signupTextButtonStyle: {
     color: '#E37550',
     textAlign: 'center',
-    fontSize: HeightPercentageToDP(12)
+    fontSize: ProportionateScreenSizeValue(12)
   },
   errorTextStyle: {
     color: '#FF4D05',
     textAlign: 'center',
-    fontSize: HeightPercentageToDP(12),
+    fontSize: ProportionateScreenSizeValue(12),
     fontStyle: 'italic',
   },
   techProblemDescStyle: {
-    fontSize: HeightPercentageToDP(12),
-    lineHeight: HeightPercentageToDP(17),
+    fontSize: ProportionateScreenSizeValue(12),
+    lineHeight: ProportionateScreenSizeValue(17),
     color: '#000000',
   },
   techProblemStyle: {
-    fontSize: HeightPercentageToDP(12),
-    lineHeight: HeightPercentageToDP(17),
+    fontSize: ProportionateScreenSizeValue(12),
+    lineHeight: ProportionateScreenSizeValue(17),
     color: '#FF4D05',
     textDecorationLine: 'underline',
   },
