@@ -8,6 +8,40 @@ import {
 const BackgroundColor = "#2A2C4E";
 
 export const ViewAllKTBStyles = StyleSheet.create({
+  headerStyle: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: BackgroundColor,
+    flexDirection: 'row',
+  },
+  headerCancelStyle: {
+    width: '50%',
+    height: '100%',
+    marginTop: ProportionateScreenSizeValue(12),
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  headerCancelTextStyle: {
+    fontSize: ProportionateScreenSizeValue(12),
+    marginLeft: ProportionateScreenSizeValue(12),
+    textDecorationLine: 'underline',
+    opacity: 1,
+    color: '#FFF',
+  },
+  headerSelectAllStyle: {
+    width: '50%',
+    height: '100%',
+    marginTop: ProportionateScreenSizeValue(12),
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+  },
+  headerSelectAllTextStyle: {
+    fontSize: ProportionateScreenSizeValue(12),
+    marginRight: ProportionateScreenSizeValue(12),
+    textDecorationLine: 'underline',
+    opacity: 1,
+    color: '#FFF',
+  },
   bodyContainerStyle: {
     position: 'absolute',
     width: '100%',

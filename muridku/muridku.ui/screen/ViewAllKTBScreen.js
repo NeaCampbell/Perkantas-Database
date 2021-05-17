@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
   View,
   ScrollView,
@@ -7,9 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  CheckBox,
-  BackHandler,
-  Button
+  Text
 } from 'react-native';
 import { connect } from 'react-redux';
 import BodyMenuBaseScreen from './BodyMenuBaseScreen';
@@ -21,45 +19,53 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   ProportionateScreenSizeValue
 } from '../helper/CommonHelper';
+import { SET_SELECTED_KTB } from "../reducer/action/ActionConst";
 
 const getktbapi = require('../api/out/getktbsbypktbid');
+const getktbbyidapi = require('../api/out/getktbbyktbid');
 
 const ViewALLKTBScreen = (props) => {
+  const selectAll = "Select All";
+  const unselectAll = "Unselect All";
   const { navigation } = props;
   const [loading, setLoading] = useState(true);
+  const [isFirstEntry, setIsFirstEntry] = useState(true);
   const [ktbs, setKtbs] = useState([]);
   const [searchedKtbs, setSearchedKtbs] = useState([]);
   const [searchKey, setSearchKey] = useState("");
   const [searchPressed, setSearchPressed] = useState(false);
-  const [groupLongPressed, setGroupLongPressed] = useState(false);
+  const [checkedMode, setCheckedMode] = useState(false);
+  const [selectedKtbs, setSelectedKtbs] = useState([]);
+  const [selectAllText, setSelectAllText] = useState(selectAll);
+  const [forceGroupCheck, setForceGroupCheck] = useState(false);
+  const [forceGroupUncheck, setForceGroupUncheck] = useState(false);
   
-  const resetState = () => {
-    setLoading(true);
-    setKtbs([]);
-    setSearchedKtbs([]);
+  const resetState = (needResetData = true) => {
     setSearchKey("");
     setSearchPressed(false);
-    setGroupLongPressed(false);
+    setCheckedMode(false);
+    setSelectedKtbs([]);
+    setSelectAllText(selectAll);
+    setForceGroupCheck(false);
+    setForceGroupUncheck(false);
+
+    if(needResetData)
+      setIsFirstEntry(true);
   };
-
-  const onBackPressed = () => {
-    console.log("test");
-    setGroupLongPressed(false);
-  };
-
-  useEffect(() => {
-    BackHandler.addEventListener("hardwareBackPress", onBackPressed);
-
-    return () => BackHandler.removeEventListener("hardwareBackPress", onBackPressed);
-  }, []);
 
   const callback = (result) => {
+    setIsFirstEntry(false);
     setLoading(false);
 
     if(!result.succeed)
       return;
 
     setKtbs(result.result);
+    setSearchedKtbs(result.result);
+  }
+
+  const errorHandler = (error) => {
+    setLoading(false);
   }
 
   const onSearch = (searchKey) => {
@@ -75,7 +81,6 @@ const ViewALLKTBScreen = (props) => {
     }
 
     const filterKtbs = (data) => {
-      console.log(data.ktb.name.toLowerCase().search(searchKey.toLowerCase()));
       return data.ktb.name.toLowerCase().search(searchKey.toLowerCase()) > -1;
     };
 
@@ -83,9 +88,36 @@ const ViewALLKTBScreen = (props) => {
   }
 
   const onGroupClick = (id) => {
-    console.log(`test ${id}`);
-    resetState();
-    navigation.navigate('AddKTBHistoryScreen');
+    setLoading(true);
+    const selectedKtbsTmp = searchedKtbs.filter((data) => {return data.ktb.id === id});
+    setLoading(false);
+
+    if(selectedKtbsTmp.length === 0)
+      return;
+
+    const selectedKtb = selectedKtbsTmp[0];
+
+    props.dispatch({type: SET_SELECTED_KTB, ktb: selectedKtb});
+    navigation.replace('ViewDataKTBScreen');
+  }
+
+  const onGroupChecked = (id, checked) => {
+    let selectedKtbsTemp = [];
+
+    selectedKtbs.forEach((item) => {
+      selectedKtbsTemp.push(item);
+    })
+
+    if(!selectedKtbs.find((idx) => idx === id) && checked)
+      selectedKtbsTemp.push(id);
+    else if(selectedKtbs.find((idx) => idx === id) && !checked)
+      selectedKtbsTemp = selectedKtbsTemp.filter((idx) => idx !== id);
+    
+    const isAllKtbSelected = selectedKtbsTemp.length === searchedKtbs.length;
+    setForceGroupCheck(isAllKtbSelected);
+    setForceGroupUncheck(false);
+    setSelectAllText(isAllKtbSelected ? unselectAll : selectAll);
+    setSelectedKtbs(selectedKtbsTemp);
   }
 
   const onMemberClick = (id) => {
@@ -93,9 +125,8 @@ const ViewALLKTBScreen = (props) => {
     resetState();
   }
 
-  const onLongPress = () => {
-    console.log("test");
-    setGroupLongPressed(true);
+  const onGroupLongPress = () => {
+    setCheckedMode(true);
   };
 
   const addGroup = () => {
@@ -106,8 +137,8 @@ const ViewALLKTBScreen = (props) => {
     console.log('delete group');
   };
 
-  if(loading)
-    getktbapi.getktbsbypktbid(props.User.memberId, callback);
+  if(isFirstEntry)
+    getktbapi.getktbsbypktbid(props.User.member_id, callback, errorHandler);
 
   const ChangeColorFunction = (oldColor) => {
     const getRandomNo = () => {
@@ -151,6 +182,11 @@ const ViewALLKTBScreen = (props) => {
   const { globalFontStyle, basicInputStyle } = BasicStyles;
   
   const {
+    headerStyle,
+    headerCancelStyle,
+    headerCancelTextStyle,
+    headerSelectAllStyle,
+    headerSelectAllTextStyle,
     bodyContainerStyle,
     searchSectionStyle,
     searchContainerStyle,
@@ -164,35 +200,22 @@ const ViewALLKTBScreen = (props) => {
     let comps = [];
     let idx = 0;
     groups.forEach(element => {
-      if(!groupLongPressed)
-        comps.push(
-          <View style={{flexDirection: 'row'}} key={idx}>
-            <DiscipleshipGroup
-              group={element.ktb}
-              members={element.members}
-              colorHolder={groupColors[idx]}
-              key={idx}
-              navigation={navigation}
-              onGroupClick={onGroupClick}
-              onMemberClick={onMemberClick}
-              onLongPress={onLongPress}
-            />
-          </View>
-        );
-      else
-        comps.push(
-          <View style={{flexDirection: 'row'}} key={idx}>
-            <DiscipleshipGroup
-              group={element.ktb}
-              members={element.members}
-              colorHolder={groupColors[idx]}
-              key={idx}
-              navigation={navigation}
-              onLongPress={onLongPress}
-            />
-              <CheckBox></CheckBox>
-          </View>
-        );
+      comps.push(
+        <DiscipleshipGroup
+          group={element.ktb}
+          members={element.members}
+          colorHolder={groupColors[idx]}
+          key={idx}
+          navigation={navigation}
+          onGroupLongPress={onGroupLongPress}
+          onGroupClick={onGroupClick}
+          onGroupChecked={onGroupChecked}
+          onMemberClick={onMemberClick}
+          isCheckedMode={checkedMode}
+          forceGroupCheck={forceGroupCheck}
+          forceGroupUncheck={forceGroupUncheck}
+        />
+      );
 
       idx++;
     });
@@ -210,28 +233,29 @@ const ViewALLKTBScreen = (props) => {
       groups = setKtbsComp(ktbs);
   }
 
+  const additionalHeader = (
+    <KeyboardAvoidingView style={[searchSectionStyle, searchContainerStyle]}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <SearchToggle
+        containerStyle={[basicInputStyle, searchContainerStyle]}
+        inputStyle={[globalFontStyle, basicInputStyle, searchTextStyle]}
+        placeholder="Cari KTB"
+        placeholderTextColor={PlaceholderTextColor}
+        keyboardType="default"
+        onSubmitEditing={Keyboard.dismiss}
+        blurOnSubmit={false}
+        underlineColorAndroid="#f000"
+        returnKeyType="next"
+        iconSize={ProportionateScreenSizeValue(20)}
+        value={searchKey}
+        onChangeText={setSearchKey}
+        onSearchSubmit={onSearch}
+      />
+    </KeyboardAvoidingView>
+  );
+
   const child = (
-    <View style={bodyContainerStyle}>
-      <View style={searchSectionStyle}>
-        <KeyboardAvoidingView style={searchContainerStyle}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}>
-          <SearchToggle
-            containerStyle={[basicInputStyle, searchContainerStyle]}
-            inputStyle={[globalFontStyle, basicInputStyle, searchTextStyle]}
-            placeholder="Cari KTB"
-            placeholderTextColor={PlaceholderTextColor}
-            keyboardType="default"
-            onSubmitEditing={Keyboard.dismiss}
-            blurOnSubmit={false}
-            underlineColorAndroid="#f000"
-            returnKeyType="next"
-            iconSize={ProportionateScreenSizeValue(20)}
-            value={searchKey}
-            onChangeText={setSearchKey}
-            onSearchSubmit={onSearch}
-          />
-        </KeyboardAvoidingView>
-      </View>
+    <KeyboardAvoidingView style={bodyContainerStyle}>
       <ScrollView>
         <View style={[{flexDirection: 'column', flex: 1}]}>
           {groups}
@@ -246,11 +270,11 @@ const ViewALLKTBScreen = (props) => {
           />
         </View>) : null
       }
-    </View>
+    </KeyboardAvoidingView>
   );
 
   const footer = (
-    <View style={[searchSectionStyle, {flexDirection:'row'}]}>
+    <View style={searchSectionStyle}>
       <View style={footerButtonStyle}>
         <TouchableOpacity
           style={buttonStyle}
@@ -265,21 +289,72 @@ const ViewALLKTBScreen = (props) => {
           style={buttonStyle}
           activeOpacity={0.5}
           onPress={() => deleteGroup()}
+          disabled={selectedKtbs.length === 0}
         >
           <Icon name="delete" size={ProportionateScreenSizeValue(25)} color="white"></Icon>
         </TouchableOpacity>
       </View>
-      <Button
-        title="Back"
-        onPress={() => {
-          navigation.goBack();
-        }}
-      />
+    </View>
+  );
+
+  const onCancelClick = () => {
+    resetState(false);
+  }
+
+  const onSelectAllClick = (text) => {
+    let forceGroupCheckTmp = false;
+    
+    if(text === selectAll)
+      forceGroupCheckTmp = true;
+    
+    setForceGroupCheck(forceGroupCheckTmp);
+    setForceGroupUncheck(!forceGroupCheckTmp);
+
+    if(!forceGroupCheckTmp)
+      setSelectedKtbs([]);
+
+    setSelectAllText(forceGroupCheckTmp ? unselectAll : selectAll);
+  }
+
+  const customHeader = (
+    <View
+      style={headerStyle}
+    >
+      <TouchableOpacity
+        style={headerCancelStyle}
+        activeOpacity={0.5}
+        onPress={() => onCancelClick()}
+      >
+        <Text
+          style={headerCancelTextStyle}
+        >
+          Cancel
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={headerSelectAllStyle}
+        activeOpacity={0.5}
+        onPress={() => onSelectAllClick(selectAllText)}
+      >
+        <Text
+          style={headerSelectAllTextStyle}
+        >
+          {selectAllText}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 
   return (
-    <BodyMenuBaseScreen title="KTB" child={child} footer={footer} />
+    <BodyMenuBaseScreen
+      title="KTB"
+      customHeader={
+        (checkedMode) ? customHeader : undefined
+      }
+      additionalHeader={additionalHeader}
+      child={child}
+      footer={footer}
+    />
   );
 };
 

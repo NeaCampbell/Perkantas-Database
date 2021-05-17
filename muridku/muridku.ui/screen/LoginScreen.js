@@ -67,8 +67,8 @@ const LoginScreen = (props) => {
         setErrorText(result.errorMessage);
         return;
       }
-      console.log(result.result);
-      props.dispatch({ type: SET_USER, email: userEmail, memberId: result.result.member_id });
+      
+      props.dispatch({ type: SET_USER, user: result.result });
       resetState();
       navigation.replace('ViewAllKTBScreen');
     }
@@ -121,7 +121,7 @@ const LoginScreen = (props) => {
           underlineColorAndroid="#f000"
           blurOnSubmit={false}
           ref={emailInputRef}
-          value={userEmail}
+          value={userEmail ? userEmail.toString() : undefined}
         />
       </KeyboardAvoidingView>
       <KeyboardAvoidingView
@@ -142,7 +142,7 @@ const LoginScreen = (props) => {
           underlineColorAndroid="#f000"
           returnKeyType="next"
           refChild={passwordInputRef}
-          value={userPassword}
+          value={userPassword.toString()}
           iconSize={ProportionateScreenSizeValue(20)}
         />
       </KeyboardAvoidingView>

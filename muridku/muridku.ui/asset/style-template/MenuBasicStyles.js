@@ -2,6 +2,7 @@ import {
   StyleSheet
 } from 'react-native';
 import {
+  WindowSize,
   ProportionateScreenSizeValue
 } from '../../helper/CommonHelper';
 
@@ -13,25 +14,34 @@ export const MenuBasicStyles = StyleSheet.create({
     width: '100%',
     height: '100%',
     justifyContent: 'flex-start',
-    backgroundColor: BackgroundColor
+    backgroundColor: BackgroundColor,
   },
   headerSectionStyle: {
     flexDirection: 'row',
-    height: ProportionateScreenSizeValue(40),
+    height: WindowSize.height * 7 / 100,
     width: '100%',
-    position: 'absolute',
+    justifyContent: 'flex-start'
+  },
+  otherHeaderSectionStyle: {
+    flexDirection: 'row',
+    height: WindowSize.height * 7 / 100,
+    marginLeft: ProportionateScreenSizeValue(15),
+    marginRight: ProportionateScreenSizeValue(15),
+    marginBottom: ProportionateScreenSizeValue(15),
+    justifyContent: 'center'
   },
   burgerStyle: {
     width: '15%',
     height: '100%',
     justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   burgerIconStyle: {
     marginTop: ProportionateScreenSizeValue(12),
     marginLeft: ProportionateScreenSizeValue(12),
     width: '40%',
     height: '40%',
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
   titleStyle: {
     width: '70%',
@@ -43,15 +53,14 @@ export const MenuBasicStyles = StyleSheet.create({
     fontSize: ProportionateScreenSizeValue(16),
     color: '#FFF',
   },
-  childContainerStyle: {
+  childSectionStyle: {
     width: '100%',
-    height: '80%',
+    height: '72%',
     justifyContent: 'center',
-    marginTop: ProportionateScreenSizeValue(40),
   },
-  footerContainerStyle: {
+  footerSectionStyle: {
     width: '100%',
     height: '13%',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
 });

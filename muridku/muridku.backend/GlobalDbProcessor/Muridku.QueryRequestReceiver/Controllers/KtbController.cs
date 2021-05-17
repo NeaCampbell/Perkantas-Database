@@ -6,6 +6,7 @@ using Muridku.QueryRequestReceiver.Models.Dbs.Combined;
 using Muridku.QueryRequestReceiver.Models.Params;
 using QueryManager;
 using QueryOperator.QueryExecutor;
+using System;
 using System.Collections.Generic;
 
 namespace Muridku.QueryRequestReceiver.Controllers
@@ -37,6 +38,19 @@ namespace Muridku.QueryRequestReceiver.Controllers
         result.Add( helper.GetAktbsByKtbId( ktb, logApi, QueryListKeyMap.GET_KTBS_BY_PKTB_ID ) );
 
       return GetResponseMultiModelsCustom( reqResult, result );
+    }
+
+    [HttpGet(QueryListKeyMap.GET_KTB_BY_KTB_ID)]
+    public Response<Ktb> GetKtbByKtbId(int id)
+    {
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("id={0}", id.ToString()));
+      QueryResult reqResult = ExecuteRequest<Member>(logApi, new List<string>() { id.ToString() }, ConstRequestType.GET,
+        QueryListKeyMap.GET_KTB_BY_KTB_ID, QueryListKeyMap.GET_KTB_BY_KTB_ID, isSingleRow: true);
+
+      if (!reqResult.Succeed)
+        return GetResponseBlankSingleModel<Ktb>(reqResult, reqResult.Succeed);
+
+      return GetResponseSingleModelCustom(reqResult, GetModelFromQueryResult<Ktb>(reqResult));
     }
   }
 }

@@ -12,6 +12,7 @@
     public const string GET_ACTIVE_USER_BY_EMAIL = "getactiveuserbyemail";
     public const string CHECK_USER_LOGIN_STATUS = "checkuserloginstatus";
     public const string GET_KTBS_BY_PKTB_ID = "getktbsbypktbid";
+    public const string GET_KTB_BY_KTB_ID = "getktbbyktbid";
     public const string GET_MEMBER_BY_ID = "getmemberbyid";
     public const string GET_MEMBERS_BY_LIST_ID = "getmembersbylistid";
     public const string GET_MEMBERS_BY_KTB_ID = "getmembersbyktbid";

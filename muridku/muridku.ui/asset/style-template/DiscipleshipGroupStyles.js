@@ -8,6 +8,7 @@ import {
 export const DiscipleshipGroupStyles = StyleSheet.create({
   ktbBoxSectionStyle: {
     flexDirection: 'column',
+    width: '90%',
     flex: 1,
     marginLeft: ProportionateScreenSizeValue(15),
     marginRight: ProportionateScreenSizeValue(15),
@@ -18,6 +19,9 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
     color: '#000000',
     backgroundColor: '#FFF9F9',
     borderRadius: ProportionateScreenSizeValue(10),
+  },
+  checkBoxSectionStyle: {
+    marginRight: ProportionateScreenSizeValue(15)
   },
   descSectionStyle: {
     width: '100%',
@@ -65,8 +69,13 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
   otherDescSectionStyle: {
     height: ProportionateScreenSizeValue(20)
   },
+  otherDescTitleStyle: {
+    width: '60%',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+  },
   otherDescValueStyle: {
-    width: '50%',
+    width: '40%',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },

@@ -3,8 +3,8 @@ import {
   } from 'react-native';
 
 export const WindowSize = {
-  width: Dimensions.get('screen').width,
-  height: Dimensions.get('screen').height,
+  width: Dimensions.get('window').width,
+  height: Dimensions.get('window').height,
   defaultHeight: 568,
   maxWidth: 1366,
   maxHeight: 1366,

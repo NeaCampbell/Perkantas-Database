@@ -87,7 +87,7 @@ const RegisterScreen = (props) => {
         return;
       }
 
-      props.dispatch({ type: SET_USER, email: userEmail });
+      props.dispatch({ type: SET_USER, user: {email: userEmail} });
       resetState();
       navigation.replace('LoginScreen');
     }

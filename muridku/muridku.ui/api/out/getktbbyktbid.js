@@ -1,11 +1,11 @@
 import { URL, PORT, GET, TOKEN, IS_HTTP } from '../apiconst';
 import { requesttemplate } from './requesttemplate';
 
-export const getktbsbypktbid = (memberid, callback, errorHandler) => {
+export const getktbbyktbid = (ktbid, callback, errorHandler) => {
   const options = {
     hostname: URL,
     port: PORT,
-    path: `/ktb/getktbsbypktbid?memberid=${memberid}`,
+    path: `/ktb/getktbbyktbid?id=${ktbid}`,
     method: GET,
     headers: {
       'Token': TOKEN

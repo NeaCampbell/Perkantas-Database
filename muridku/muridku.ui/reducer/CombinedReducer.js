@@ -1,10 +1,12 @@
 import { combineReducers } from 'redux';
 import UserReducer from './UserReducer';
-import PageStylesReducer from './style-reducer/PageStylesReducer';
+import KTBReducer from './KTBReducer';
+import MemberReducer from './MemberReducer';
 
 const tmpCombinedReducer = combineReducers({
   User: UserReducer,
-  PageStyles: PageStylesReducer
+  KTB: KTBReducer,
+  Member: MemberReducer
 });
 
 const CombinedReducer = (state, action) => {
