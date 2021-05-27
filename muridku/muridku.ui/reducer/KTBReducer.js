@@ -1,6 +1,7 @@
-import { SET_SELECTED_KTB } from "./action/ActionConst";
+/* eslint-disable prettier/prettier */
+import { SET_SELECTED_KTB } from './action/ActionConst';
 
-const selectedKtb = {}
+const selectedKtb = {};
 
 const KTBReducer = (state = selectedKtb, action) => {
   switch (action.type) {
@@ -9,7 +10,7 @@ const KTBReducer = (state = selectedKtb, action) => {
       return state;
     default:
       return state;
-  };
+  }
 };
 
 export default KTBReducer;

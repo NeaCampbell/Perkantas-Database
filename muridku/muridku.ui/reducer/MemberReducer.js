@@ -1,4 +1,5 @@
-import { SET_SELECTED_MEMBER } from "./action/ActionConst";
+/* eslint-disable prettier/prettier */
+import { SET_SELECTED_MEMBER } from './action/ActionConst';
 
 const selectedMember = {};
 
@@ -9,7 +10,7 @@ const MemberReducer = (state = selectedMember, action) => {
       return state;
     default:
       return state;
-  };
+  }
 };
 
 export default MemberReducer;

@@ -6,6 +6,7 @@ using Muridku.QueryRequestReceiver.Models.Dbs;
 using Muridku.QueryRequestReceiver.Models.Dbs.Combined;
 using QueryManager;
 using QueryOperator.QueryExecutor;
+using System;
 using System.Collections.Generic;
 
 namespace Muridku.QueryRequestReceiver.Controllers
@@ -14,36 +15,49 @@ namespace Muridku.QueryRequestReceiver.Controllers
   {
     private readonly HttpContext _customContext;
 
-    public GlobalHelperController( ILogger<QueryControllerBase> logger, IQueryOperatorManager<DbServiceType> queryOperatorManager, HttpContext context )
-      : base( logger, queryOperatorManager )
+    public GlobalHelperController(ILogger<QueryControllerBase> logger, IQueryOperatorManager<DbServiceType> queryOperatorManager, HttpContext context)
+      : base(logger, queryOperatorManager)
     {
       _customContext = context;
     }
 
-    public CombinedKtbMember GetAktbsByKtbId( Ktb ktb, LogApi logApi, string requestCode )
+    public CombinedKtbMember GetAktbsByKtbId(Ktb ktb, LogApi logApi, string requestCode)
     {
       CombinedKtbMember result = new CombinedKtbMember
       {
         Ktb = ktb
       };
 
-      QueryResult reqResultMember = ExecuteRequest<Member>( logApi, new List<string>() { ktb.id.ToString() }, ConstRequestType.GET,
-        requestCode, QueryListKeyMap.GET_AKTBS_BY_KTB_ID, customContext : _customContext );
+      QueryResult reqResultMember = ExecuteRequest<Member>(logApi, new List<string>() { ktb.id.ToString() }, ConstRequestType.GET,
+        requestCode, QueryListKeyMap.GET_AKTBS_BY_KTB_ID, customContext: _customContext);
 
-      if( reqResultMember.Succeed )
-        result.Members = GetModelListFromQueryResult<Member>( reqResultMember );
+      if (reqResultMember.Succeed)
+      {
+        result.Members = new List<CombinedMemberUserInstituteFaculty>();
+        IList<Member> members = GetModelListFromQueryResult<Member>(reqResultMember);
+        Console.WriteLine("member count = {0}", members.Count);
+
+        foreach (Member member in members)
+          result.Members.Add(GetCompleteMemberData(member, logApi, requestCode));
+      }
 
       return result;
     }
 
-    public CombinedMemberInstitutionFaculty GetCompleteMemberData( Member member, LogApi logApi, string requestCode )
+    public CombinedMemberUserInstituteFaculty GetCompleteMemberData( Member member, LogApi logApi, string requestCode )
     {
-      CombinedMemberInstitutionFaculty result = new CombinedMemberInstitutionFaculty
+      CombinedMemberUserInstituteFaculty result = new CombinedMemberUserInstituteFaculty
       {
         Member = member
       };
 
-      if( member.institution_id.HasValue )
+      QueryResult reqResultUser = ExecuteRequest<User>(logApi, new List<string>() { member.id.ToString() }, ConstRequestType.GET,
+        requestCode, QueryListKeyMap.GET_USER_BY_MEMBER_ID, isSingleRow: true, customContext: _customContext);
+
+    if (reqResultUser.Succeed)
+      result.User = GetModelFromQueryResult<User>(reqResultUser);
+
+      if ( member.institution_id.HasValue )
       {
         QueryResult reqResultInstitution = ExecuteRequest<Institution>( logApi, new List<string>() { member.institution_id.Value.ToString() }, ConstRequestType.GET,
           requestCode, QueryListKeyMap.GET_INSTITUTION_BY_ID, isSingleRow: true, customContext: _customContext );

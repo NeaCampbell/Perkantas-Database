@@ -1,9 +1,10 @@
+/* eslint-disable prettier/prettier */
 import {
   StyleSheet,
 } from 'react-native';
 import { WindowSize, ProportionateScreenSizeValue } from '../../helper/CommonHelper';
 
-const BackgroundColor = "#2A2C4E";
+const BackgroundColor = '#2A2C4E';
 
 export const SplashStyles = StyleSheet.create({
   containerStyle: {
@@ -11,13 +12,13 @@ export const SplashStyles = StyleSheet.create({
     width: '100%',
     height: '100%',
     justifyContent: 'flex-start',
-    backgroundColor: BackgroundColor
+    backgroundColor: BackgroundColor,
   },
   imgContainerStyle: {
     width: '100%',
     height: ProportionateScreenSizeValue(WindowSize.width > WindowSize.height ? 350 : 500),
     alignItems: 'flex-start',
-    position: 'absolute'
+    position: 'absolute',
   },
   imgStyle: {
     height: '60%',
@@ -29,25 +30,25 @@ export const SplashStyles = StyleSheet.create({
     width: '100%',
     height: ProportionateScreenSizeValue(125),
     alignItems: 'center',
-    marginTop: ProportionateScreenSizeValue(WindowSize.width > WindowSize.height ? 250 : 300)
+    marginTop: ProportionateScreenSizeValue(WindowSize.width > WindowSize.height ? 250 : 300),
   },
   logo2ContainerStyle: {
     width: '100%',
     height: ProportionateScreenSizeValue(50),
     justifyContent: 'flex-end',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   logoStyle: {
     height: '70%',
     width: '70%',
     resizeMode: 'contain',
-    position: 'absolute'
+    position: 'absolute',
   },
   versionContainerStyle: {
     width: '100%',
     height: ProportionateScreenSizeValue(50),
     justifyContent: 'flex-start',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   versionTextStyle: {
     color: '#CCC',
@@ -58,6 +59,6 @@ export const SplashStyles = StyleSheet.create({
     fontStyle: 'normal',
     fontSize: ProportionateScreenSizeValue(10),
     lineHeight: ProportionateScreenSizeValue(17),
-    alignSelf: 'flex-end'
+    alignSelf: 'flex-end',
   },
 });

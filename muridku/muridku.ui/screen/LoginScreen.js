@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable react-native/no-inline-styles */
 import React, { useState, createRef } from 'react';
 import {
   ActivityIndicator,
@@ -8,9 +10,9 @@ import {
   Image,
   Keyboard,
   TouchableOpacity,
-  Platform
+  Platform,
 } from 'react-native';
-import { SET_USER } from "../reducer/action/ActionConst";
+import { SET_USER } from '../reducer/action/ActionConst';
 import { connect } from 'react-redux';
 import BodyBaseScreen from './BodyBaseScreen';
 import { ProportionateScreenSizeValue } from '../helper/CommonHelper';
@@ -18,12 +20,11 @@ import PasswordToggle from './component/PasswordToggle';
 import {
   BasicStyles,
   BasicColor,
-  LoadingViewSize,
-  PlaceholderTextColor
+  PlaceholderTextColor,
 } from '../asset/style-template/BasicStyles';
 import {
   LoginStyles,
-  BackgroundColor
+  BackgroundColor,
 } from '../asset/style-template/LoginStyles';
 
 const loginapi = require('../api/out/login');
@@ -33,10 +34,10 @@ const LoginScreen = (props) => {
   const [userEmail, setUserEmail] = useState(props.User.email);
   const [userPassword, setUserPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errortext, setErrorText] = useState('');
+  const [errorText, setErrorText] = useState('');
   const emailInputRef = createRef();
   const passwordInputRef = createRef();
-  
+
   const resetState = () => {
     setUserEmail(props.User.email);
     setUserPassword('');
@@ -46,7 +47,7 @@ const LoginScreen = (props) => {
 
   const handleSubmitPress = () => {
     setErrorText('');
-    
+
     if (!userEmail) {
       setErrorText('Email belum diisi.');
       emailInputRef.current.focus();
@@ -63,32 +64,43 @@ const LoginScreen = (props) => {
     const callback = (result) => {
       setLoading(false);
 
-      if(!result.succeed) {
+      if (!result.succeed) {
         setErrorText(result.errorMessage);
         return;
       }
-      
+
       props.dispatch({ type: SET_USER, user: result.result });
       resetState();
       navigation.replace('ViewAllKTBScreen');
-    }
+    };
 
     const errorHandler = (error) => {
       setLoading(false);
       setErrorText(error.message);
-    }
+    };
 
     loginapi.login(userEmail, userPassword, callback, errorHandler);
   };
 
-  const { globalFontStyle, basicInputStyle, inputStyle, passwordInputStyle } = BasicStyles;
-  
+  const {
+    globalFontStyle,
+    basicInputStyle,
+    inputStyle,
+    passwordInputStyle,
+    errorSectionStyle,
+    errorMessageContainerStyle,
+    errorMessageTextStyle,
+    errorMessageButtonStyle,
+    errorMessageButtonTextStyle,
+    customActivityIndicatorStyle,
+    customActivityIndicatorSizeStyle,
+  } = BasicStyles;
+
   const {
     bodyContainerStyle,
     logoContainerStyle,
     logoStyle,
     bodySectionStyle,
-    errorTextStyle,
     buttonStyle,
     buttonTextStyle,
     forgotPwdTextStyle,
@@ -96,11 +108,27 @@ const LoginScreen = (props) => {
     signupTextButtonStyle,
     techProblemDescStyle,
     techProblemStyle,
-    customActivityIndicatorStyle
   } = LoginStyles;
 
   const baseScreenItems = (
     <View style={bodyContainerStyle}>
+      {
+        (errorText !== '') ? (
+          <View style={errorSectionStyle}>
+            <View style={errorMessageContainerStyle}>
+              <Text style={errorMessageTextStyle}>
+                {`Error! ${errorText}`}
+              </Text>
+              <TouchableOpacity
+                style={errorMessageButtonStyle}
+                onPress={() => setErrorText('')}
+              >
+              <Text style={errorMessageButtonTextStyle}>Back</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null
+      }
       <View style={logoContainerStyle}>
         <Image
           source={require('../asset/img/logo.png')}
@@ -109,7 +137,7 @@ const LoginScreen = (props) => {
       </View>
       <KeyboardAvoidingView
         style={[bodySectionStyle, {marginTop: ProportionateScreenSizeValue(150)}]}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <TextInput style={[globalFontStyle, basicInputStyle, inputStyle]}
           onChangeText={(UserEmail) => setUserEmail(UserEmail)}
@@ -121,16 +149,16 @@ const LoginScreen = (props) => {
           underlineColorAndroid="#f000"
           blurOnSubmit={false}
           ref={emailInputRef}
-          value={userEmail ? userEmail.toString() : undefined}
+          value={userEmail.toString()}
         />
       </KeyboardAvoidingView>
       <KeyboardAvoidingView
         style={bodySectionStyle}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <PasswordToggle
           containerStyle={[basicInputStyle, inputStyle]}
-          inputStyle={[globalFontStyle, basicInputStyle, passwordInputStyle]}
+          textInputStyle={[globalFontStyle, basicInputStyle, passwordInputStyle]}
           onChangeText={
             (UserPassword) => setUserPassword(UserPassword)
           }
@@ -146,16 +174,9 @@ const LoginScreen = (props) => {
           iconSize={ProportionateScreenSizeValue(20)}
         />
       </KeyboardAvoidingView>
-      {(errortext != '') ? (
-        <View style={[bodySectionStyle, {justifyContent: 'flex-start', alignItems: 'flex-start'}]}>
-          <Text style={[globalFontStyle, errorTextStyle]}>
-            {errortext}
-          </Text>
-        </View>
-      ) : null}
       <KeyboardAvoidingView
         style={bodySectionStyle}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <TouchableOpacity
           style={buttonStyle}
@@ -169,7 +190,7 @@ const LoginScreen = (props) => {
       </KeyboardAvoidingView>
       <KeyboardAvoidingView
         style={[bodySectionStyle, {justifyContent: 'flex-start'}]}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <TouchableOpacity
           activeOpacity={0.5}
@@ -215,12 +236,12 @@ const LoginScreen = (props) => {
           </Text>
         </TouchableOpacity>
       </View>
-      {(loading) ? 
+      {(loading) ?
         (<View style={customActivityIndicatorStyle}>
           <ActivityIndicator
+            style={customActivityIndicatorSizeStyle}
             animating={loading}
             color={BasicColor}
-            size={ProportionateScreenSizeValue(LoadingViewSize)}
           />
         </View>) : null
       }

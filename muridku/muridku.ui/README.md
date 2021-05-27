@@ -24,6 +24,10 @@ Mobile App untuk PKTB.
 18. react-native-vector-icons
 19. react-native-reanimated
 20. typescript
+21. @react-native-community/checkbox
+22. react-native-windows
+23. BELUM FIX react-native-dropdown-picker
+24. BELUM FIX @react-native-community/datetimepicker
 
 ## Commands
 

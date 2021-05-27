@@ -9,6 +9,7 @@ using QueryManager;
 using QueryOperator.QueryExecutor;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Muridku.QueryRequestReceiver.Controllers
 {
@@ -206,6 +207,45 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
       user.password = null;
       return GetResponseSingleModelCustom( reqResult, user );
+    }
+
+    [HttpGet(QueryListKeyMap.VALIDATE_NEW_EMAIL)]
+    public Response<User> ValidateNewEmail(string email)
+    {
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("email={0}", email));
+      QueryResult reqResult = ExecuteRequest<User>(logApi, new List<string>() { email }, ConstRequestType.GET, QueryListKeyMap.VALIDATE_NEW_EMAIL,
+        QueryListKeyMap.GET_USER_BY_EMAIL, false);
+
+      if (!reqResult.Succeed && reqResult.ErrorMessage != CommonMessage.DATA_NOT_FOUND)
+        return GetResponseBlankSingleModel<User>(reqResult, reqResult.Succeed);
+
+      if (!reqResult.Succeed && reqResult.ErrorMessage == CommonMessage.DATA_NOT_FOUND)
+        return GetResponseBlankSingleModel<User>(reqResult, true, "");
+
+      return GetResponseBlankSingleModel<User>(reqResult, false, "user already exists");
+    }
+
+    [HttpGet(QueryListKeyMap.GET_INACTIVE_USER_BY_MEMBER_ID)]
+    public Response<User> GetInactiveUserByMemberId(int memberid)
+    {
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("memberid={0}", memberid));
+      QueryResult reqResult = ExecuteRequest<User>(logApi, new List<string>() { memberid.ToString() }, ConstRequestType.GET, QueryListKeyMap.GET_INACTIVE_USER_BY_MEMBER_ID,
+        QueryListKeyMap.GET_USERS_BY_MEMBER_ID);
+
+      if (!reqResult.Succeed && reqResult.ErrorMessage != CommonMessage.DATA_NOT_FOUND)
+        return GetResponseBlankSingleModel<User>(reqResult, reqResult.Succeed);
+
+      if (!reqResult.Succeed && reqResult.ErrorMessage == CommonMessage.DATA_NOT_FOUND)
+        return GetResponseBlankSingleModel<User>(reqResult, true, "");
+
+      IList<User> users = GetModelListFromQueryResult<User>(reqResult);
+
+      if (users.Any(user => user.is_active == 1))
+        return GetResponseBlankSingleModel<User>(reqResult, false, "member already have active user", false);
+
+      User user = users[0];
+      user.password = null;
+      return GetResponseSingleModelCustom(reqResult, user);
     }
 
     private CheckParam ValidateEmail( string email, string errorMessage )

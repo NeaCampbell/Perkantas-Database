@@ -1,9 +1,8 @@
+/* eslint-disable prettier/prettier */
 import {
     StyleSheet,
   } from 'react-native';
-  
-  const BackgroundColor = "#2A2C4E";
-  
+
   export const UpdateKTBStyles = StyleSheet.create({
     bodyContainerStyle: {
       position: 'absolute',
@@ -47,7 +46,7 @@ import {
         height: 35,
         width: '100%',
         alignItems: 'center',
-        marginTop: 20
+        marginTop: 20,
     },
     buttonTextStyle: {
         color: '#FFFFFF',
@@ -56,5 +55,4 @@ import {
         fontSize: 14,
         lineHeight: 17,
     },
-      
 });

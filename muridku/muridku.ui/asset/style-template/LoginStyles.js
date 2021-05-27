@@ -1,11 +1,12 @@
+/* eslint-disable prettier/prettier */
 import {
   StyleSheet,
 } from 'react-native';
 import {
-  ProportionateScreenSizeValue
+  ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
 
-export const BackgroundColor = "#2A2C4E";
+export const BackgroundColor = '#2A2C4E';
 
 export const LoginStyles = StyleSheet.create({
   bodyContainerStyle: {
@@ -13,19 +14,19 @@ export const LoginStyles = StyleSheet.create({
     width: '100%',
     height: '100%',
     justifyContent: 'flex-start',
-    backgroundColor: BackgroundColor
+    backgroundColor: BackgroundColor,
   },
   logoContainerStyle: {
     width: '100%',
     height: ProportionateScreenSizeValue(125),
     alignItems: 'center',
-    position: 'absolute'
+    position: 'absolute',
   },
   logoStyle: {
     width: '60%',
     height: '60%',
     resizeMode: 'contain',
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   bodySectionStyle: {
     height: ProportionateScreenSizeValue(40),
@@ -33,7 +34,7 @@ export const LoginStyles = StyleSheet.create({
     marginLeft: ProportionateScreenSizeValue(15),
     marginRight: ProportionateScreenSizeValue(15),
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   buttonStyle: {
     backgroundColor: '#E37550',
@@ -41,7 +42,7 @@ export const LoginStyles = StyleSheet.create({
     height: ProportionateScreenSizeValue(35),
     width: '100%',
     alignItems: 'center',
-    marginTop: ProportionateScreenSizeValue(10)
+    marginTop: ProportionateScreenSizeValue(10),
   },
   buttonTextStyle: {
     color: '#FFFFFF',
@@ -55,17 +56,17 @@ export const LoginStyles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'normal',
     fontSize: ProportionateScreenSizeValue(12),
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   signupTextStyle: {
     color: '#FFFFFF',
     textAlign: 'center',
-    fontSize: ProportionateScreenSizeValue(12)
+    fontSize: ProportionateScreenSizeValue(12),
   },
   signupTextButtonStyle: {
     color: '#E37550',
     textAlign: 'center',
-    fontSize: ProportionateScreenSizeValue(12)
+    fontSize: ProportionateScreenSizeValue(12),
   },
   errorTextStyle: {
     color: '#FF4D05',
@@ -83,15 +84,5 @@ export const LoginStyles = StyleSheet.create({
     lineHeight: ProportionateScreenSizeValue(17),
     color: '#FF4D05',
     textDecorationLine: 'underline',
-  },
-  customActivityIndicatorStyle: {
-    alignItems: 'center',
-    height: '100%',
-    width: '100%',
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    opacity: 0.3,
   },
 });

@@ -6,7 +6,6 @@ using Muridku.QueryRequestReceiver.Models.Dbs.Combined;
 using Muridku.QueryRequestReceiver.Models.Params;
 using QueryManager;
 using QueryOperator.QueryExecutor;
-using System;
 using System.Collections.Generic;
 
 namespace Muridku.QueryRequestReceiver.Controllers
@@ -41,16 +40,18 @@ namespace Muridku.QueryRequestReceiver.Controllers
     }
 
     [HttpGet(QueryListKeyMap.GET_KTB_BY_KTB_ID)]
-    public Response<Ktb> GetKtbByKtbId(int id)
+    public Response<CombinedKtbMember> GetKtbByKtbId(int id)
     {
       LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("id={0}", id.ToString()));
       QueryResult reqResult = ExecuteRequest<Member>(logApi, new List<string>() { id.ToString() }, ConstRequestType.GET,
         QueryListKeyMap.GET_KTB_BY_KTB_ID, QueryListKeyMap.GET_KTB_BY_KTB_ID, isSingleRow: true);
 
       if (!reqResult.Succeed)
-        return GetResponseBlankSingleModel<Ktb>(reqResult, reqResult.Succeed);
+        return GetResponseBlankSingleModel<CombinedKtbMember>(reqResult, reqResult.Succeed);
 
-      return GetResponseSingleModelCustom(reqResult, GetModelFromQueryResult<Ktb>(reqResult));
+      Ktb ktb = GetModelFromQueryResult<Ktb>(reqResult);
+      GlobalHelperController helper = new GlobalHelperController(Logger, QueryOperatorManager, HttpContext);
+      return GetResponseSingleModelCustom(reqResult, helper.GetAktbsByKtbId(ktb, logApi, QueryListKeyMap.GET_KTB_BY_KTB_ID));
     }
   }
 }

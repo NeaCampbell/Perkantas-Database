@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 //https://aboutreact.com/react-native-login-and-signup/
 import 'react-native-gesture-handler';
 

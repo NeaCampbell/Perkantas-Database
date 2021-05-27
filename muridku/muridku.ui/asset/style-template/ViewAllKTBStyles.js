@@ -1,11 +1,12 @@
+/* eslint-disable prettier/prettier */
 import {
   StyleSheet,
 } from 'react-native';
 import {
-  ProportionateScreenSizeValue
+  ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
 
-const BackgroundColor = "#2A2C4E";
+const BackgroundColor = '#2A2C4E';
 
 export const ViewAllKTBStyles = StyleSheet.create({
   headerStyle: {
@@ -55,7 +56,7 @@ export const ViewAllKTBStyles = StyleSheet.create({
     marginLeft: ProportionateScreenSizeValue(15),
     marginRight: ProportionateScreenSizeValue(15),
     marginBottom: ProportionateScreenSizeValue(15),
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   searchContainerStyle: {
     color: '#000000',
@@ -64,7 +65,7 @@ export const ViewAllKTBStyles = StyleSheet.create({
     height: ProportionateScreenSizeValue(42),
     paddingLeft: ProportionateScreenSizeValue(5),
     paddingRight: ProportionateScreenSizeValue(5),
-    borderRadius: ProportionateScreenSizeValue(10)
+    borderRadius: ProportionateScreenSizeValue(10),
   },
   searchTextStyle: {
     color: '#000000',
@@ -72,10 +73,10 @@ export const ViewAllKTBStyles = StyleSheet.create({
     fontSize: ProportionateScreenSizeValue(12),
     width: '95%',
   },
-  footerButtonStyle: {
+  footerViewStyle: {
     width: '50%',
     alignItems: 'center',
-    justifyContent:'flex-start'
+    justifyContent:'flex-start',
   },
   buttonStyle: {
     backgroundColor: '#815BF0',
@@ -84,6 +85,10 @@ export const ViewAllKTBStyles = StyleSheet.create({
     width: ProportionateScreenSizeValue(35),
     alignItems: 'center',
     marginTop: ProportionateScreenSizeValue(10),
+    borderTopLeftRadius: ProportionateScreenSizeValue(5),
+    borderTopRightRadius: ProportionateScreenSizeValue(5),
+    borderBottomLeftRadius: ProportionateScreenSizeValue(5),
+    borderBottomRightRadius: ProportionateScreenSizeValue(5),
   },
   customActivityIndicatorStyle: {
     alignItems: 'center',
@@ -91,7 +96,6 @@ export const ViewAllKTBStyles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#FFFFFF',
     opacity: 0.3,
   },

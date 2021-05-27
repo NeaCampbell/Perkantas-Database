@@ -1,8 +1,9 @@
+/* eslint-disable prettier/prettier */
 import React from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
-  ProportionateScreenSizeValue
+  ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
 
 export default class SearchToggle extends React.Component {
@@ -11,7 +12,7 @@ export default class SearchToggle extends React.Component {
 
     this.state = {
       visible: true,
-    }
+    };
   }
 
   setVisible(visible) {
@@ -30,7 +31,7 @@ export default class SearchToggle extends React.Component {
             this.props.onSearchSubmit(this.props.value);
           }}>
           <Icon
-            name='search'
+            name="search"
             size={this.props.iconSize}
           />
         </TouchableOpacity>
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
   container:{
     flexDirection:'row',
     alignItems:'center',
-  }
+  },
 });
 
 SearchToggle.defaultProps = {
@@ -52,6 +53,5 @@ SearchToggle.defaultProps = {
   iconVisibleColor: '#222',
   iconInvisibleColor: '#777',
   iconSize: ProportionateScreenSizeValue(20),
-  inputStyle:{}
+  inputStyle:{},
 };
-

@@ -162,7 +162,7 @@ const EditDataAKKScreen = (props) => {
     searchSectionStyle,
     searchContainerStyle,
     searchTextStyle,
-    footerButtonStyle,
+    footerViewStyle,
     buttonStyle,
     customActivityIndicatorStyle,
     bodySectionStyle,
@@ -337,7 +337,7 @@ const EditDataAKKScreen = (props) => {
 
   const footer = (
     <View style={searchSectionStyle}>
-      <View style={footerButtonStyle}>
+      <View style={footerViewStyle}>
         <TouchableOpacity
           style={buttonFooterStyle}
           activeOpacity={0.5}

@@ -1,6 +1,7 @@
-import { SET_USER } from "./action/ActionConst";
+/* eslint-disable prettier/prettier */
+import { SET_USER } from './action/ActionConst';
 
-const user = {}
+const user = {};
 
 const UserReducer = (state = user, action) => {
   switch (action.type) {
@@ -9,7 +10,7 @@ const UserReducer = (state = user, action) => {
       return state;
     default:
       return state;
-  };
+  }
 };
 
 export default UserReducer;

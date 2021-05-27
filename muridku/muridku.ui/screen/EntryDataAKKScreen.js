@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable curly */
 import React, {useState} from 'react';
 import {
   View,
@@ -8,355 +10,517 @@ import {
   Platform,
   ActivityIndicator,
   Text,
-  Image,
-  TextInput
+  TextInput,
 } from 'react-native';
 import { connect } from 'react-redux';
 import BodyMenuBaseScreen from './BodyMenuBaseScreen';
-import SearchToggle from './component/SearchToggle';
-import DiscipleshipGroup from './component/DiscipleshipGroup';
 import { BasicStyles, BasicColor, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
 import { DataAKKStyles } from '../asset/style-template/DataAKKStyles';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
-  ProportionateScreenSizeValue
+  ProportionateScreenSizeValue,
 } from '../helper/CommonHelper';
+import DropDownPicker from 'react-native-dropdown-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import {
+  SET_SELECTED_KTB,
+} from '../reducer/action/ActionConst';
 
-const getktbapi = require('../api/out/getktbsbypktbid');
+const getinstitutionapi = require('../api/out/getinstitutionbytype');
+const getfacultyapi = require('../api/out/getfacultybyinstitutionid');
+const updatememberapi = require('../api/out/updatesinglemember');
+const savememberapi = require('../api/out/savesinglemember');
+const getktbapi = require('../api/out/getktbbyktbid');
 
-const EmtryDataAKKScreen = (props) => {
+const EntryDataAKKScreen = (props) => {
+  const AKK_TYPE_NONE = 'NONE';
+  const AKK_TYPE_SCHOOL = 'SCH';
+  const AKK_TYPE_COLLEGE = 'CLG';
+  const AKK_TYPE_ALUMNI = 'ALM';
+  const enabledBackgroundColor = '#FFF';
+  const disabledBackgroundColor = '#EFEFEF';
+  const isUpdate = props.Member ? true : false;
+  let member;
+  let user;
+  let institution;
+  let faculty;
+
+  if (props.Member) {
+    member = props.Member.member;
+    user = props.Member.user;
+    institution = props.Member.institution;
+    faculty = props.Member.faculty;
+    console.log(props.Member);
+    console.log(member);
+    console.log(props.KTB);
+  }
   const { navigation } = props;
-  const [loading, setLoading] = useState(true);
-  const [ktbs, setKtbs] = useState([]);
-  const [searchedKtbs, setSearchedKtbs] = useState([]);
-  const [searchKey, setSearchKey] = useState("");
-  const [searchPressed, setSearchPressed] = useState(false);
-  const [checkedMode, setCheckedMode] = useState(false);
-  const [selectedKtbs, setSelectedKtbs] = useState([]);
-  console.log(selectedKtbs);
-  
+  const [loading, setLoading] = useState(false);
+  const [selectedAKKType, setSelectedAKKType] = useState(institution ? institution.type : AKK_TYPE_NONE);
+  const [isEnabled, setIsEnabled] = useState(selectedAKKType !== AKK_TYPE_NONE);
+  const [name, setName] = useState(member ? member.name : '');
+  const [email, setEmail] = useState(user ? user.email : '');
+  const [address, setAddress] = useState(member && member.address ? member.address : '');
+  const [birthDt, setBirthDt] = useState(member && member.birth_dt ? member.birth_dt : null);
+  const [birthPlace, setBirthPlace] = useState(member && member.birth_place ? member.birth_place : '');
+  const [mobilePhn, setMobilePhn] = useState(member && member.mobile_phn ? member.mobile_phn : '');
+  const [institutionId, setInstitutionId] = useState(institution ? institution.id : null);
+  const [facultyId, setFacultyId] = useState(faculty ? faculty.id : null);
+  const [errorText, setErrorText] = useState('');
+  const [instListOpen, setInstListOpen] = useState(false);
+  const [facListOpen, setFacListOpen] = useState(false);
+  const [institutionList, setInstitutionList] = useState([]);
+  const [facultyList, setFacultyList] = useState([]);
+
   const resetState = () => {
-    setLoading(true);
-    setKtbs([]);
-    setSearchedKtbs([]);
-    setSearchKey("");
-    setSearchPressed(false);
-    setCheckedMode(false);
+    setLoading(false);
   };
 
-  const callback = (result) => {
+  const errorHandler = (error) => {
+    setLoading(false);
+    setErrorText(error.message);
+  };
+
+  const callbackFaculty = (result) => {
+    if (loading)
+      setLoading(false);
+
+    if (!result.succeed)
+      return;
+
+    const facList = result.result;
+
+    facList.forEach(element => {
+      element.value = element.id;
+      element.label = element.name;
+    });
+
+    setFacultyList(facList);
+  };
+
+  const onInstitutionChange = (value) => {
+    getfacultyapi.getfacultybyinstitutionid(value, callbackFaculty, errorHandler);
+  };
+
+  const callbackInstitution = (result) => {
     setLoading(false);
 
-    if(!result.succeed)
+    if (!result.succeed)
       return;
 
-    setKtbs(result.result);
-  }
+    const instList = result.result;
 
-  const onSearch = (searchKey) => {
-    if(ktbs.length === 0)
-      return;
-    
-    setSearchPressed(true);
+    instList.forEach(element => {
+      element.value = element.id;
+      element.label = element.name;
+    });
 
-    if(searchKey === undefined || searchKey === null || searchKey === "")
-    {
-      setSearchedKtbs(ktbs);
+    setInstitutionList(instList);
+  };
+
+  const onSelectAKKType = (akkType) => {
+    setLoading(true);
+    setSelectedAKKType(akkType);
+    setIsEnabled(akkType !== AKK_TYPE_NONE);
+    getinstitutionapi.getinstitutionbytype(akkType, callbackInstitution, errorHandler);
+
+    if (akkType !== AKK_TYPE_COLLEGE) {
+      setFacultyId(null);
+      setFacListOpen(false);
+    }
+  };
+
+  const resetDropdownList = () => {
+    setFacListOpen(false);
+    setInstListOpen(false);
+  };
+
+  const onInstOpen = () => {
+    setFacListOpen(false);
+    setInstListOpen(true);
+  };
+
+  const onFacOpen = () => {
+    setInstListOpen(false);
+    setFacListOpen(true);
+  };
+
+  const onTextFocus = () => {
+    resetDropdownList();
+  };
+
+  const callbackRefreshKtb = (result) => {
+    setLoading(false);
+
+    if (!result.succeed) {
+      setErrorText(result.errorMessage);
       return;
     }
 
-    const filterKtbs = (data) => {
-      console.log(data.ktb.name.toLowerCase().search(searchKey.toLowerCase()));
-      return data.ktb.name.toLowerCase().search(searchKey.toLowerCase()) > -1;
-    };
-
-    setSearchedKtbs(ktbs.filter(filterKtbs));
-  }
-
-  const onGroupClick = (id) => {
-    console.log(`test ${id}`);
+    props.dispatch({type: SET_SELECTED_KTB, ktb: result.result});
     resetState();
-    navigation.navigate('AddKTBHistoryScreen');
-  }
-
-  const onGroupChecked = (id, checked) => {
-    console.log(`test check ${id}`);
-    let selectedKtbsTemp = [];
-
-    selectedKtbs.forEach((item) => {
-      selectedKtbsTemp.push(item);
-    })
-
-    if(!selectedKtbs.find((idx) => idx === id) && checked)
-      selectedKtbsTemp.push(id);
-    else if(selectedKtbs.find((idx) => idx === id) && !checked)
-      selectedKtbsTemp = selectedKtbsTemp.filter((idx) => idx !== id);
-
-    setSelectedKtbs(selectedKtbsTemp);
-  }
-
-  const onMemberClick = (id) => {
-    console.log(`test member ${id}`);
-    resetState();
-  }
-
-  const onGroupLongPress = () => {
-    console.log("test long press");
-    setCheckedMode(true);
+    navigation.replace('ViewDataKTBScreen');
   };
 
-  const addGroup = () => {
-    console.log("add group");
+  const callbackSaveMember = (result) => {
+    if (!result.succeed) {
+      setLoading(false);
+      setErrorText(result.errorMessage);
+      return;
+    }
+
+    getktbapi.getktbbyktbid(props.KTB.ktb.id, callbackRefreshKtb, errorHandler);
   };
 
-  const deleteGroup = () => {
-    console.log('delete group');
-  };
+  const onSubmitClick = () => {
+    if (name === '') {
+      setErrorText('nama belum diisi.');
+      return;
+    }
+    if (email === '') {
+      setErrorText('email belum diisi.');
+      return;
+    }
+    if (address === '') {
+      setErrorText('alamat belum diisi.');
+      return;
+    }
 
-  if(loading)
-    getktbapi.getktbsbypktbid(props.User.member_id, callback);
+    setLoading(true);
 
-  const ChangeColorFunction = (oldColor) => {
-    const getRandomNo = () => {
-      let res = Math.random();
-      const minValue = 0.85;
-
-      while(res < minValue)
-        res = Math.random();
-      
-      return res;
-    };
-
-    const colorTolerance = 5;
-    let r = Math.floor(getRandomNo() * 255);
-    let g = Math.floor(getRandomNo() * 255);
-
-    while(g >= r - colorTolerance && g <= r + colorTolerance)
-      g = Math.floor(getRandomNo() * 255);
-    
-    let b = Math.floor(getRandomNo() * 255);
-    
-    while((b >= r - colorTolerance && b <= r + colorTolerance) || (b >= g - colorTolerance && b <= g + colorTolerance))
-      b = Math.floor(getRandomNo() * 255);
-
-    const result = `rgb(${r},${g},${b})`;
-
-    if(result === oldColor)
-      return ChangeColorFunction(oldColor);
-
-    return result;
-  }
-
-  const groupCount = ktbs.length;
-  const groupColors = [];
-
-  for(let i = 0; i < groupCount; i++) {
-    let color = ChangeColorFunction( i === 0 ? '' : groupColors[i-1] );
-    groupColors.push(color);
-  }
-
-  const { globalFontStyle, basicInputStyle, inputStyle } = BasicStyles;
-  
-  const {
-    bodyContainerStyle,
-    searchSectionStyle,
-    searchContainerStyle,
-    searchTextStyle,
-    footerButtonStyle,
-    buttonStyle,
-    customActivityIndicatorStyle,
-    bodySectionStyle,
-    nameButtonTextStyle,
-    cityButtonTextStyle,
-    photoStyle,
-    buttonFooterStyle,
-    welcomingTextStyle,
-    accTypeTextStyle,
-    welcomingTextSectionStyle,
-    descTextStyle,
-    submitButtonTextStyle,
-    formStyle,
-    formSectionStyle
-  } = DataAKKStyles;
-
-  const setKtbsComp = (groups) => {
-    let comps = [];
-    let idx = 0;
-    groups.forEach(element => {
-      comps.push(
-        <DiscipleshipGroup
-          group={element.ktb}
-          members={element.members}
-          colorHolder={groupColors[idx]}
-          key={idx}
-          navigation={navigation}
-          onGroupLongPress={onGroupLongPress}
-          onGroupClick={onGroupClick}
-          onGroupChecked={onGroupChecked}
-          onMemberClick={onMemberClick}
-          isCheckedMode={checkedMode}
-        />
+    if (isUpdate) {
+      updatememberapi.updatesinglemember(
+        email,
+        member.id,
+        name,
+        address,
+        birthDt,
+        birthPlace,
+        mobilePhn,
+        institutionId,
+        facultyId,
+        props.User.email,
+        callbackSaveMember,
+        errorHandler
       );
 
-      idx++;
-    });
+      return;
+    }
 
-    return comps;
-  }
+    savememberapi.savesinglemember(
+      props.KTB.ktb.id,
+      email,
+      name,
+      address,
+      birthDt,
+      birthPlace,
+      mobilePhn,
+      institutionId,
+      facultyId,
+      props.User.email,
+      callbackSaveMember,
+      errorHandler
+    );
+  };
 
-  let groups = undefined;
+  const {
+    globalFontStyle,
+    inputStyle,
+    errorSectionStyle,
+    errorMessageContainerStyle,
+    errorMessageTextStyle,
+    errorMessageButtonStyle,
+    errorMessageButtonTextStyle,
+  } = BasicStyles;
 
-  if(!loading && ktbs.length > 0)
-  {
-    if(searchPressed)
-      groups = setKtbsComp(searchedKtbs);
-    else
-      groups = setKtbsComp(ktbs);
-  }
+  const {
+    bodyContainerStyle,
+    welcomingSectionStyle,
+    welcomingTextStyle,
+    accTypeTextStyle,
+    instSectionStyle,
+    instButtonStyle,
+    buttonStyle,
+    buttonUnselectedStyle,
+    nameButtonTextStyle,
+    nameButtonUselectedTextStyle,
+    formSectionStyle,
+    formBodySectionStyle,
+    formStyle,
+    dropDownContainerStyle,
+    dropDownPlaceholderStyle,
+    dropDownItemStyle,
+    dropDownSearchContainerStyle,
+    dropDownSearchInputStyle,
+    customActivityIndicatorStyle,
+    footerViewStyle,
+    buttonFooterStyle,
+    submitButtonTextStyle,
+  } = DataAKKStyles;
+
+  const minBirthDtYear = new Date().getFullYear() - 90;
+  const maxBirthDtYear = new Date().getFullYear();
+  const minBirthDtMonth = 1;
+  const maxBirthDtMonth = new Date().getMonth() + 1;
+  const minBirthDtDay = 1;
+  const maxBirthDtDay = new Date().getDate();
+  const minDtStr = `${minBirthDtYear}-${minBirthDtMonth < 10 ? '0' : ''}${minBirthDtMonth}-${minBirthDtDay < 10 ? '0' : ''}${minBirthDtDay}`;
+  const maxDtStr = `${maxBirthDtYear}-${maxBirthDtMonth < 10 ? '0' : ''}${maxBirthDtMonth}-${maxBirthDtDay < 10 ? '0' : ''}${maxBirthDtDay}`;
+  const minDt = new Date(minDtStr);
+  const maxDt = new Date(maxDtStr);
 
   const child = (
     <View style={bodyContainerStyle}>
-      <View style={welcomingTextSectionStyle}>
+      <View style={welcomingSectionStyle}>
         <Text style={[globalFontStyle, welcomingTextStyle]}>
-          Welcome
+          {isUpdate ? 'Update' : 'Create'}
         </Text>
         <Text style={[globalFontStyle, accTypeTextStyle]}>
-          Choose your Account Type
+          Pilih Tipe Institusi AKK
         </Text>
-      </View>
-      <View style={searchSectionStyle}>
-          <View style={{flexDirection: 'row', flex: 7}}>
-            <View style={[bodySectionStyle, {flex: 2.5}]}>
-              <TouchableOpacity
-                style={buttonStyle}
-                activeOpacity={0.5}
-                >
-                <Image
-                  source={require('../asset/img/man.png')}
-                  style={photoStyle}
-                />
-                <Text style={[globalFontStyle, nameButtonTextStyle]}>
-                  Mahasiswa
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={[bodySectionStyle, {flex: 2.5}]}>
-              <TouchableOpacity
-                style={buttonStyle}
-                activeOpacity={0.5}
-                >
-                <Image
-                  source={require('../asset/img/man.png')}
-                  style={photoStyle}
-                />
-                <Text style={[globalFontStyle, nameButtonTextStyle]}>
-                  Siswa
-                </Text>
-              </TouchableOpacity>
-            </View>
+        <View style={instSectionStyle}>
+          <View style={instButtonStyle}>
+            <TouchableOpacity
+              style={selectedAKKType === AKK_TYPE_SCHOOL ? buttonStyle : buttonUnselectedStyle}
+              activeOpacity={0.5}
+              onPress={() => {
+                resetDropdownList();
+                onSelectAKKType(AKK_TYPE_SCHOOL);
+              }}
+            >
+              <Text style={[globalFontStyle, selectedAKKType === AKK_TYPE_SCHOOL ? nameButtonTextStyle : nameButtonUselectedTextStyle]}>
+                Siswa
+              </Text>
+            </TouchableOpacity>
           </View>
-      </View>
-      <View style={welcomingTextSectionStyle}>
-        <Text style={[globalFontStyle, descTextStyle]}>
-          Hello! Please fill out the form below to get started
-        </Text>
-      </View>
-      <View style={formSectionStyle}>
-      <KeyboardAvoidingView
-        style={[bodySectionStyle, {marginTop: ProportionateScreenSizeValue(15)}]}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <TextInput style={[globalFontStyle, inputStyle, formStyle]}
-          placeholder="Nama AKK"
-          placeholderTextColor={PlaceholderTextColor}
-        />
-      </KeyboardAvoidingView>
-      <KeyboardAvoidingView
-        style={[bodySectionStyle, {marginTop: ProportionateScreenSizeValue(5)}]}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <TextInput style={[globalFontStyle, inputStyle, formStyle]}
-          placeholder="Email"
-          placeholderTextColor={PlaceholderTextColor}
-        />
-      </KeyboardAvoidingView>
-      <KeyboardAvoidingView
-        style={[bodySectionStyle, {marginTop: ProportionateScreenSizeValue(5)}]}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <TextInput style={[globalFontStyle, inputStyle, formStyle]}
-          placeholder="Alamat"
-          placeholderTextColor={PlaceholderTextColor}
-        />
-      </KeyboardAvoidingView>
-      <KeyboardAvoidingView
-        style={[bodySectionStyle, {marginTop: ProportionateScreenSizeValue(5)}]}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <TextInput style={[globalFontStyle, inputStyle, formStyle]}
-          placeholder="No. Handphone"
-          placeholderTextColor={PlaceholderTextColor}
-        />
-      </KeyboardAvoidingView>
-      <KeyboardAvoidingView
-        style={[bodySectionStyle, {marginTop: ProportionateScreenSizeValue(5)}]}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <TextInput style={[globalFontStyle, inputStyle, formStyle]}
-          placeholder="Tanggal Lahir"
-          placeholderTextColor={PlaceholderTextColor}
-        />
-      </KeyboardAvoidingView>
-      <KeyboardAvoidingView
-        style={[bodySectionStyle, {marginTop: ProportionateScreenSizeValue(5)}]}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <TextInput style={[globalFontStyle, inputStyle, formStyle]}
-          placeholder="Universitas/Sekolah"
-          placeholderTextColor={PlaceholderTextColor}
-        />
-      </KeyboardAvoidingView>
-      </View>
-      <ScrollView>
-        <View style={[{flexDirection: 'column', flex: 1}]}>
-          {groups}
+          <View style={instButtonStyle}>
+            <TouchableOpacity
+              style={selectedAKKType === AKK_TYPE_COLLEGE ? buttonStyle : buttonUnselectedStyle}
+              activeOpacity={0.5}
+              onPress={() => {
+                resetDropdownList();
+                onSelectAKKType(AKK_TYPE_COLLEGE);
+              }}
+            >
+              <Text style={[globalFontStyle, selectedAKKType === AKK_TYPE_COLLEGE ? nameButtonTextStyle : nameButtonUselectedTextStyle]}>
+                Mahasiswa
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={instButtonStyle}>
+            <TouchableOpacity
+              style={selectedAKKType === AKK_TYPE_ALUMNI ? buttonStyle : buttonUnselectedStyle}
+              activeOpacity={0.5}
+              onPress={() => {
+                resetDropdownList();
+                onSelectAKKType(AKK_TYPE_ALUMNI);
+              }}
+            >
+              <Text style={[globalFontStyle, selectedAKKType === AKK_TYPE_ALUMNI ? nameButtonTextStyle : nameButtonUselectedTextStyle]}>
+                Alumni
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
+      </View>
+      <ScrollView style={[formSectionStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}>
+        <KeyboardAvoidingView
+          style={formBodySectionStyle}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+            placeholder="Nama Lengkap"
+            placeholderTextColor={PlaceholderTextColor}
+            value={name}
+            onChangeText={(value) => setName(value)}
+            onSubmitEditing={Keyboard.dismiss}
+            onFocus={() => onTextFocus()}
+            disabled={!isEnabled}
+          />
+        </KeyboardAvoidingView>
+        <KeyboardAvoidingView
+          style={formBodySectionStyle}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+            placeholder="Email"
+            placeholderTextColor={PlaceholderTextColor}
+            value={email}
+            disabled={!isEnabled || (user && user.is_active === 1)}
+            onChangeText={(value) => setEmail(value)}
+            onFocus={() => onTextFocus()}
+          />
+        </KeyboardAvoidingView>
+        <KeyboardAvoidingView
+          style={formBodySectionStyle}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+            placeholder="Alamat"
+            placeholderTextColor={PlaceholderTextColor}
+            value={address}
+            onChangeText={(value) => setAddress(value)}
+            onFocus={() => onTextFocus()}
+            disabled={!isEnabled}
+          />
+        </KeyboardAvoidingView>
+        <KeyboardAvoidingView
+          style={formBodySectionStyle}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+            placeholder="No. Handphone"
+            placeholderTextColor={PlaceholderTextColor}
+            value={mobilePhn}
+            onChangeText={(value) => setMobilePhn(value)}
+            onFocus={() => onTextFocus()}
+            disabled={!isEnabled}
+          />
+        </KeyboardAvoidingView>
+        <KeyboardAvoidingView
+          style={formBodySectionStyle}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+            placeholder="Tempat Lahir"
+            placeholderTextColor={PlaceholderTextColor}
+            value={birthPlace}
+            onChangeText={(value) => setBirthPlace(value)}
+            onFocus={() => onTextFocus()}
+            disabled={!isEnabled}
+          />
+        </KeyboardAvoidingView>
+        <KeyboardAvoidingView
+          style={formBodySectionStyle}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          {/* <TextInput style={[globalFontStyle, inputStyle, formStyle]}
+            placeholder="Tanggal Lahir"
+            placeholderTextColor={PlaceholderTextColor}
+            onFocus={() => onTextFocus()}
+          /> */}
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={birthDt}
+            minimumDate={minDt}
+            maximumDate={maxDt}
+            mode="date"
+            is24Hour={true}
+            display="default"
+            onChange={(event, selectedDate) => {
+              setBirthDt(selectedDate || new Date());
+            }}
+            disabled={!isEnabled}
+          />
+        </KeyboardAvoidingView>
+        <KeyboardAvoidingView
+          style={formBodySectionStyle}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <DropDownPicker
+            defaultNull
+            searchable={true}
+            searchPlaceholder="Cari Institusi..."
+            searchContainerStyle={dropDownSearchContainerStyle}
+            searchTextinputStyle={[globalFontStyle, dropDownSearchInputStyle]}
+            searchPlaceholderTextColor={PlaceholderTextColor}
+            placeholder="Institusi"
+            containerStyle={[inputStyle, dropDownContainerStyle]}
+            style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+            placeholderStyle={[globalFontStyle, dropDownPlaceholderStyle]}
+            dropDownContainerStyle={dropDownContainerStyle}
+            listItemLabelStyle={[globalFontStyle, dropDownItemStyle]}
+            open={instListOpen}
+            setOpen={onInstOpen}
+            closeAfterSelecting={true}
+            items={institutionList}
+            setItems={setInstitutionList}
+            zIndex={99}
+            zIndexInverse={199}
+            value={institutionId}
+            setValue={setInstitutionId}
+            onChangeValue={(value) => onInstitutionChange(value)}
+            disabled={!isEnabled}
+          />
+        </KeyboardAvoidingView>
+        <KeyboardAvoidingView
+          style={formBodySectionStyle}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <DropDownPicker
+            defaultNull
+            disabled={selectedAKKType !== AKK_TYPE_COLLEGE || facultyId === 0 && !isEnabled}
+            searchable={true}
+            searchPlaceholder="Cari Fakultas..."
+            searchContainerStyle={dropDownSearchContainerStyle}
+            searchTextinputStyle={[globalFontStyle, dropDownSearchInputStyle]}
+            searchPlaceholderTextColor={PlaceholderTextColor}
+            placeholder="Fakultas"
+            containerStyle={[inputStyle, dropDownContainerStyle]}
+            style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+            placeholderStyle={[globalFontStyle, dropDownPlaceholderStyle]}
+            dropDownContainerStyle={dropDownContainerStyle}
+            listItemLabelStyle={[globalFontStyle, dropDownItemStyle]}
+            open={facListOpen}
+            setOpen={onFacOpen}
+            items={facultyList}
+            setItems={setFacultyList}
+            zIndex={199}
+            zIndexInverse={99}
+            value={facultyId}
+            setValue={setFacultyId}
+          />
+        </KeyboardAvoidingView>
       </ScrollView>
       {
-      // (loading) ? 
-      //   (<View style={customActivityIndicatorStyle}>
-      //     <ActivityIndicator
-      //       animating={loading}
-      //       color={BasicColor}
-      //       size={ProportionateScreenSizeValue(ProportionateScreenSizeValue(30))}
-      //     />
-      //   </View>) : null
+      (loading) ?
+        (<View style={customActivityIndicatorStyle}>
+          <ActivityIndicator
+            animating={loading}
+            color={BasicColor}
+            size={ProportionateScreenSizeValue(ProportionateScreenSizeValue(30))}
+          />
+        </View>) : null
       }
     </View>
   );
 
-  const footer = (
-    <View style={searchSectionStyle}>
-      <View style={footerButtonStyle}>
+  const error = (
+    <View style={errorSectionStyle}>
+      <View style={errorMessageContainerStyle}>
+        <Text style={errorMessageTextStyle}>
+          {`Error! ${errorText}`}
+        </Text>
         <TouchableOpacity
-          style={buttonFooterStyle}
-          activeOpacity={0.5}
-          onPress={() => addGroup()}
+          style={errorMessageButtonStyle}
+          onPress={() => setErrorText('')}
         >
-          <Text style={[globalFontStyle, submitButtonTextStyle]}>Create</Text>
+        <Text style={errorMessageButtonTextStyle}>Back</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
+  const footer = (
+    <KeyboardAvoidingView style={footerViewStyle}>
+      <TouchableOpacity
+        style={buttonFooterStyle}
+        activeOpacity={0.5}
+        onFocus={() => onTextFocus()}
+        onPress={() => onSubmitClick()}
+      >
+        <Text style={[globalFontStyle, submitButtonTextStyle]}>Save</Text>
+      </TouchableOpacity>
+    </KeyboardAvoidingView>
+  );
+
   return (
-    <BodyMenuBaseScreen title="Create Data AKK" child={child} footer={footer} />
+    <BodyMenuBaseScreen title="Data AKK" child={child} footer={footer} isError={errorText !== ''} error={error} />
   );
 };
 
 const mapStateToProps = state => {
-  const { User } = state;
-  return { User };
+  const { User, KTB, Member } = state;
+  return { User, KTB, Member };
 };
 
-export default connect(mapStateToProps)(EmtryDataAKKScreen);
+export default connect(mapStateToProps)(EntryDataAKKScreen);

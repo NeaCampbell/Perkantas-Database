@@ -1,8 +1,9 @@
+/* eslint-disable prettier/prettier */
 import {
   StyleSheet,
 } from 'react-native';
 import {
-  ProportionateScreenSizeValue
+  ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
 
 export const DiscipleshipGroupStyles = StyleSheet.create({
@@ -21,7 +22,10 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
     borderRadius: ProportionateScreenSizeValue(10),
   },
   checkBoxSectionStyle: {
-    marginRight: ProportionateScreenSizeValue(15)
+    marginRight: ProportionateScreenSizeValue(15),
+  },
+  scrollViewSectionStyle: {
+    width: '100%',
   },
   descSectionStyle: {
     width: '100%',
@@ -34,7 +38,7 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
   },
   groupNameStyle: {
     color:'#000000',
-    fontSize: ProportionateScreenSizeValue(20),
+    fontSize: ProportionateScreenSizeValue(15),
     fontWeight: 'bold',
     textAlign: 'left',
   },
@@ -45,10 +49,10 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
     flexDirection: 'row',
   },
   iconUserStyle: {
-    width: ProportionateScreenSizeValue(40),
-    height: ProportionateScreenSizeValue(40),
-    marginLeft: ProportionateScreenSizeValue(-7),
-    borderRadius: ProportionateScreenSizeValue(20),
+    width: ProportionateScreenSizeValue(30),
+    height: ProportionateScreenSizeValue(30),
+    marginLeft: ProportionateScreenSizeValue(-4),
+    borderRadius: ProportionateScreenSizeValue(15),
     backgroundColor:'#FFF',
     alignItems: 'center',
     justifyContent: 'center',
@@ -58,29 +62,29 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
     },
     shadowColor: '#555',
     shadowOpacity: 0.2,
-    borderWidth: 1,
-    borderColor: '#AAA',
+    // borderWidth: 1,
+    // borderColor: '#AAA',
   },
   iconUserTextStyle: {
     color: '#000000',
-    fontSize: ProportionateScreenSizeValue(15),
+    fontSize: ProportionateScreenSizeValue(12),
     fontWeight: 'bold',
   },
   otherDescSectionStyle: {
-    height: ProportionateScreenSizeValue(20)
+    height: ProportionateScreenSizeValue(15),
   },
   otherDescTitleStyle: {
-    width: '60%',
+    width: '35%',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
   otherDescValueStyle: {
-    width: '40%',
+    width: '65%',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
   otherDescTextStyle: {
     color: '#666',
-    fontSize: ProportionateScreenSizeValue(12),
+    fontSize: ProportionateScreenSizeValue(10),
   },
 });

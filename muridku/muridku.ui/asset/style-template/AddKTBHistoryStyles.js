@@ -1,8 +1,9 @@
+/* eslint-disable prettier/prettier */
 import {
   StyleSheet,
 } from 'react-native';
 
-const BackgroundColor = "#FFFFFF";
+const BackgroundColor = '#FFFFFF';
 
 export const AddKTBHistoryStyles = StyleSheet.create({
   bodyContainerStyle: {
@@ -10,16 +11,16 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     width: '100%',
     height: '100%',
     justifyContent: 'center',
-    backgroundColor: BackgroundColor
+    backgroundColor: BackgroundColor,
   },
   logoContainerStyle: {
     width: '100%',
-    height: '100%'
+    height: '100%',
   },
   logoStyle: {
     width: '100%',
     height: 100,
-    resizeMode: 'center'
+    resizeMode: 'center',
   },
   bodySectionStyle: {
     flexDirection: 'row',
@@ -27,7 +28,7 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 15,
     marginRight: 15,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   buttonStyle: {
     backgroundColor: '#E37550',
@@ -35,7 +36,7 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     height: 35,
     width: '100%',
     alignItems: 'center',
-    marginTop: 10
+    marginTop: 10,
   },
   buttonTextStyle: {
     color: '#FFFFFF',
@@ -49,17 +50,17 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'normal',
     fontSize: 12,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   signupTextStyle: {
     color: '#FFFFFF',
     textAlign: 'center',
-    fontSize: 12
+    fontSize: 12,
   },
   signupTextButtonStyle: {
     color: '#E37550',
     textAlign: 'center',
-    fontSize: 12
+    fontSize: 12,
   },
   errorTextStyle: {
     color: '#FF4D05',
@@ -84,7 +85,6 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#FFFFFF',
     opacity: 0.3,
   },

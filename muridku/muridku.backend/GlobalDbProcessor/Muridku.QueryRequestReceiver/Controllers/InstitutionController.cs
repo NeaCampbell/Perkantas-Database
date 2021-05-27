@@ -5,7 +5,6 @@ using Muridku.QueryRequestReceiver.Models.Dbs;
 using Muridku.QueryRequestReceiver.Models.Params;
 using QueryManager;
 using QueryOperator.QueryExecutor;
-using System;
 using System.Collections.Generic;
 
 namespace Muridku.QueryRequestReceiver.Controllers
@@ -19,11 +18,23 @@ namespace Muridku.QueryRequestReceiver.Controllers
     {
     }
 
-    [HttpGet( QueryListKeyMap.GET_ALL_INSTITUTION )]
+    [HttpGet(QueryListKeyMap.GET_ALL_INSTITUTION)]
     public QueryResult GetAllInstitution()
     {
-      LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Empty );
-      return EnqueueRequest( logApi, null, ConstRequestType.GET, QueryListKeyMap.GET_ALL_INSTITUTION, QueryListKeyMap.GET_ALL_INSTITUTION );
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Empty);
+      return EnqueueRequest(logApi, null, ConstRequestType.GET, QueryListKeyMap.GET_ALL_INSTITUTION, QueryListKeyMap.GET_ALL_INSTITUTION);
+    }
+
+    [HttpGet(QueryListKeyMap.GET_INSTITUTION_BY_TYPE)]
+    public Response<IList<Institution>> GetInstitutionByType(string insttype)
+    {
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("insttype={0}", insttype));
+      QueryResult reqResult = ExecuteRequest<Institution>(logApi, new List<string>() { insttype }, ConstRequestType.GET, QueryListKeyMap.GET_INSTITUTION_BY_TYPE, QueryListKeyMap.GET_INSTITUTION_BY_TYPE);
+
+      if (!reqResult.Succeed)
+        return GetResponseBlankMultiModels<Institution>(reqResult, reqResult.Succeed);
+
+      return GetResponseMultiModels<Institution>(reqResult);
     }
 
     [HttpGet( QueryListKeyMap.GET_INSTITUTION_BY_ID )]

@@ -1,9 +1,9 @@
+/* eslint-disable prettier/prettier */
 import React from 'react';
 import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-// import { Icon } from 'react-native-elements';
 import {
-  ProportionateScreenSizeValue
+  ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
 
 export default class PasswordToggle extends React.Component {
@@ -12,7 +12,7 @@ export default class PasswordToggle extends React.Component {
 
     this.state = {
       visible: true,
-    }
+    };
   }
 
   setVisible(visible) {
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   container:{
     flexDirection:'row',
     alignItems:'center',
-  }
+  },
 });
 
 PasswordToggle.defaultProps = {
@@ -59,6 +59,5 @@ PasswordToggle.defaultProps = {
   iconVisibleColor: '#222',
   iconInvisibleColor: '#777',
   iconSize: ProportionateScreenSizeValue(20),
-  inputStyle:{}
+  inputStyle:{},
 };
-

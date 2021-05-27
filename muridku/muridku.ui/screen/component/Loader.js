@@ -1,9 +1,10 @@
+/* eslint-disable prettier/prettier */
 // Import React and Component
 import React from 'react';
 import {StyleSheet, View, Modal, ActivityIndicator} from 'react-native';
 
 const Loader = (props) => {
-  const {loading, ...attributes} = props;
+  const {loading} = props;
 
   return (
     <Modal

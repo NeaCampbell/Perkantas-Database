@@ -326,6 +326,24 @@ namespace Muridku.QueryRequestReceiver.Controllers
       return result;
     }
 
+    protected CheckParam ValidateParamInputLong(params Tuple<string, long?>[] param)
+    {
+      if (param.Length > 0)
+        foreach (Tuple<string, long?> prm in param)
+          if (!prm.Item2.HasValue || prm.Item2.Value == 0)
+            return new CheckParam()
+            {
+              CheckResult = false,
+              Message = string.Format("param '{0}' cannot be empty", prm.Item1)
+            };
+
+      return new CheckParam()
+      {
+        CheckResult = true,
+        Message = string.Empty
+      };
+    }
+
     protected string GetUsernameFromHeader( HttpContext context )
     {
       if( context.Request.Headers.ContainsKey( "Username" ) )

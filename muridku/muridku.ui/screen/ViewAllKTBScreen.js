@@ -1,3 +1,6 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable curly */
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {
   View,
@@ -7,7 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Text
+  Text,
 } from 'react-native';
 import { connect } from 'react-redux';
 import BodyMenuBaseScreen from './BodyMenuBaseScreen';
@@ -17,39 +20,42 @@ import { BasicStyles, BasicColor, PlaceholderTextColor } from '../asset/style-te
 import { ViewAllKTBStyles } from '../asset/style-template/ViewAllKTBStyles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
-  ProportionateScreenSizeValue
+  ProportionateScreenSizeValue,
+  ChangeColorFunction,
 } from '../helper/CommonHelper';
-import { SET_SELECTED_KTB } from "../reducer/action/ActionConst";
+import { SET_SELECTED_KTB, SET_SELECTED_MEMBER } from '../reducer/action/ActionConst';
 
 const getktbapi = require('../api/out/getktbsbypktbid');
-const getktbbyidapi = require('../api/out/getktbbyktbid');
+const getsinglektbapi = require('../api/out/getktbbyktbid');
 
 const ViewALLKTBScreen = (props) => {
-  const selectAll = "Select All";
-  const unselectAll = "Unselect All";
+  const selectAll = 'Select All';
+  const unselectAll = 'Unselect All';
   const { navigation } = props;
   const [loading, setLoading] = useState(true);
+  const [errorText, setErrorText] = useState('');
   const [isFirstEntry, setIsFirstEntry] = useState(true);
   const [ktbs, setKtbs] = useState([]);
   const [searchedKtbs, setSearchedKtbs] = useState([]);
-  const [searchKey, setSearchKey] = useState("");
+  const [searchKey, setSearchKey] = useState('');
   const [searchPressed, setSearchPressed] = useState(false);
   const [checkedMode, setCheckedMode] = useState(false);
   const [selectedKtbs, setSelectedKtbs] = useState([]);
   const [selectAllText, setSelectAllText] = useState(selectAll);
   const [forceGroupCheck, setForceGroupCheck] = useState(false);
   const [forceGroupUncheck, setForceGroupUncheck] = useState(false);
-  
+
   const resetState = (needResetData = true) => {
-    setSearchKey("");
+    setSearchKey('');
     setSearchPressed(false);
     setCheckedMode(false);
     setSelectedKtbs([]);
     setSelectAllText(selectAll);
     setForceGroupCheck(false);
     setForceGroupUncheck(false);
+    setErrorText('');
 
-    if(needResetData)
+    if (needResetData)
       setIsFirstEntry(true);
   };
 
@@ -57,130 +63,150 @@ const ViewALLKTBScreen = (props) => {
     setIsFirstEntry(false);
     setLoading(false);
 
-    if(!result.succeed)
+    if (!result.succeed) {
+      setErrorText(result.errorMessage);
       return;
+    }
 
     setKtbs(result.result);
     setSearchedKtbs(result.result);
-  }
+  };
 
   const errorHandler = (error) => {
+    setErrorText(error.mesage);
     setLoading(false);
-  }
+  };
 
-  const onSearch = (searchKey) => {
-    if(ktbs.length === 0)
+  const onSearch = (paramSearch, paramGroup) => {
+    if (paramGroup.length === 0)
       return;
-    
+
     setSearchPressed(true);
 
-    if(searchKey === undefined || searchKey === null || searchKey === "")
+    if (paramSearch === undefined || paramSearch === null || paramSearch === '')
     {
-      setSearchedKtbs(ktbs);
+      setSearchedKtbs(paramGroup);
       return;
     }
 
     const filterKtbs = (data) => {
-      return data.ktb.name.toLowerCase().search(searchKey.toLowerCase()) > -1;
+      return data.ktb.name.toLowerCase().search(paramSearch.toLowerCase()) > -1;
     };
 
-    setSearchedKtbs(ktbs.filter(filterKtbs));
-  }
+    setSearchedKtbs(paramGroup.filter(filterKtbs));
+  };
 
   const onGroupClick = (id) => {
     setLoading(true);
-    const selectedKtbsTmp = searchedKtbs.filter((data) => {return data.ktb.id === id});
+    const selectedKtbsTmp = searchedKtbs.filter((data) => {return data.ktb.id === id;});
     setLoading(false);
 
-    if(selectedKtbsTmp.length === 0)
+    if (selectedKtbsTmp.length === 0) {
+      setErrorText('Data KTB tidak ditemukan.');
       return;
+    }
 
     const selectedKtb = selectedKtbsTmp[0];
 
     props.dispatch({type: SET_SELECTED_KTB, ktb: selectedKtb});
     navigation.replace('ViewDataKTBScreen');
-  }
+  };
 
   const onGroupChecked = (id, checked) => {
     let selectedKtbsTemp = [];
 
     selectedKtbs.forEach((item) => {
       selectedKtbsTemp.push(item);
-    })
+    });
 
-    if(!selectedKtbs.find((idx) => idx === id) && checked)
+    if (!selectedKtbs.find((idx) => idx === id) && checked)
       selectedKtbsTemp.push(id);
-    else if(selectedKtbs.find((idx) => idx === id) && !checked)
+    else if (selectedKtbs.find((idx) => idx === id) && !checked)
       selectedKtbsTemp = selectedKtbsTemp.filter((idx) => idx !== id);
-    
+
     const isAllKtbSelected = selectedKtbsTemp.length === searchedKtbs.length;
     setForceGroupCheck(isAllKtbSelected);
     setForceGroupUncheck(false);
     setSelectAllText(isAllKtbSelected ? unselectAll : selectAll);
     setSelectedKtbs(selectedKtbsTemp);
-  }
+  };
+
+  const callbackGetKtb = (result, memberId) => {
+    if (!result.succeed) {
+      setLoading(false);
+      setErrorText(result.errorMessage);
+      return;
+    }
+
+    const selectedMember = result.result.members.filter((data) => {
+      return data.member.id === memberId;
+    });
+
+    if (selectedMember.length === 0) {
+      setLoading(false);
+      setErrorText('Data Member tidak ditemukan.');
+      return;
+    }
+
+    props.dispatch({type: SET_SELECTED_KTB, ktb: result.result});
+    props.dispatch({ type: SET_SELECTED_MEMBER, member: selectedMember[0] });
+    navigation.replace('EntryDataAKKScreen');
+  };
 
   const onMemberClick = (id) => {
-    console.log(`test member ${id}`);
-    resetState();
-  }
+    const selectedKtbsTmp = searchedKtbs.filter((data) => {
+      let result = false;
+      data.members.forEach(element => {
+        if (element.member.id === id) {
+          result = true;
+          return;
+        }
+      });
+      return result;
+    });
+
+    if (selectedKtbsTmp.length === 0) {
+      setLoading(false);
+      setErrorText('Data KTB tidak ditemukan.');
+      return;
+    }
+
+    getsinglektbapi.getktbbyktbid(selectedKtbsTmp[0].ktb.id, (result) => callbackGetKtb(result, id), errorHandler);
+  };
 
   const onGroupLongPress = () => {
     setCheckedMode(true);
   };
 
   const addGroup = () => {
-    console.log("add group");
+    console.log('add group');
   };
 
   const deleteGroup = () => {
     console.log('delete group');
   };
 
-  if(isFirstEntry)
+  if (isFirstEntry)
     getktbapi.getktbsbypktbid(props.User.member_id, callback, errorHandler);
-
-  const ChangeColorFunction = (oldColor) => {
-    const getRandomNo = () => {
-      let res = Math.random();
-      const minValue = 0.85;
-
-      while(res < minValue)
-        res = Math.random();
-      
-      return res;
-    };
-
-    const colorTolerance = 5;
-    let r = Math.floor(getRandomNo() * 255);
-    let g = Math.floor(getRandomNo() * 255);
-
-    while(g >= r - colorTolerance && g <= r + colorTolerance)
-      g = Math.floor(getRandomNo() * 255);
-    
-    let b = Math.floor(getRandomNo() * 255);
-    
-    while((b >= r - colorTolerance && b <= r + colorTolerance) || (b >= g - colorTolerance && b <= g + colorTolerance))
-      b = Math.floor(getRandomNo() * 255);
-
-    const result = `rgb(${r},${g},${b})`;
-
-    if(result === oldColor)
-      return ChangeColorFunction(oldColor);
-
-    return result;
-  }
 
   const groupCount = ktbs.length;
   const groupColors = [];
 
-  for(let i = 0; i < groupCount; i++) {
-    let color = ChangeColorFunction( i === 0 ? '' : groupColors[i-1] );
+  for (let i = 0; i < groupCount; i++) {
+    let color = ChangeColorFunction( groupColors );
     groupColors.push(color);
   }
 
-  const { globalFontStyle, basicInputStyle } = BasicStyles;
-  
+  const {
+    globalFontStyle,
+    basicInputStyle,
+    errorSectionStyle,
+    errorMessageContainerStyle,
+    errorMessageTextStyle,
+    errorMessageButtonStyle,
+    errorMessageButtonTextStyle,
+  } = BasicStyles;
+
   const {
     headerStyle,
     headerCancelStyle,
@@ -191,9 +217,9 @@ const ViewALLKTBScreen = (props) => {
     searchSectionStyle,
     searchContainerStyle,
     searchTextStyle,
-    footerButtonStyle,
+    footerViewStyle,
     buttonStyle,
-    customActivityIndicatorStyle
+    customActivityIndicatorStyle,
   } = ViewAllKTBStyles;
 
   const setKtbsComp = (groups) => {
@@ -221,13 +247,13 @@ const ViewALLKTBScreen = (props) => {
     });
 
     return comps;
-  }
+  };
 
-  let groups = undefined;
+  let groups;
 
-  if(!loading && ktbs.length > 0)
+  if (!loading && ktbs.length > 0)
   {
-    if(searchPressed)
+    if (searchPressed)
       groups = setKtbsComp(searchedKtbs);
     else
       groups = setKtbsComp(ktbs);
@@ -235,7 +261,7 @@ const ViewALLKTBScreen = (props) => {
 
   const additionalHeader = (
     <KeyboardAvoidingView style={[searchSectionStyle, searchContainerStyle]}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <SearchToggle
         containerStyle={[basicInputStyle, searchContainerStyle]}
         inputStyle={[globalFontStyle, basicInputStyle, searchTextStyle]}
@@ -249,19 +275,36 @@ const ViewALLKTBScreen = (props) => {
         iconSize={ProportionateScreenSizeValue(20)}
         value={searchKey}
         onChangeText={setSearchKey}
-        onSearchSubmit={onSearch}
+        onSearchSubmit={(param) => onSearch(param, ktbs)}
       />
     </KeyboardAvoidingView>
   );
 
   const child = (
     <KeyboardAvoidingView style={bodyContainerStyle}>
+      {
+        (errorText !== '') ? (
+          <View style={errorSectionStyle}>
+            <View style={errorMessageContainerStyle}>
+              <Text style={errorMessageTextStyle}>
+                {`Error! ${errorText}`}
+              </Text>
+              <TouchableOpacity
+                style={errorMessageButtonStyle}
+                onPress={() => setErrorText('')}
+              >
+              <Text style={errorMessageButtonTextStyle}>Back</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null
+      }
       <ScrollView>
         <View style={[{flexDirection: 'column', flex: 1}]}>
           {groups}
         </View>
       </ScrollView>
-      {(loading) ? 
+      {(loading) ?
         (<View style={customActivityIndicatorStyle}>
           <ActivityIndicator
             animating={loading}
@@ -275,23 +318,23 @@ const ViewALLKTBScreen = (props) => {
 
   const footer = (
     <View style={searchSectionStyle}>
-      <View style={footerButtonStyle}>
+      <View style={footerViewStyle}>
         <TouchableOpacity
           style={buttonStyle}
           activeOpacity={0.5}
           onPress={() => addGroup()}
         >
-          <Icon name="add" size={ProportionateScreenSizeValue(25)} color="white"></Icon>
+          <Icon name="add" size={ProportionateScreenSizeValue(25)} color="white"/>
         </TouchableOpacity>
       </View>
-      <View style={footerButtonStyle}>
+      <View style={footerViewStyle}>
         <TouchableOpacity
           style={buttonStyle}
           activeOpacity={0.5}
           onPress={() => deleteGroup()}
           disabled={selectedKtbs.length === 0}
         >
-          <Icon name="delete" size={ProportionateScreenSizeValue(25)} color="white"></Icon>
+          <Icon name="delete" size={ProportionateScreenSizeValue(25)} color="white"/>
         </TouchableOpacity>
       </View>
     </View>
@@ -299,22 +342,22 @@ const ViewALLKTBScreen = (props) => {
 
   const onCancelClick = () => {
     resetState(false);
-  }
+  };
 
   const onSelectAllClick = (text) => {
     let forceGroupCheckTmp = false;
-    
-    if(text === selectAll)
+
+    if (text === selectAll)
       forceGroupCheckTmp = true;
-    
+
     setForceGroupCheck(forceGroupCheckTmp);
     setForceGroupUncheck(!forceGroupCheckTmp);
 
-    if(!forceGroupCheckTmp)
+    if (!forceGroupCheckTmp)
       setSelectedKtbs([]);
 
     setSelectAllText(forceGroupCheckTmp ? unselectAll : selectAll);
-  }
+  };
 
   const customHeader = (
     <View

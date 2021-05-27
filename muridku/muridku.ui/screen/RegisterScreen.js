@@ -1,4 +1,6 @@
-import React, {useState, useEffect, createRef} from 'react';
+/* eslint-disable prettier/prettier */
+/* eslint-disable react-native/no-inline-styles */
+import React, {useState, createRef} from 'react';
 import {
   ActivityIndicator,
   TextInput,
@@ -9,9 +11,9 @@ import {
   Keyboard,
   TouchableOpacity,
   KeyboardAvoidingView,
-  Platform
+  Platform,
 } from 'react-native';
-import { SET_USER } from "../reducer/action/ActionConst";
+import { SET_USER } from '../reducer/action/ActionConst';
 import { connect } from 'react-redux';
 import BodyBaseScreen from './BodyBaseScreen';
 import PasswordToggle from './component/PasswordToggle';
@@ -29,12 +31,12 @@ const RegisterScreen = (props) => {
   const [userPassword, setUserPassword] = useState('');
   const [userPasswordConfirm, setUserPasswordConfirm] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errortext, setErrorText] = useState('');
+  const [errorText, setErrorText] = useState('');
   const fullnameInputRef = createRef();
   const emailInputRef = createRef();
   const passwordInputRef = createRef();
   const passwordConfirmInputRef = createRef();
-  
+
   const resetState = () => {
     setUserFullname('');
     setUserAddress('');
@@ -47,13 +49,13 @@ const RegisterScreen = (props) => {
 
   const handleSubmitPress = () => {
     setErrorText('');
-    
+
     if (!userFullname) {
       setErrorText('Nama lengkap belum diisi.');
       fullnameInputRef.current.focus();
       return;
     }
-    
+
     if (!userEmail) {
       setErrorText('Email belum diisi.');
       emailInputRef.current.focus();
@@ -82,7 +84,7 @@ const RegisterScreen = (props) => {
     const callback = (result) => {
       setLoading(false);
 
-      if(!result.succeed) {
+      if (!result.succeed) {
         setErrorText(result.errorMessage);
         return;
       }
@@ -90,13 +92,22 @@ const RegisterScreen = (props) => {
       props.dispatch({ type: SET_USER, user: {email: userEmail} });
       resetState();
       navigation.replace('LoginScreen');
-    }
+    };
 
     registerapi.registeruser(userFullname, userAddress, userEmail, userPassword, callback);
   };
 
-  const { globalFontStyle, inputStyle, passwordInputStyle } = BasicStyles;
-  
+  const {
+    globalFontStyle,
+    inputStyle,
+    passwordInputStyle,
+    errorSectionStyle,
+    errorMessageContainerStyle,
+    errorMessageTextStyle,
+    errorMessageButtonStyle,
+    errorMessageButtonTextStyle,
+  } = BasicStyles;
+
   const {
     bodyContainerStyle,
     logoContainerStyle,
@@ -104,7 +115,6 @@ const RegisterScreen = (props) => {
     titleContainerStyle,
     titleStyle,
     bodySectionStyle,
-    errorTextStyle,
     customInputStyle,
     customInputPasswordStyle,
     buttonStyle,
@@ -113,13 +123,30 @@ const RegisterScreen = (props) => {
     signupTextButtonStyle,
     techProblemDescStyle,
     techProblemStyle,
-    customActivityIndicatorStyle
+    customActivityIndicatorStyle,
   } = RegisterStyles;
 
   // const showScrollBar = Platform.OS === 'web';
 
   const baseScreenItems = (
     <View style={bodyContainerStyle}>
+      {
+        (errorText !== '') ? (
+          <View style={errorSectionStyle}>
+            <View style={errorMessageContainerStyle}>
+              <Text style={errorMessageTextStyle}>
+                {`Error! ${errorText}`}
+              </Text>
+              <TouchableOpacity
+                style={errorMessageButtonStyle}
+                onPress={() => setErrorText('')}
+              >
+              <Text style={errorMessageButtonTextStyle}>Back</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null
+      }
       <View style={logoContainerStyle}>
         <Image
           source={require('../asset/img/logo.png')}
@@ -132,10 +159,10 @@ const RegisterScreen = (props) => {
         </Text>
       </View>
       <ScrollView>
-        <View style={{backgroundColor: "#FFFFFF", paddingTop: ProportionateScreenSizeValue(15)}}>
+        <View style={{backgroundColor: '#FFFFFF', paddingTop: ProportionateScreenSizeValue(15)}}>
           <KeyboardAvoidingView
             style={bodySectionStyle}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
             <TextInput
               style={[globalFontStyle, customInputStyle, inputStyle]}
@@ -152,7 +179,7 @@ const RegisterScreen = (props) => {
           </KeyboardAvoidingView>
           <KeyboardAvoidingView
             style={bodySectionStyle}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
             <TextInput
               style={[globalFontStyle, customInputStyle, inputStyle]}
@@ -169,7 +196,7 @@ const RegisterScreen = (props) => {
           </KeyboardAvoidingView>
           <KeyboardAvoidingView
             style={bodySectionStyle}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
             <TextInput
               style={[globalFontStyle, customInputStyle, inputStyle]}
@@ -187,11 +214,11 @@ const RegisterScreen = (props) => {
           </KeyboardAvoidingView>
           <KeyboardAvoidingView
             style={bodySectionStyle}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
             <PasswordToggle
               containerStyle={[globalFontStyle, customInputStyle, inputStyle]}
-              inputStyle={[globalFontStyle, customInputPasswordStyle, passwordInputStyle]}
+              textInputStyle={[globalFontStyle, customInputPasswordStyle, passwordInputStyle]}
               onChangeText={
                 (UserPassword) => setUserPassword(UserPassword)
               }
@@ -208,11 +235,11 @@ const RegisterScreen = (props) => {
           </KeyboardAvoidingView>
           <KeyboardAvoidingView
             style={bodySectionStyle}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
             <PasswordToggle
               containerStyle={[globalFontStyle, customInputStyle, inputStyle]}
-              inputStyle={[globalFontStyle, customInputPasswordStyle, passwordInputStyle]}
+              textInputStyle={[globalFontStyle, customInputPasswordStyle, passwordInputStyle]}
               onChangeText={
                 (UserPassword) => setUserPasswordConfirm(UserPassword)
               }
@@ -227,15 +254,8 @@ const RegisterScreen = (props) => {
               iconSize={ProportionateScreenSizeValue(20)}
             />
           </KeyboardAvoidingView>
-          {(errortext != '') ? (
-            <View style={bodySectionStyle}>
-              <Text style={[globalFontStyle, errorTextStyle]}>
-                {errortext}
-              </Text>
-            </View>
-          ) : null}
         </View>
-        <View style={{backgroundColor: "#FFFFFF"}}>
+        <View style={{backgroundColor: '#FFFFFF'}}>
           <View style={bodySectionStyle}>
             <TouchableOpacity
               style={buttonStyle}
@@ -247,7 +267,7 @@ const RegisterScreen = (props) => {
               </Text>
             </TouchableOpacity>
           </View>
-          <View style={bodySectionStyle, {marginTop: ProportionateScreenSizeValue(10), alignItems: 'center'}}>
+          <View style={[bodySectionStyle, {marginTop: ProportionateScreenSizeValue(10), alignItems: 'center'}]}>
             <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
               <Text
                 style={[globalFontStyle, signupTextStyle]}>
@@ -278,7 +298,7 @@ const RegisterScreen = (props) => {
               </Text>
             </TouchableOpacity>
           </View>
-          {(loading) ? 
+          {(loading) ?
             (<View style={customActivityIndicatorStyle}>
               <ActivityIndicator
                 animating={loading}

@@ -1,12 +1,13 @@
+/* eslint-disable prettier/prettier */
 import {
-  StyleSheet
+  StyleSheet,
 } from 'react-native';
 import {
   WindowSize,
-  ProportionateScreenSizeValue
+  ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
 
-export const BackgroundColor = "#2A2C4E";
+export const BackgroundColor = '#2A2C4E';
 
 export const MenuBasicStyles = StyleSheet.create({
   bodyContainerStyle: {
@@ -20,7 +21,7 @@ export const MenuBasicStyles = StyleSheet.create({
     flexDirection: 'row',
     height: WindowSize.height * 7 / 100,
     width: '100%',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
   },
   otherHeaderSectionStyle: {
     flexDirection: 'row',
@@ -28,20 +29,21 @@ export const MenuBasicStyles = StyleSheet.create({
     marginLeft: ProportionateScreenSizeValue(15),
     marginRight: ProportionateScreenSizeValue(15),
     marginBottom: ProportionateScreenSizeValue(15),
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   burgerStyle: {
     width: '15%',
     height: '100%',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  burgerIconStyle: {
-    marginTop: ProportionateScreenSizeValue(12),
-    marginLeft: ProportionateScreenSizeValue(12),
+  headerSearchMenuStyle: {
+    borderTopWidth: ProportionateScreenSizeValue(1),
+    borderTopColor: '#FFF',
     width: '40%',
-    height: '40%',
-    resizeMode: 'contain',
+  },
+  headerSearchMenuDistStyle: {
+    marginBottom: ProportionateScreenSizeValue(4),
   },
   titleStyle: {
     width: '70%',
@@ -55,12 +57,11 @@ export const MenuBasicStyles = StyleSheet.create({
   },
   childSectionStyle: {
     width: '100%',
-    height: '72%',
     justifyContent: 'center',
   },
   footerSectionStyle: {
     width: '100%',
-    height: '13%',
+    height: WindowSize.height * 11 / 100,
     justifyContent: 'center',
   },
 });

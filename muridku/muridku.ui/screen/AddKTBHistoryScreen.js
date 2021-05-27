@@ -29,7 +29,7 @@ const AddKTBHistoryScreen = (props) => {
     searchSectionStyle,
     searchContainerStyle,
     searchTextStyle,
-    footerButtonStyle,
+    footerViewStyle,
     buttonStyle,
     customActivityIndicatorStyle
   } = ViewAllKTBStyles;
@@ -80,7 +80,7 @@ const AddKTBHistoryScreen = (props) => {
 
   const footer = (
     <View style={[searchSectionStyle, {flexDirection:'row'}]}>
-      <View style={footerButtonStyle}>
+      <View style={footerViewStyle}>
         <TouchableOpacity
           style={buttonStyle}
           activeOpacity={0.5}
@@ -88,7 +88,7 @@ const AddKTBHistoryScreen = (props) => {
           <Icon name="add" size={ProportionateScreenSizeValue(25)} color="white"></Icon>
         </TouchableOpacity>
       </View>
-      <View style={footerButtonStyle}>
+      <View style={footerViewStyle}>
         <TouchableOpacity
           style={buttonStyle}
           activeOpacity={0.5}

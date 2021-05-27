@@ -33,37 +33,38 @@ namespace QueryManager
     private readonly int _maxQueueCount;
     private readonly int _threadPoolWaitingTime;
 
-    public QueryOperatorManager( IConfigSource dbConfigSource )
+    public QueryOperatorManager(IConfigSource dbConfigSource)
     {
-      DbServiceType dbServiceType = dbConfigSource.GetValue( "DbServiceType", default( DbServiceType ) );
-      string connectionString = dbConfigSource.GetValue( "ConnectionString", string.Empty );
-      Console.WriteLine( connectionString );
-      _maxQueueCount = dbConfigSource.GetValue( "MaxQueueCount", 0 );
-      int threadCount = dbConfigSource.GetValue( "ThreadCount", 0 );
-      _threadPoolWaitingTime = dbConfigSource.GetValue( "ThreadPoolWaitingTime", 0 );
-      RequestWaitingTime = dbConfigSource.GetValue( "RequestWaitingTime", 0 );
-      MaxRequestTimeout = dbConfigSource.GetValue( "MaxRequestTimeout", 0 );
-      EncryptMD5HashFormat = dbConfigSource.GetValue( "HashFormat", string.Empty );
-      EncryptMD5HashCultureInfo = dbConfigSource.GetValue( "HashCultureInfo", string.Empty );
+      DbServiceType dbServiceType = dbConfigSource.GetValue("DbServiceType", default(DbServiceType));
+      string connectionString = dbConfigSource.GetValue("ConnectionString", string.Empty);
+      Console.WriteLine(connectionString);
+      _maxQueueCount = dbConfigSource.GetValue("MaxQueueCount", 0);
+      int threadCount = dbConfigSource.GetValue("ThreadCount", 0);
+      _threadPoolWaitingTime = dbConfigSource.GetValue("ThreadPoolWaitingTime", 0);
+      RequestWaitingTime = dbConfigSource.GetValue("RequestWaitingTime", 0);
+      MaxRequestTimeout = dbConfigSource.GetValue("MaxRequestTimeout", 0);
+      EncryptMD5HashFormat = dbConfigSource.GetValue("HashFormat", string.Empty);
+      EncryptMD5HashCultureInfo = dbConfigSource.GetValue("HashCultureInfo", string.Empty);
 
-      IDbConnectionBuilder<DbServiceType> connBuilder = new DbConnectionBuilder( dbServiceType, connectionString );
-      IQueryExecutorBuilder<DbServiceType> queryExecutorBuilder = new QueryExecutorBuilder( dbServiceType, dbConfigSource );
+      IDbConnectionBuilder<DbServiceType> connBuilder = new DbConnectionBuilder(dbServiceType, connectionString);
+      IQueryExecutorBuilder<DbServiceType> queryExecutorBuilder = new QueryExecutorBuilder(dbServiceType, dbConfigSource);
 
       _queryExecutor = queryExecutorBuilder.Build();
-      _queryExecutor.AssignConnection( connBuilder.Build() );
+      _queryExecutor.AssignConnection(connBuilder.Build());
       _queueRequest = new ConcurrentQueue<QueryRequestParam>();
       _queryTasks = new List<Task>();
       _queueQueryExecutors = new List<IQueryExecutor>();
       _lockObject = new object();
 
-      for( int i = 0; i < threadCount; i++ )
+      for (int i = 0; i < threadCount; i++)
       {
-        _queryTasks.Add( new Task( () => { } ) );
-        _queueQueryExecutors.Add( queryExecutorBuilder.Build() );
-        _queueQueryExecutors[ i ].AssignConnection( connBuilder.Build() );
+        _queryTasks.Add(new Task(() => { }));
+        _queueQueryExecutors.Add(queryExecutorBuilder.Build());
+        _queueQueryExecutors[i].AssignConnection(connBuilder.Build());
       }
 
-      _queryTaskWatcher = new Thread( () => MonitorQueryTask() );
+      if (threadCount > 0)
+        _queryTaskWatcher = new Thread(() => MonitorQueryTask());
     }
 
     private void MonitorQueryTask()
@@ -127,7 +128,7 @@ namespace QueryManager
 
       try
       {
-        if( queryExecutor.ConnectionState != ConnectionState.Open )
+        if ( queryExecutor.ConnectionState != ConnectionState.Open )
         {
           InvokeEvent( reqParam, null, new Exception( "unable to start transaction" ), isNeedReturnValue, isFromQueue );
           return;
@@ -183,11 +184,15 @@ namespace QueryManager
       {
         _queryExecutor.ChangeDbTransState( DbTransactionState.Open );
 
-        foreach( IQueryExecutor qryExec in _queueQueryExecutors )
+        foreach ( IQueryExecutor qryExec in _queueQueryExecutors )
           qryExec.ChangeDbTransState( DbTransactionState.Open );
 
-        _shouldWatcherActive = true;
-        _queryTaskWatcher.Start();
+        if (_queryTaskWatcher != null)
+        {
+          _shouldWatcherActive = true;
+          _queryTaskWatcher.Start();
+        }
+
         return new RequestResult( true, CommonMessage.SUCCESS );
       }
       catch( Exception e )
@@ -236,8 +241,11 @@ namespace QueryManager
     {
       try
       {
-        _shouldWatcherActive = false;
-        _queryTaskWatcher.Join();
+        if (_queryTaskWatcher != null)
+        {
+          _shouldWatcherActive = false;
+          _queryTaskWatcher.Join();
+        }
 
         while( _queueRequest.TryDequeue( out QueryRequestParam param ) )
           OnQueuedQueryCancelled?.Invoke( this, "Database connection is closed", param );

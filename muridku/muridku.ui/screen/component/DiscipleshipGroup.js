@@ -1,64 +1,69 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable curly */
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
 import { View, Text, TouchableOpacity, CheckBox as CheckBoxReact, Platform, ScrollView } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
+// import CheckBox from '@react-native-community/checkbox';
 import { BasicStyles } from '../../asset/style-template/BasicStyles';
 import { DiscipleshipGroupStyles } from '../../asset/style-template/DiscipleshipGroupStyles';
 
-export default DiscipleshipGroup = (props) => {
+const DiscipleshipGroup = (props) => {
   const [isChecked, setIsChecked] = useState(false);
 
   useEffect(() => {
-    if(!props.isCheckedMode)
+    if (!props.isCheckedMode)
       setIsChecked(false);
-      
-    if(props.forceGroupCheck)
+
+    if (props.forceGroupCheck)
       setIsChecked(true);
-      
-    if(props.forceGroupUncheck)
+
+    if (props.forceGroupUncheck)
       setIsChecked(false);
-  });
+  }, []);
 
   const getFirstLetterName = (name) => {
-    let nameArr = name.split(" ");
-    let result = "";
+    let nameArr = name.split(' ');
+    let result = '';
 
-    for(let idx = 0; idx < nameArr.length && idx < 2; idx++)
+    for (let idx = 0; idx < nameArr.length && idx < 2; idx++)
       result += nameArr[idx][0];
 
     return result;
-  }
+  };
 
   const onGroupClick = (id, onParentGroupClick) => {
-    if(onParentGroupClick)
+    if (onParentGroupClick)
       onParentGroupClick(id);
-  }
+  };
 
   const onGroupLongPress = (id, onParentGroupLongPress) => {
-    if(onParentGroupLongPress)
+    if (onParentGroupLongPress)
       onParentGroupLongPress(id);
-  }
+  };
 
   const onGroupChecked = (id, checked, onParentGroupChecked) => {
     setIsChecked(checked);
 
-    if(onParentGroupChecked)
+    if (onParentGroupChecked)
       onParentGroupChecked(id, checked);
-  }
+  };
 
   const onMemberClick = (id, onParentMemberClick) => {
-    if(onParentMemberClick)
+    if (onParentMemberClick)
       onParentMemberClick(id);
-  }
-  
+  };
+
   let members = [];
 
   const {
-    globalFontStyle
+    globalFontStyle,
   } = BasicStyles;
 
   const {
     ktbBoxSectionStyle,
     checkBoxSectionStyle,
+    scrollViewSectionStyle,
     descSectionStyle,
     otherDescSectionStyle,
     groupSectionStyle,
@@ -76,10 +81,10 @@ export default DiscipleshipGroup = (props) => {
       <TouchableOpacity
         style={iconUserStyle}
         activeOpacity={0.3}
-        key={element.id}
-        onPress={() => onMemberClick(element.id, props.onMemberClick)}
+        key={element.member.id}
+        onPress={() => onMemberClick(element.member.id, props.onMemberClick)}
       >
-        <Text style={iconUserTextStyle}>{getFirstLetterName(element.name)}</Text>
+        <Text style={iconUserTextStyle}>{getFirstLetterName(element.member.name)}</Text>
       </TouchableOpacity>
     );
   });
@@ -103,7 +108,7 @@ export default DiscipleshipGroup = (props) => {
             {members}
           </View>
         </View>
-        <ScrollView scrollDire>
+        <ScrollView style={scrollViewSectionStyle}>
           <View style={[descSectionStyle, otherDescSectionStyle]}>
             <View style={otherDescTitleStyle}>
               <Text style={otherDescTextStyle}>
@@ -112,7 +117,7 @@ export default DiscipleshipGroup = (props) => {
             </View>
             <View style={otherDescValueStyle}>
               <Text style={otherDescTextStyle}>
-                {props.group.last_meet_dt ?? "-"}
+                {props.group.last_meet_dt ?? '-'}
               </Text>
             </View>
           </View>
@@ -124,7 +129,7 @@ export default DiscipleshipGroup = (props) => {
             </View>
             <View style={otherDescValueStyle}>
               <Text style={otherDescTextStyle}>
-                {props.group.last_meet_name ?? "-"}
+                {props.group.last_meet_name ?? '-'}
               </Text>
             </View>
           </View>
@@ -136,7 +141,7 @@ export default DiscipleshipGroup = (props) => {
             </View>
             <View style={otherDescValueStyle}>
               <Text style={otherDescTextStyle}>
-                {props.group.last_meet_chapter ?? "-"}
+                {props.group.last_meet_chapter ?? '-'}
               </Text>
             </View>
           </View>
@@ -165,4 +170,6 @@ export default DiscipleshipGroup = (props) => {
       }
     </View>
   );
-}
+};
+
+export default DiscipleshipGroup;

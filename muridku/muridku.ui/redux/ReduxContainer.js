@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { createStore } from 'redux';
 import CombinedReducer from '../reducer/CombinedReducer';
 import { persistStore, persistReducer } from 'redux-persist';
@@ -8,8 +9,8 @@ const persistConfig = {
   storage: AsyncStorage,
   // version: 0,
   // migrate: createMigrate({ 0: state => initialState }, { debug: false })
-}
-  
+};
+
 const customCreateStore = (initialState = {}) => {
   const persistedReducer = persistReducer(persistConfig, CombinedReducer);
 
@@ -17,10 +18,10 @@ const customCreateStore = (initialState = {}) => {
     persistedReducer,
     initialState
   );
-  
+
   const persistor = persistStore(store);
   return { store, persistor };
-}
+};
 
 const initialState = {};
 

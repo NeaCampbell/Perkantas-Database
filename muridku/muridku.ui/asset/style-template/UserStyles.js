@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import {
   StyleSheet,
 } from 'react-native';
@@ -121,7 +122,6 @@ export const UserStyles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#FFFFFF',
     opacity: 0.3,
   },

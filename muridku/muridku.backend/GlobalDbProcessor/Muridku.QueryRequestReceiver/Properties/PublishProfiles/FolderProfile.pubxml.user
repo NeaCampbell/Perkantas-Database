@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>D:\Perkantas\ktb-pkk\muridku\muridku.backend\GlobalDbProcessor\Muridku.QueryRequestReceiver\bin\Release\netcoreapp3.1\publish\</_PublishTargetUrl>
+    <History>True|2021-05-27T12:42:40.3230804Z;True|2021-05-27T19:25:10.9382264+07:00;True|2021-05-27T19:18:39.0744421+07:00;True|2021-05-27T19:05:25.5630318+07:00;True|2021-05-27T19:00:08.8040124+07:00;True|2021-05-27T15:54:19.0832407+07:00;</History>
+  </PropertyGroup>
+</Project>

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import registeruser from './out/registeruser';
 import activateuser from './out/activateuser';
 import login from './out/login';

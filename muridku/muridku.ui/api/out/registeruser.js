@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { URL, PORT, POST, TOKEN, IS_HTTP } from '../apiconst';
 import { requesttemplate } from './requesttemplate';
 
@@ -6,7 +7,7 @@ export const registeruser = (fullname, address, email, password, callback) => {
     fullname: fullname,
     address: address,
     email: email,
-    password: password
+    password: password,
   });
 
   const options = {
@@ -16,8 +17,8 @@ export const registeruser = (fullname, address, email, password, callback) => {
     method: POST,
     headers: {
       'Token': TOKEN,
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   };
 
   requesttemplate(options, callback, paraminput, IS_HTTP);

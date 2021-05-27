@@ -1,9 +1,10 @@
+/* eslint-disable prettier/prettier */
 import {
   StyleSheet,
-  Platform
+  Platform,
 } from 'react-native';
 import {
-  ProportionateScreenSizeValue
+  ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
 
 export const BasicColor = '#F59873';
@@ -48,10 +49,66 @@ export const BasicStyles = StyleSheet.create({
     paddingLeft: ProportionateScreenSizeValue(15),
     paddingRight: ProportionateScreenSizeValue(15),
     height: ProportionateScreenSizeValue(DefaultInputHeight),
-    position: 'absolute'
+    position: 'absolute',
   },
   passwordInputStyle: {
+    paddingLeft: ProportionateScreenSizeValue(15),
+    paddingRight: ProportionateScreenSizeValue(15),
     height: ProportionateScreenSizeValue(DefaultPasswordInputHeight),
+    width: '80%',
+    position: 'absolute',
+  },
+  errorSectionStyle: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    zIndex: 1000,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorMessageContainerStyle: {
+    width: '90%',
+    height: ProportionateScreenSizeValue(90),
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 1,
+    backgroundColor: '#FFF',
+    borderRadius: ProportionateScreenSizeValue(10),
+  },
+  errorMessageTextStyle: {
+    fontSize: ProportionateScreenSizeValue(14),
+    color: 'red',
+    fontWeight: 'bold',
+    opacity: 1,
+  },
+  errorMessageButtonStyle: {
+    backgroundColor: 'red',
+    width: '30%',
+    height: '30%',
+    marginTop: ProportionateScreenSizeValue(10),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: ProportionateScreenSizeValue(8),
+  },
+  errorMessageButtonTextStyle: {
+    color: '#FFF',
+  },
+  customActivityIndicatorStyle: {
+    alignItems: 'center',
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.3)',
+  },
+  customActivityIndicatorSizeStyle: {
+    height: '60%',
+    width: '60%',
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

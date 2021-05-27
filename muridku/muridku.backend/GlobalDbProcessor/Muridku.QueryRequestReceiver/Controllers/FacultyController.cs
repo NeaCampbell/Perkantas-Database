@@ -37,25 +37,25 @@ namespace Muridku.QueryRequestReceiver.Controllers
       }
     }
 
-    [HttpGet( QueryListKeyMap.GET_ALL_FACULTY )]
+    [HttpGet(QueryListKeyMap.GET_ALL_FACULTY)]
     public QueryResult GetAllFaculty()
     {
-      LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Empty );
-      return EnqueueRequest( logApi, null, ConstRequestType.GET, QueryListKeyMap.GET_ALL_FACULTY, QueryListKeyMap.GET_ALL_FACULTY );
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Empty);
+      return EnqueueRequest(logApi, null, ConstRequestType.GET, QueryListKeyMap.GET_ALL_FACULTY, QueryListKeyMap.GET_ALL_FACULTY);
     }
 
     [HttpGet( QueryListKeyMap.GET_FACULTY_BY_INSTITUTION_ID )]
-    public Response<Faculty> GetFacultyByInstitutionId( int institutionid )
+    public Response<IList<Faculty>> GetFacultyByInstitutionId( int institutionid )
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "institutionid={0}", institutionid.ToString() ) );
 
       QueryResult reqResult = ExecuteRequest<Faculty>( logApi, new List<string>() { institutionid.ToString() }, ConstRequestType.GET,
-        QueryListKeyMap.GET_FACULTY_BY_INSTITUTION_ID, QueryListKeyMap.GET_FACULTY_BY_INSTITUTION_ID, true );
+        QueryListKeyMap.GET_FACULTY_BY_INSTITUTION_ID, QueryListKeyMap.GET_FACULTY_BY_INSTITUTION_ID );
 
       if( !reqResult.Succeed )
-        return GetResponseBlankSingleModel<Faculty>( reqResult, reqResult.Succeed );
+        return GetResponseBlankMultiModels<Faculty>( reqResult, reqResult.Succeed );
 
-      return GetResponseSingleModel<Faculty>( reqResult );
+      return GetResponseMultiModels<Faculty>( reqResult );
     }
 
     [HttpGet( QueryListKeyMap.GET_FACULTY_BY_ID )]

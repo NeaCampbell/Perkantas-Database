@@ -224,31 +224,38 @@ namespace QueryOperator.QueryExecutor.MySQL
 
     public void ChangeDbTransState( DbTransactionState transState )
     {
-      switch( transState )
+      try
       {
-        case DbTransactionState.Open:
-          _dbConnection.Open();
-          ConnectionState = _dbConnection.State;
-          break;
-        case DbTransactionState.Start:
-          _transaction = _dbConnection.BeginTransaction();
-          ConnectionState = _dbConnection.State;
-          break;
-        case DbTransactionState.Commit:
-          _transaction.Commit();
-          ConnectionState = _dbConnection.State;
-          break;
-        case DbTransactionState.Rollback:
-          _transaction.Rollback();
-          ConnectionState = _dbConnection.State;
-          break;
-        case DbTransactionState.Close:
-          if( _dbConnection.State != ConnectionState.Closed )
-            _dbConnection.Close();
-          ConnectionState = _dbConnection.State;
-          break;
-        default:
-          break;
+        switch (transState)
+        {
+          case DbTransactionState.Open:
+            _dbConnection.Open();
+            ConnectionState = _dbConnection.State;
+            break;
+          case DbTransactionState.Start:
+            _transaction = _dbConnection.BeginTransaction();
+            ConnectionState = _dbConnection.State;
+            break;
+          case DbTransactionState.Commit:
+            _transaction.Commit();
+            ConnectionState = _dbConnection.State;
+            break;
+          case DbTransactionState.Rollback:
+            _transaction.Rollback();
+            ConnectionState = _dbConnection.State;
+            break;
+          case DbTransactionState.Close:
+            if (_dbConnection.State != ConnectionState.Closed)
+              _dbConnection.Close();
+            ConnectionState = _dbConnection.State;
+            break;
+          default:
+            break;
+        }
+      }
+      catch(Exception e)
+      {
+        Console.WriteLine(e.Message);
       }
     }
 

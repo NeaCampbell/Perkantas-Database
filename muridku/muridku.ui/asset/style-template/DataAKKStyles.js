@@ -1,12 +1,17 @@
-import { BorderWidth } from 'react-bootstrap-icons';
+/* eslint-disable prettier/prettier */
 import {
   StyleSheet,
 } from 'react-native';
 import {
-  ProportionateScreenSizeValue
+  ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
+import {
+  DefaultInputHeight,
+  PlaceholderTextColor,
+  DefaultInputFontSize,
+} from './BasicStyles';
 
-const BackgroundColor = "#2A2C4E";
+const BackgroundColor = '#2A2C4E';
 
 export const DataAKKStyles = StyleSheet.create({
   bodyContainerStyle: {
@@ -15,59 +20,127 @@ export const DataAKKStyles = StyleSheet.create({
     height: '100%',
     justifyContent: 'flex-start',
     backgroundColor: BackgroundColor,
+    flexDirection: 'column',
   },
-  searchSectionStyle: {
-    flexDirection: 'row',
-    height: ProportionateScreenSizeValue(42),
-    marginLeft: ProportionateScreenSizeValue(15),
-    marginRight: ProportionateScreenSizeValue(15),
-    marginBottom: ProportionateScreenSizeValue(15),
+  welcomingSectionStyle: {
+    flexDirection: 'column',
     justifyContent: 'center',
-  },
-  searchContainerStyle: {
-    color: '#000000',
-    backgroundColor: '#FAF9FF',
-    width: '100%',
-    height: ProportionateScreenSizeValue(42),
-    paddingLeft: ProportionateScreenSizeValue(5),
-    paddingRight: ProportionateScreenSizeValue(5),
-    borderRadius: ProportionateScreenSizeValue(10)
-  },
-  searchTextStyle: {
-    color: '#000000',
-    backgroundColor: '#FAF9FF',
-    fontSize: ProportionateScreenSizeValue(12),
-    width: '95%',
-  },
-  footerButtonStyle: {
-    width: '30%',
     alignItems: 'center',
-    justifyContent:'flex-start',
-    marginTop: 15
+    width: '100%',
+  },
+  welcomingTextStyle: {
+    color: '#FFFFFF',
+    fontStyle: 'normal',
+    fontSize: ProportionateScreenSizeValue(25),
+  },
+  accTypeTextStyle: {
+    color: '#FFFFFF',
+    paddingVertical: ProportionateScreenSizeValue(10),
+    fontStyle: 'normal',
+    fontSize: ProportionateScreenSizeValue(14),
+  },
+  instSectionStyle: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  instButtonStyle: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '32%',
   },
   buttonStyle: {
     backgroundColor: '#74B973',
-    color: '#FFFFFF',
-    height: ProportionateScreenSizeValue(120),
-    width: ProportionateScreenSizeValue(120),
+    height: ProportionateScreenSizeValue(30),
+    width: ProportionateScreenSizeValue(85),
     alignItems: 'center',
-    marginTop: ProportionateScreenSizeValue(10),
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10
+    justifyContent: 'center',
+    borderTopLeftRadius: ProportionateScreenSizeValue(10),
+    borderTopRightRadius: ProportionateScreenSizeValue(10),
+    borderBottomLeftRadius: ProportionateScreenSizeValue(10),
+    borderBottomRightRadius: ProportionateScreenSizeValue(10),
   },
-  buttonFooterStyle: {
-    backgroundColor: '#F59873',
-    color: '#FFFFFF',
-    height: ProportionateScreenSizeValue(42),
-    width: ProportionateScreenSizeValue(250),
+  buttonUnselectedStyle: {
+    height: ProportionateScreenSizeValue(30),
+    width: ProportionateScreenSizeValue(85),
+    borderWidth: ProportionateScreenSizeValue(1),
+    borderColor: '#AAA',
     alignItems: 'center',
-    marginTop: ProportionateScreenSizeValue(0),
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10
+    justifyContent: 'center',
+    borderTopLeftRadius: ProportionateScreenSizeValue(10),
+    borderTopRightRadius: ProportionateScreenSizeValue(10),
+    borderBottomLeftRadius: ProportionateScreenSizeValue(10),
+    borderBottomRightRadius: ProportionateScreenSizeValue(10),
+  },
+  nameButtonTextStyle: {
+    color: '#3A2A6E',
+    fontStyle: 'normal',
+    fontSize: ProportionateScreenSizeValue(10),
+  },
+  nameButtonUselectedTextStyle: {
+    color: '#AAA',
+    fontStyle: 'normal',
+    fontSize: ProportionateScreenSizeValue(10),
+  },
+  photoStyle: {
+    width: '55%',
+    height: ProportionateScreenSizeValue(40),
+    resizeMode: 'center',
+  },
+  formSectionStyle:{
+    backgroundColor: '#FFFFFF',
+    marginTop: ProportionateScreenSizeValue(15),
+  },
+  formBodySectionStyle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: ProportionateScreenSizeValue(DefaultInputHeight),
+    marginVertical: ProportionateScreenSizeValue(5),
+  },
+  formStyle: {
+    color: '#000',
+    backgroundColor: '#FFFFFF',
+    width: '90%',
+    fontSize: ProportionateScreenSizeValue(12),
+    borderWidth: ProportionateScreenSizeValue(1.5),
+    borderColor: '#D1D5E0',
+    borderTopLeftRadius: ProportionateScreenSizeValue(10),
+    borderTopRightRadius: ProportionateScreenSizeValue(10),
+    borderBottomLeftRadius: ProportionateScreenSizeValue(10),
+    borderBottomRightRadius: ProportionateScreenSizeValue(10),
+  },
+  dropDownContainerStyle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    width: '100%',
+    borderColor: '#D1D5E0',
+    borderRadius: 0,
+    marginLeft: ProportionateScreenSizeValue(15),
+    marginRight: ProportionateScreenSizeValue(15),
+  },
+  dropDownPlaceholderStyle: {
+    width: '80%',
+    fontSize: ProportionateScreenSizeValue(DefaultInputFontSize),
+    color: PlaceholderTextColor,
+  },
+  dropDownStyle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 0,
+  },
+  dropDownItemStyle: {
+    fontSize: ProportionateScreenSizeValue(DefaultInputFontSize),
+  },
+  dropDownSearchContainerStyle: {
+    width: '100%',
+    borderWidth: 0,
+  },
+  dropDownSearchInputStyle: {
+    color: '#000',
+    fontSize: ProportionateScreenSizeValue(DefaultInputFontSize),
   },
   customActivityIndicatorStyle: {
     alignItems: 'center',
@@ -75,85 +148,34 @@ export const DataAKKStyles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#FFFFFF',
     opacity: 0.3,
   },
-  nameButtonTextStyle: {
-    color: '#3A2A6E',
-    paddingVertical: 8,
-    fontStyle: 'normal',
-    fontSize: 16,
-    lineHeight: 10,
-  },
-  bodySectionStyle: {
-    flexDirection: 'row',
-    height: 40,
-    marginTop: 5,
-    marginLeft: 0,
-    marginRight: 0,
-    justifyContent: 'center',
-  },
-  photoStyle: {
-    width: '55%',
-    height: 95,
-    resizeMode: 'center'
-  },
-  welcomingTextStyle: {
-    color: '#FFFFFF',
-    paddingVertical: 10,
-    fontStyle: 'normal',
-    fontSize: 25,
-    lineHeight: 10,
-  },
-  accTypeTextStyle: {
-    color: '#FFFFFF',
-    paddingVertical: 10,
-    fontStyle: 'normal',
-    fontSize: 14,
-    lineHeight: 10,
-  },
-  descTextStyle: {
-    color: '#FFFFFF',
-    paddingVertical: 10,
-    fontStyle: 'normal',
-    fontSize: 14,
-    lineHeight: 10,
-    marginTop: 150
-  },
-  welcomingTextSectionStyle: {
-    flexDirection: 'column',
-    height: 40,
-    marginTop: 10,
-    marginLeft: 0,
-    marginRight: 0,
-    justifyContent: 'center',
+  footerViewStyle: {
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
+    justifyContent:'center',
+    backgroundColor: '#FFF',
+    // marginTop: ProportionateScreenSizeValue(15),
+  },
+  buttonFooterStyle: {
+    backgroundColor: '#F59873',
+    color: '#FFFFFF',
+    height: ProportionateScreenSizeValue(42),
+    width: ProportionateScreenSizeValue(250),
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderTopLeftRadius: ProportionateScreenSizeValue(10),
+    borderTopRightRadius: ProportionateScreenSizeValue(10),
+    borderBottomLeftRadius: ProportionateScreenSizeValue(10),
+    borderBottomRightRadius: ProportionateScreenSizeValue(10),
   },
   submitButtonTextStyle: {
     color: '#FFFFFF',
-    paddingVertical: 15,
     fontStyle: 'normal',
-    fontSize: 16,
-    lineHeight: 15,
+    fontSize: ProportionateScreenSizeValue(16),
+    lineHeight: ProportionateScreenSizeValue(15),
     fontWeight: 'bold',
-  },
-  formStyle:{
-    color: '#F4F8FC',
-    backgroundColor: '#FFFFFF',
-    width: '90%',
-    fontSize: 12,
-    borderWidth: 2,
-    borderColor: '#D1D5E0',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-  },
-  formSectionStyle:{
-    backgroundColor: '#FFFFFF',
-    marginTop: 75,
-    marginBottom: 50,
-    paddingBottom: 100,
   },
 });

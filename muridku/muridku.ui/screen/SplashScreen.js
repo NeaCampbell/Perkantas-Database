@@ -1,13 +1,19 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable curly */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-native/no-inline-styles */
 // Import React and Component
 import React, { useState, useEffect } from 'react';
 import {
   ActivityIndicator,
   View,
   Image,
-  StyleSheet,
-  Text
+  Text,
 } from 'react-native';
-import { LoadingViewSize } from '../asset/style-template/BasicStyles';
+import {
+  BasicStyles,
+  BasicColor,
+} from '../asset/style-template/BasicStyles';
 import { SplashStyles } from '../asset/style-template/SplashStyles';
 
 // Import reducer dependencies
@@ -16,8 +22,8 @@ import { connect } from 'react-redux';
 // Import needed views
 import BodyBaseScreen from './BodyBaseScreen';
 
-const checkuserapi = require("../api/out/checkuserloginstatus");
-const appJson = require("../app.json");
+const checkuserapi = require('../api/out/checkuserloginstatus');
+const appJson = require('../app.json');
 
 const SplashScreen = (props) => {
   //State for ActivityIndicator animation
@@ -28,15 +34,15 @@ const SplashScreen = (props) => {
 
     const callback = (resultapi) => {
       result = resultapi.result;
-    }
+    };
 
-    if(props.User.email !== undefined && props.User.email !== null && props.User.email !== "")
+    if (props.User.email !== undefined && props.User.email !== null && props.User.email !== '')
       checkuserapi.checkuserloginstatus(props.User.email, callback);
 
     setTimeout(() => {
       setAnimating(false);
-      
-      if(!result) {
+
+      if (!result) {
         props.navigation.replace('LoginScreen');
         return;
       }
@@ -46,13 +52,18 @@ const SplashScreen = (props) => {
   }, []);
 
   const {
+    customActivityIndicatorStyle,
+    customActivityIndicatorSizeStyle,
+  } = BasicStyles;
+
+  const {
     containerStyle,
     imgContainerStyle,
     imgStyle,
     logoContainerStyle,
     logo2ContainerStyle,
     logoStyle,
-    versionTextStyle
+    versionTextStyle,
   } = SplashStyles;
 
   const baseScreenItems = (
@@ -80,11 +91,13 @@ const SplashScreen = (props) => {
           <Text style={versionTextStyle}>Version {appJson.version}</Text>
         </View>
       </View>
+      <View style={[customActivityIndicatorStyle, {backgroundColor: 'transparent'}]}>
       <ActivityIndicator
         animating={animating}
-        color="#FFFFFF"
-        size={LoadingViewSize}
+        color={BasicColor}
+        style={customActivityIndicatorSizeStyle}
       />
+      </View>
     </>
   );
 
@@ -92,13 +105,6 @@ const SplashScreen = (props) => {
     <BodyBaseScreen items={baseScreenItems} />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-});
 
 const mapStateToProps = state => {
   const { User } = state;

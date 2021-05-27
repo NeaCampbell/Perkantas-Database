@@ -1,9 +1,8 @@
+/* eslint-disable prettier/prettier */
 import React from 'react';
 import {
   TouchableOpacity,
   View,
-  Image,
-  StyleSheet,
   Text,
   Platform,
 } from 'react-native';
@@ -18,15 +17,23 @@ const BodyMenuBaseScreen = (props) => {
     headerSectionStyle,
     otherHeaderSectionStyle,
     burgerStyle,
-    burgerIconStyle,
+    headerSearchMenuStyle,
+    headerSearchMenuDistStyle,
     titleStyle,
     titleTextStyle,
     childSectionStyle,
     footerSectionStyle,
   } = MenuBasicStyles;
 
+  const childHeightPercentage = props.additionalHeader ? (props.footer ? 72 : 85) :
+                                                         (props.footer ? 82 : 101);
+
   const baseScreenItems = (
     <View style={bodyContainerStyle}>
+      {
+        (props.isError) ?
+        props.error : null
+      }
       <View style={headerSectionStyle}>
         {
           (props.customHeader) ?
@@ -37,10 +44,9 @@ const BodyMenuBaseScreen = (props) => {
                 style={burgerStyle}
                 activeOpacity={0.5}
               >
-                <Image
-                  style={burgerIconStyle}
-                  source={require('../asset/img/burger_strip.png')}
-                />
+                <View style={[headerSearchMenuStyle, headerSearchMenuDistStyle]} />
+                <View style={[headerSearchMenuStyle, headerSearchMenuDistStyle]} />
+                <View style={[headerSearchMenuStyle]} />
               </TouchableOpacity>
               <View style={titleStyle}>
                 <Text style={titleTextStyle}>
@@ -59,14 +65,19 @@ const BodyMenuBaseScreen = (props) => {
           </View>
         ) : null
       }
-      <View style={childSectionStyle}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <View style={[childSectionStyle, {height: `${childHeightPercentage}%`}]}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         {props.child}
       </View>
-      <View style={footerSectionStyle}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}>
-        {props.footer}
-      </View>
+      {
+        (props.footer) ?
+        (
+          <View style={footerSectionStyle}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            {props.footer}
+          </View>
+        ) : null
+      }
     </View>
   );
 
@@ -74,12 +85,5 @@ const BodyMenuBaseScreen = (props) => {
     <BodyBaseScreen items={baseScreenItems} />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-});
 
 export default BodyMenuBaseScreen;
