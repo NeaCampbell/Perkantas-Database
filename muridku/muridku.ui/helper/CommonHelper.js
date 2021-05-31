@@ -25,9 +25,10 @@ export const ProportionateScreenSizeValue = (compHeight) => {
 export const ChangeColorFunction = (oldColors) => {
   const getRandomNo = () => {
     let res = Math.random();
-    const minValue = 0.85;
+    const minValue = 0.4;
+    const maxValue = 0.7;
 
-    while (res < minValue)
+    while (res < minValue || res > maxValue)
       res = Math.random();
 
     return res;

@@ -67,24 +67,9 @@ namespace Muridku.QueryRequestReceiver.Controllers
         () => ValidateEmail( param.email, invalidMsg )
       };
 
-      QueryResult reqResult = ExecuteRequest<User>( logApi, new List<string>() { param.email }, ConstRequestType.GET, QueryListKeyMap.REGISTER_MURIDKU_USER,
-        QueryListKeyMap.GET_USER_BY_EMAIL, isSingleRow: true, preCheckFuncs: preCheckFuncs );
-
-      if( !reqResult.Succeed && reqResult.ErrorMessage != CommonMessage.DATA_NOT_FOUND )
-        return reqResult;
-
-      if( reqResult.Succeed )
-        return new QueryResult()
-        {
-          RequestId = reqResult.RequestId,
-          RequestCode = reqResult.RequestCode,
-          Succeed = false,
-          ErrorMessage = "user already exists",
-          Result = reqResult.Result
-        };
-
-      return ExecuteRequest<User>( logApi, new List<string>() { param.fullname, param.email, encryptedPassword, GetUsernameFromHeader( HttpContext ) },
-        ConstRequestType.POST, QueryListKeyMap.REGISTER_MURIDKU_USER, QueryListKeyMap.REGISTER_MURIDKU_USER, isSingleRow: true );
+      return ExecuteRequest<User>(logApi, new List<string>() { param.fullname, param.email, encryptedPassword, GetUsernameFromHeader(HttpContext) },
+        ConstRequestType.POST, QueryListKeyMap.REGISTER_MURIDKU_USER, QueryListKeyMap.REGISTER_MURIDKU_USER, isSingleRow: true,
+        preCheckFuncs: preCheckFuncs);
     }
 
     [HttpPut( QueryListKeyMap.ACTIVATE_USER )]
@@ -97,27 +82,25 @@ namespace Muridku.QueryRequestReceiver.Controllers
         () => ValidateParamInputString( new Tuple<string, string, int>( "email", email, email.Length ) )
       };
 
-      QueryResult userResult = ExecuteRequest<User>( logApi, new List<string>() { email }, ConstRequestType.GET, QueryListKeyMap.ACTIVATE_USER,
-        QueryListKeyMap.GET_USER_BY_EMAIL, isSingleRow: true, preCheckFuncs: preCheckFuncs );
-
-      if( !userResult.Succeed )
-        return userResult;
-
-      return ExecuteRequest<User>( logApi, new List<string>() { email }, ConstRequestType.PUT, QueryListKeyMap.ACTIVATE_USER, QueryListKeyMap.ACTIVATE_USER,
-        isSingleRow: true );
+      return ExecuteRequest<User>(logApi, new List<string>() { email }, ConstRequestType.PUT,
+        QueryListKeyMap.ACTIVATE_USER, QueryListKeyMap.ACTIVATE_USER,
+        isSingleRow: true, preCheckFuncs: preCheckFuncs);
     }
 
-    [HttpPut( QueryListKeyMap.LOGIN )]
-    public Response<User> Login( string email, string password )
+    [HttpPut(QueryListKeyMap.LOGIN)]
+    public Response<User> Login(string email, string password, string deviceid, int isstayloggedin)
     {
-      LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "email={0}&password={1}", email, password ) );
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("email={0}&password={1}&deviceid={2}&isstayloggedin={3}",
+        email, password, deviceid, isstayloggedin.ToString()));
       string invalidMsg = "invalid email or password";
 
       IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
       {
         () => ValidateParamInputString( new Tuple<string, string, int>( "email", email, email.Length ),
-                                        new Tuple<string, string, int>( "password", password, string.IsNullOrEmpty( password ) ? 0 : password.Length ) ),
-        () => ValidateEmail( email, invalidMsg )
+                                        new Tuple<string, string, int>( "password", password, string.IsNullOrEmpty( password ) ? 0 : password.Length ),
+                                        new Tuple<string, string, int>( "device id", deviceid, string.IsNullOrEmpty( deviceid ) ? 0 : deviceid.Length )),
+        () => ValidateEmail( email, invalidMsg ),
+        () => ValidateStayLoggedInValue( isstayloggedin )
       };
 
       IList<Func<User, CheckParam>> postCheckFuncs = new List<Func<User, CheckParam>>
@@ -125,88 +108,85 @@ namespace Muridku.QueryRequestReceiver.Controllers
         ( User user ) => ValidatePassword( user, password, invalidMsg )
       };
 
-      QueryResult reqResult = ExecuteRequest( logApi, new List<string>() { email }, ConstRequestType.GET, QueryListKeyMap.LOGIN,
-        QueryListKeyMap.GET_ACTIVE_USER_BY_EMAIL, isSingleRow: true, preCheckFuncs: preCheckFuncs, postCheckFuncs: postCheckFuncs );
+      QueryResult reqResult = ExecuteRequest(logApi, new List<string>() { email, deviceid, isstayloggedin.ToString() }, ConstRequestType.GET,
+        QueryListKeyMap.LOGIN, QueryListKeyMap.LOGIN, isSingleRow: true, preCheckFuncs: preCheckFuncs,
+        postCheckFuncs: postCheckFuncs);
 
-      if( !reqResult.Succeed )
-        return GetResponseBlankSingleModel<User>( reqResult, reqResult.Succeed );
+      if (!reqResult.Succeed)
+        return GetResponseBlankSingleModel<User>(reqResult, reqResult.Succeed);
 
-      User user = GetModelFromQueryResult<User>( reqResult );
-
-      if( user.is_logged_in == 1 )
-        return GetResponseBlankSingleModel<User>( reqResult, false, "user is still logged in", false );
-
-      QueryResult loginResult = ExecuteRequest<User>( logApi, new List<string>() { email }, ConstRequestType.PUT, QueryListKeyMap.LOGIN,
-        QueryListKeyMap.LOGIN, isSingleRow: true );
-
-      if( !loginResult.Succeed )
-        return GetResponseBlankSingleModel<User>( loginResult, loginResult.Succeed );
-
+      User user = GetModelFromQueryResult<User>(reqResult);
       user.password = null;
-      user.is_logged_in = 1;
-      return GetResponseSingleModelCustom( loginResult, user );
+      return GetResponseSingleModelCustom(reqResult, user);
     }
 
-    [HttpPut( QueryListKeyMap.LOGOUT )]
-    public Response<User> Logout( string email )
+    [HttpPut(QueryListKeyMap.LOGOUT)]
+    public Response<User> Logout(string email, string deviceid)
     {
-      LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "email={0}", email ) );
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("email={0}&deviceid={1}", email, deviceid));
       string invalidMsg = "invalid email";
 
       IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
       {
-        () => ValidateParamInputString( new Tuple<string, string, int>( "email", email, email.Length ) ),
+        () => ValidateParamInputString( new Tuple<string, string, int>( "email", email, email.Length ),
+                                        new Tuple<string, string, int>( "device id", deviceid, deviceid.Length ) ),
         () => ValidateEmail( email, invalidMsg )
       };
 
-      QueryResult reqResult = ExecuteRequest<User>( logApi, new List<string>() { email }, ConstRequestType.GET, QueryListKeyMap.LOGOUT,
-        QueryListKeyMap.GET_ACTIVE_USER_BY_EMAIL, isSingleRow: true, preCheckFuncs: preCheckFuncs );
+      QueryResult reqResult = ExecuteRequest<User>(logApi, new List<string>() { email, deviceid }, ConstRequestType.GET,
+        QueryListKeyMap.LOGOUT, QueryListKeyMap.LOGOUT, isSingleRow: true, preCheckFuncs: preCheckFuncs);
 
-      if( !reqResult.Succeed )
-        return GetResponseBlankSingleModel<User>( reqResult, reqResult.Succeed );
+      if (!reqResult.Succeed)
+        return GetResponseBlankSingleModel<User>(reqResult, reqResult.Succeed);
 
-      User user = GetModelFromQueryResult<User>( reqResult );
-
-      if( user.is_logged_in == 0 )
-        return GetResponseBlankSingleModel<User>( reqResult, false, "user already logged out", false );
-
-      QueryResult logoutResult = ExecuteRequest<User>( logApi, new List<string>() { email }, ConstRequestType.PUT, QueryListKeyMap.LOGOUT,
-        QueryListKeyMap.LOGOUT, isSingleRow: true );
-      logoutResult.RequestCode = QueryListKeyMap.LOGOUT;
-
-      if( !logoutResult.Succeed )
-        return GetResponseBlankSingleModel<User>( logoutResult, logoutResult.Succeed );
-
+      User user = GetModelFromQueryResult<User>(reqResult);
       user.password = null;
-      user.is_logged_in = 0;
-      return GetResponseSingleModelCustom( logoutResult, user );
+      return GetResponseSingleModelCustom(reqResult, user);
     }
 
-    [HttpGet( QueryListKeyMap.CHECK_USER_LOGIN_STATUS )]
-    public Response<User> CheckUserLoginStatus( string email )
+    [HttpGet(QueryListKeyMap.CHECK_USER_LOGIN_STATUS)]
+    public Response<User> CheckUserLoginStatus(string email, string deviceid)
     {
-      LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "email={0}", email ) );
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("email={0}&deviceid={1}", email, deviceid));
       string invalidMsg = "invalid email";
 
       IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
       {
-        () => ValidateParamInputString( new Tuple<string, string, int>( "email", email, email.Length ) ),
+        () => ValidateParamInputString( new Tuple<string, string, int>( "email", email, email.Length ),
+                                        new Tuple<string, string, int>( "device id", deviceid, deviceid.Length ) ),
         () => ValidateEmail( email, invalidMsg )
       };
 
-      QueryResult reqResult = ExecuteRequest<User>( logApi, new List<string>() { email }, ConstRequestType.GET, QueryListKeyMap.CHECK_USER_LOGIN_STATUS,
-        QueryListKeyMap.GET_ACTIVE_USER_BY_EMAIL, isSingleRow: true, preCheckFuncs: preCheckFuncs );
+      QueryResult reqResult = ExecuteRequest<User>(logApi, new List<string>() { email, deviceid }, ConstRequestType.GET,
+        QueryListKeyMap.CHECK_USER_LOGIN_STATUS, QueryListKeyMap.CHECK_USER_LOGIN_STATUS, isSingleRow: true, preCheckFuncs: preCheckFuncs);
 
-      if( !reqResult.Succeed )
-        return GetResponseBlankSingleModel<User>( reqResult, reqResult.Succeed );
+      if (!reqResult.Succeed)
+        return GetResponseBlankSingleModel<User>(reqResult, reqResult.Succeed);
 
-      User user = GetModelFromQueryResult<User>( reqResult );
-
-      if( user.is_logged_in == 0 )
-        return GetResponseBlankSingleModel<User>( reqResult, false, "user already logged out", false );
-
+      User user = GetModelFromQueryResult<User>(reqResult);
       user.password = null;
-      return GetResponseSingleModelCustom( reqResult, user );
+      return GetResponseSingleModelCustom(reqResult, user);
+    }
+
+    [HttpGet(QueryListKeyMap.CHECK_USER_ACTIVE_ON_DEVICE)]
+    public Response<User> CheckUserActiveOnDevice(string deviceid)
+    {
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("deviceid={0}", deviceid));
+
+      IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
+      {
+        () => ValidateParamInputString( new Tuple<string, string, int>( "device id", deviceid, deviceid.Length ) )
+      };
+
+      QueryResult reqResult = ExecuteRequest<User>(logApi, new List<string>() { deviceid }, ConstRequestType.GET,
+        QueryListKeyMap.CHECK_USER_ACTIVE_ON_DEVICE, QueryListKeyMap.CHECK_USER_ACTIVE_ON_DEVICE, isSingleRow: true, preCheckFuncs: preCheckFuncs);
+
+      if (!reqResult.Succeed)
+        return GetResponseBlankSingleModel<User>(reqResult, reqResult.Succeed);
+
+      User user = GetModelFromQueryResult<User>(reqResult);
+      user.password = null;
+      return GetResponseSingleModelCustom(reqResult, user);
     }
 
     [HttpGet(QueryListKeyMap.VALIDATE_NEW_EMAIL)]
@@ -277,6 +257,21 @@ namespace Muridku.QueryRequestReceiver.Controllers
       {
         CheckResult = true,
         Message = string.Empty
+      };
+    }
+
+    private CheckParam ValidateStayLoggedInValue(int isstayloggedin)
+    {
+      if (isstayloggedin > 1 || isstayloggedin < 0)
+        return new CheckParam()
+        {
+          CheckResult = false,
+          Message = "invalid stay logged in param"
+        };
+
+      return new CheckParam()
+      {
+        CheckResult = true
       };
     }
   }

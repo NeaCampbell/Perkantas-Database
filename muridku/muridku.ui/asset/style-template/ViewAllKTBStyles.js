@@ -6,13 +6,12 @@ import {
   ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
 
-const BackgroundColor = '#2A2C4E';
+const ButtonColor = '#815BF0';
 
 export const ViewAllKTBStyles = StyleSheet.create({
   headerStyle: {
     height: '100%',
     width: '100%',
-    backgroundColor: BackgroundColor,
     flexDirection: 'row',
   },
   headerCancelStyle: {
@@ -26,8 +25,7 @@ export const ViewAllKTBStyles = StyleSheet.create({
     fontSize: ProportionateScreenSizeValue(12),
     marginLeft: ProportionateScreenSizeValue(12),
     textDecorationLine: 'underline',
-    opacity: 1,
-    color: '#FFF',
+    color: 'rgba(255, 255, 255, 1)',
   },
   headerSelectAllStyle: {
     width: '50%',
@@ -40,55 +38,94 @@ export const ViewAllKTBStyles = StyleSheet.create({
     fontSize: ProportionateScreenSizeValue(12),
     marginRight: ProportionateScreenSizeValue(12),
     textDecorationLine: 'underline',
-    opacity: 1,
-    color: '#FFF',
+    color: 'rgba(255, 255, 255, 1)',
   },
   bodyContainerStyle: {
     position: 'absolute',
     width: '100%',
     height: '100%',
     justifyContent: 'flex-start',
-    backgroundColor: BackgroundColor,
+    backgroundColor: 'white',
+    paddingVertical: ProportionateScreenSizeValue(12),
   },
   searchSectionStyle: {
     flexDirection: 'row',
-    height: ProportionateScreenSizeValue(42),
+    height: '100%',
+    width: '100%',
     marginLeft: ProportionateScreenSizeValue(15),
     marginRight: ProportionateScreenSizeValue(15),
-    marginBottom: ProportionateScreenSizeValue(15),
-    justifyContent: 'center',
-  },
-  searchContainerStyle: {
-    color: '#000000',
-    backgroundColor: '#FAF9FF',
-    width: '100%',
-    height: ProportionateScreenSizeValue(42),
-    paddingLeft: ProportionateScreenSizeValue(5),
-    paddingRight: ProportionateScreenSizeValue(5),
     borderRadius: ProportionateScreenSizeValue(10),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchSectionContainerStyle: {
+    width: '90%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: ProportionateScreenSizeValue(10),
+    marginLeft: ProportionateScreenSizeValue(5),
+    marginRight: ProportionateScreenSizeValue(5),
+    height: '70%',
+    backgroundColor: 'white',
   },
   searchTextStyle: {
-    color: '#000000',
-    backgroundColor: '#FAF9FF',
-    fontSize: ProportionateScreenSizeValue(12),
-    width: '95%',
+    marginLeft: ProportionateScreenSizeValue(7),
+    marginRight: ProportionateScreenSizeValue(8),
+    width: '75%',
+    backgroundColor: 'white',
+    color: 'black',
   },
-  footerViewStyle: {
-    width: '50%',
+  searchButtonStyle: {
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent:'flex-start',
+    borderLeftWidth: ProportionateScreenSizeValue(2),
+    borderLeftColor: '#DDD',
+    height: '70%',
+    width: '15%',
+  },
+  searchButtonTextStyle: {
+    fontSize: ProportionateScreenSizeValue(12),
+    color: '#000',
+  },
+  footerSectionStyle: {
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerButtonSectionStyle: {
+    width: '50%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent:'center',
   },
   buttonStyle: {
-    backgroundColor: '#815BF0',
-    color: '#FFFFFF',
-    height: ProportionateScreenSizeValue(35),
-    width: ProportionateScreenSizeValue(35),
+    height: ProportionateScreenSizeValue(36),
+    width: ProportionateScreenSizeValue(60),
     alignItems: 'center',
-    marginTop: ProportionateScreenSizeValue(10),
-    borderTopLeftRadius: ProportionateScreenSizeValue(5),
-    borderTopRightRadius: ProportionateScreenSizeValue(5),
-    borderBottomLeftRadius: ProportionateScreenSizeValue(5),
-    borderBottomRightRadius: ProportionateScreenSizeValue(5),
+    justifyContent: 'center',
+    borderRadius: ProportionateScreenSizeValue(18),
+  },
+  buttonEnableStyle: {
+    borderWidth: ProportionateScreenSizeValue(1),
+    borderColor: ButtonColor,
+  },
+  buttonDisableStyle: {
+    borderWidth: ProportionateScreenSizeValue(1),
+    borderColor: 'rgba(129, 91, 240, 0.5)',
+  },
+  buttonTextStyle: {
+    fontSize: ProportionateScreenSizeValue(12),
+  },
+  buttonTextEnableStyle: {
+    color: ButtonColor,
+    fontWeight: 'bold',
+  },
+  buttonTextDisableStyle: {
+    color: 'rgba(129, 91, 240, 0.5)',
   },
   customActivityIndicatorStyle: {
     alignItems: 'center',
@@ -96,7 +133,6 @@ export const ViewAllKTBStyles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    opacity: 0.3,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
 });

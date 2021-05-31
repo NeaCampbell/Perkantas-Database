@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable curly */
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
+  KeyboardAvoidingView,
   TouchableOpacity,
   Text,
   ScrollView,
@@ -10,32 +11,38 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import BodyMenuBaseScreen from './BodyMenuBaseScreen';
-import { BasicStyles } from '../asset/style-template/BasicStyles';
 import { ViewDataKTBStyles } from '../asset/style-template/ViewDataKTBStyles';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import {
-  ProportionateScreenSizeValue,
-  ChangeColorFunction,
-} from '../helper/CommonHelper';
-import { SET_SELECTED_KTB, SET_SELECTED_MEMBER } from '../reducer/action/ActionConst';
+import { BackgroundColor } from '../asset/style-template/MenuBasicStyles';
+import { SET_SELECTED_KTB, SET_SELECTED_MEMBER, SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
+import EntryKTBScreen, { KTBEditMode } from './EntryKTBScreen';
+import Disciple from './component/Disciple';
+import Error from './component/Error';
 
 const getktbapi = require('../api/out/getktbbyktbid');
 
 const ViewDataKTBScreen = (props) => {
+  const selectAll = 'Select All';
+  const unselectAll = 'Unselect All';
   const { navigation } = props;
   const [loading, setLoading] = useState(true);
   const [errorText, setErrorText] = useState('');
+  const [checkedMode, setCheckedMode] = useState(false);
+  const [selectAllText, setSelectAllText] = useState(selectAll);
+  const [showEditGroupScreen, setShowEditGroupScreen] = useState(false);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [errorText]);
 
   const errorHandler = (error) => {
-    setLoading(false);
     setErrorText(error.message);
   };
 
   const callback = (result) => {
-    setLoading(false);
-
     if (!result.succeed)
       setErrorText(result.errorMessage);
+    else
+      setLoading(false);
 
     props.dispatch({type: SET_SELECTED_KTB, ktb: result.result});
   };
@@ -43,34 +50,48 @@ const ViewDataKTBScreen = (props) => {
   if (loading)
     getktbapi.getktbbyktbid(props.KTB.ktb.id, callback, errorHandler);
 
-    const {
-      globalFontStyle,
-      errorSectionStyle,
-      errorMessageContainerStyle,
-      errorMessageTextStyle,
-      errorMessageButtonStyle,
-      errorMessageButtonTextStyle,
-    } = BasicStyles;
-
   const {
+    headerStyle,
+    headerCancelStyle,
+    headerCancelTextStyle,
+    headerSelectAllStyle,
+    headerSelectAllTextStyle,
     bodyContainerStyle,
+    headerRightButtonSectionStyle,
+    headerRightButtonTextStyle,
     historySectionStyle,
     historyInnerSectionStyle,
     historyInnerTitleSectionStyle,
     historyTextStyle,
-    contentSectionStyle,
-    contentSectionInnerStyle,
-    discipleSectionStyle,
-    buttonDiscipleStyle,
-    textButtonSectionStyle,
     footerSectionStyle,
     footerViewStyle,
-    nameButtonSectionStyle,
-    nameButtonTextStyle,
-    cityButtonTopTextStyle,
-    cityButtonTextStyle,
     buttonFooterStyle,
+    buttonFooterEnableStyle,
+    buttonFooterDisableStyle,
+    buttonFooterTextStyle,
+    buttonFooterTextEnableStyle,
+    buttonFooterTextDisableStyle,
   } = ViewDataKTBStyles;
+
+  const onEditKTBNameClick = () => {
+    setShowEditGroupScreen(true);
+  };
+
+  const onCancelClick = () => {
+    setCheckedMode(false);
+  };
+
+  const onSelectAllClick = (text) => {
+    console.log(text);
+  };
+
+  const onEditGroupSaveClick = (value) => {
+    setShowEditGroupScreen(false);
+  };
+
+  const onEditGroupCancelClick = () => {
+    setShowEditGroupScreen(false);
+  };
 
   const onMemberClick = (id) => {
     const selectedMembers = props.KTB.members.filter((data) => {return data.member.id === id;});
@@ -80,76 +101,93 @@ const ViewDataKTBScreen = (props) => {
 
     const selectedMember = selectedMembers[0];
     props.dispatch({ type: SET_SELECTED_MEMBER, member: selectedMember });
+    props.dispatch({ type: SET_CURRENT_PAGE, page: 'EntryDataAKKScreen' });
     navigation.replace('EntryDataAKKScreen');
+  };
+
+  const onMemberLongPress = () => {
+    if (!checkedMode)
+      setCheckedMode(true);
   };
 
   const addMemberClick = () => {
     props.dispatch({ type: SET_SELECTED_MEMBER, member: null });
+    props.dispatch({ type: SET_CURRENT_PAGE, page: 'EntryDataAKKScreen' });
     navigation.replace('EntryDataAKKScreen');
+  };
+
+  const addKtbHistoryClick = () => {
+    props.dispatch({ type: SET_CURRENT_PAGE, page: 'AddKTBHistoryScreen' });
+    navigation.replace('AddKTBHistoryScreen');
   };
 
   const deleteMemberClick = () => {
   };
 
   let disciple = [];
-  let discipleColors = [];
 
   if (props.KTB.members.length > 0)
     props.KTB.members.forEach((item) => {
-      const color = ChangeColorFunction( discipleColors );
-
       disciple.push(
         (
-          <View style={discipleSectionStyle} key={item.member.id}>
-            <TouchableOpacity
-              style={[buttonDiscipleStyle, {backgroundColor: color}]}
-              activeOpacity={0.5}
-              onPress={() => onMemberClick(item.member.id)}
-              disabled={item.user.is_active === 1}
-            >
-              {/* <Image
-                source={require('../asset/img/man.png')}
-                style={disciplePhotoStyle}
-              /> */}
-              <View
-                style={textButtonSectionStyle}
-              >
-                <View
-                  style={nameButtonSectionStyle}
-                >
-                  <Text style={[globalFontStyle, nameButtonTextStyle]}>
-                    {item.member.name}
-                  </Text>
-                </View>
-                <Text style={[globalFontStyle, cityButtonTopTextStyle]}>
-                  {item.user && item.user.email !== undefined && item.user.email !== null && item.user.email !== '' ? item.user.email : '-'}
-                </Text>
-                <Text style={[globalFontStyle, cityButtonTextStyle]}>
-                  {item.member.address !== undefined && item.member.address !== null && item.member.address !== '' ? item.member.address : '-'}
-                </Text>
-                <Text style={[globalFontStyle, cityButtonTextStyle]}>
-                  {item.member.birth_dt !== undefined && item.member.birth_dt !== null && item.member.birth_dt !== '' ? item.member.birth_dt : '-'}
-                </Text>
-                <Text style={[globalFontStyle, cityButtonTextStyle]}>
-                  {item.member.birth_place !== undefined && item.member.birth_place !== null && item.member.birth_place !== '' ? item.member.birth_place : '-'}
-                </Text>
-                <Text style={[globalFontStyle, cityButtonTextStyle]}>
-                  {item.member.mobile_phn !== undefined && item.member.mobile_phn !== null && item.member.mobile_phn !== '' ? item.member.mobile_phn : '-'}
-                </Text>
-                {/* for institution - API is not done yet */}
-                <Text style={[globalFontStyle, cityButtonTextStyle]}>
-                  {item.member.mobile_phn !== undefined && item.member.mobile_phn !== null && item.member.mobile_phn !== '' ? item.member.mobile_phn : '-'}
-                </Text>
-                {/* for faculty - API is not done yet */}
-                <Text style={[globalFontStyle, cityButtonTextStyle]}>
-                  {item.member.mobile_phn !== undefined && item.member.mobile_phn !== null && item.member.mobile_phn !== '' ? item.member.mobile_phn : '-'}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+          <Disciple
+            key={item.member.id}
+            isCheckedMode={checkedMode}
+            forceMemberCheck={false}
+            forceMemberUncheck={false}
+            member={item}
+            onMemberClick={onMemberClick}
+            onMemberLongPress={onMemberLongPress}
+          />
         )
       );
     });
+
+  const headerRightButton = (
+    <TouchableOpacity
+      style={headerRightButtonSectionStyle}
+      onPress={() => onEditKTBNameClick()}
+    >
+      <Text style={headerRightButtonTextStyle}>Edit</Text>
+    </TouchableOpacity>
+  );
+
+  const editKTBScreen = (
+    <EntryKTBScreen
+      onNextClick={(value) => onEditGroupSaveClick(value)}
+      onCancelClick={() => onEditGroupCancelClick()}
+      mode={KTBEditMode}
+    />
+  );
+
+  const customHeader = (
+    <View
+      style={headerStyle}
+    >
+      <TouchableOpacity
+        style={headerCancelStyle}
+        activeOpacity={0.5}
+        onPress={() => onCancelClick()}
+      >
+        <Text
+          style={headerCancelTextStyle}
+        >
+          Cancel
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={headerSelectAllStyle}
+        activeOpacity={0.5}
+        onPress={() => onSelectAllClick(selectAllText)}
+      >
+        <Text
+          style={headerSelectAllTextStyle}
+        >
+          {selectAllText}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   const groupHistory = (
     <View style={historySectionStyle}
@@ -163,6 +201,7 @@ const ViewDataKTBScreen = (props) => {
         >
           <Text
             style={historyTextStyle}
+            numberOfLines={1}
           >
             Pertemuan Terakhir
           </Text>
@@ -224,54 +263,55 @@ const ViewDataKTBScreen = (props) => {
     </View>
   );
 
+  const errorScreen = (
+    <Error
+      buttonClick={() => setErrorText('')}
+      message={errorText}
+    />
+  );
+
   const child = (
-    <View style={bodyContainerStyle}>
-      {
-        (errorText !== '') ? (
-          <View style={errorSectionStyle}>
-            <View style={errorMessageContainerStyle}>
-              <Text style={errorMessageTextStyle}>
-                {`Error! ${errorText}`}
-              </Text>
-              <TouchableOpacity
-                style={errorMessageButtonStyle}
-                onPress={() => setErrorText('')}
-              >
-              <Text style={errorMessageButtonTextStyle}>Back</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : null
-      }
+    <KeyboardAvoidingView style={bodyContainerStyle}>
       {groupHistory}
       <ScrollView
-        style={contentSectionStyle}
-        contentContainerStyle={contentSectionInnerStyle}
+        // style={dataSectionStyle}
+        // contentContainerStyle={dataContentSectionStyle}
       >
+        <View style={[{flexDirection: 'column', flex: 1}]}>
           {disciple}
+        </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 
   const footer = (
     <View style={footerSectionStyle}>
       <View style={footerViewStyle}>
         <TouchableOpacity
-          style={buttonFooterStyle}
+          style={[buttonFooterStyle, buttonFooterEnableStyle]}
           activeOpacity={0.5}
           onPress={() => addMemberClick()}
         >
-          <Icon name="add" size={ProportionateScreenSizeValue(25)} color="white"/>
+          <Text style={[buttonFooterTextStyle, buttonFooterTextEnableStyle]}>Tambah</Text>
         </TouchableOpacity>
       </View>
       <View style={footerViewStyle}>
         <TouchableOpacity
-          style={buttonFooterStyle}
+          style={[buttonFooterStyle, buttonFooterEnableStyle]}
+          activeOpacity={0.5}
+          onPress={() => addKtbHistoryClick()}
+        >
+          <Text style={[buttonFooterTextStyle, buttonFooterTextEnableStyle]}>History</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={footerViewStyle}>
+        <TouchableOpacity
+          style={[buttonFooterStyle, buttonFooterDisableStyle]}
           activeOpacity={0.5}
           onPress={() => deleteMemberClick()}
           disabled={true}
         >
-          <Icon name="history" size={ProportionateScreenSizeValue(25)} color="white"/>
+          <Text style={[buttonFooterTextStyle, buttonFooterTextDisableStyle]}>Hapus</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -280,15 +320,24 @@ const ViewDataKTBScreen = (props) => {
   return (
     <BodyMenuBaseScreen
       title={`Kelompok ${props.KTB.ktb.name}`}
+      overlayScreen={showEditGroupScreen ? editKTBScreen : null}
+      errorScreen={(errorText !== '') ? errorScreen : null}
+      headerRightButton={headerRightButton}
+      customHeader={
+        (checkedMode) ? customHeader : undefined
+      }
       child={child}
       footer={footer}
+      childName="ViewDataKTBScreen"
+      navigation={navigation}
+      statusBarColor={BackgroundColor}
     />
   );
 };
 
 const mapStateToProps = state => {
-  const { User, KTB } = state;
-  return { User, KTB };
+  const { Page, User, KTB } = state;
+  return { Page, User, KTB };
 };
 
 export default connect(mapStateToProps)(ViewDataKTBScreen);

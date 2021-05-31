@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useState } from 'react';
 import {
   TouchableOpacity,
   View,
@@ -7,11 +7,23 @@ import {
   Platform,
 } from 'react-native';
 import { MenuBasicStyles } from '../asset/style-template/MenuBasicStyles';
+import MenuScreen from './MenuScreen';
 
 // Import needed views
 import BodyBaseScreen from './BodyBaseScreen';
 
 const BodyMenuBaseScreen = (props) => {
+  const { navigation, statusBarColor } = props;
+  const [showMenuScreen, setShowMenuScreen] = useState(false);
+
+  const onBurgerClick = () => {
+    setShowMenuScreen(true);
+  };
+
+  const onMenuExitClick = () => {
+    setShowMenuScreen(false);
+  };
+
   const {
     bodyContainerStyle,
     headerSectionStyle,
@@ -28,6 +40,13 @@ const BodyMenuBaseScreen = (props) => {
   const childHeightPercentage = props.additionalHeader ? (props.footer ? 72 : 85) :
                                                          (props.footer ? 82 : 101);
 
+  const overlayScreenView = (
+    <MenuScreen
+      onExitClick={() => onMenuExitClick()}
+      navigation={navigation}
+    />
+  );
+
   const baseScreenItems = (
     <View style={bodyContainerStyle}>
       {
@@ -43,6 +62,7 @@ const BodyMenuBaseScreen = (props) => {
               <TouchableOpacity
                 style={burgerStyle}
                 activeOpacity={0.5}
+                onPress={() => onBurgerClick()}
               >
                 <View style={[headerSearchMenuStyle, headerSearchMenuDistStyle]} />
                 <View style={[headerSearchMenuStyle, headerSearchMenuDistStyle]} />
@@ -53,6 +73,9 @@ const BodyMenuBaseScreen = (props) => {
                   {props.title}
                 </Text>
               </View>
+              {
+                (props.headerRightButton) ?? null
+              }
             </>
           )
         }
@@ -82,7 +105,16 @@ const BodyMenuBaseScreen = (props) => {
   );
 
   return (
-    <BodyBaseScreen items={baseScreenItems} />
+    <BodyBaseScreen
+      statusBarColor={statusBarColor}
+      items={baseScreenItems}
+      overlayScreen={showMenuScreen ? overlayScreenView : props.overlayScreen}
+      loadingScreen={props.loadingScreen}
+      confirmScreen={props.confirmScreen}
+      errorScreen={props.errorScreen}
+      childName={props.childName}
+      navigation={navigation}
+    />
   );
 };
 

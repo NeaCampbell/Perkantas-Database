@@ -1,5 +1,4 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable react-native/no-inline-styles */
 import React, { useState, createRef } from 'react';
 import {
   ActivityIndicator,
@@ -12,7 +11,7 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import { SET_USER } from '../reducer/action/ActionConst';
+import { SET_USER, SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
 import { connect } from 'react-redux';
 import BodyBaseScreen from './BodyBaseScreen';
 import { ProportionateScreenSizeValue } from '../helper/CommonHelper';
@@ -26,6 +25,7 @@ import {
   LoginStyles,
   BackgroundColor,
 } from '../asset/style-template/LoginStyles';
+import Error from './component/Error';
 
 const loginapi = require('../api/out/login');
 
@@ -33,6 +33,7 @@ const LoginScreen = (props) => {
   const { navigation } = props;
   const [userEmail, setUserEmail] = useState(props.User.email);
   const [userPassword, setUserPassword] = useState('');
+  const [isStayLoggedIn, setIsStayLoggedIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorText, setErrorText] = useState('');
   const emailInputRef = createRef();
@@ -41,6 +42,7 @@ const LoginScreen = (props) => {
   const resetState = () => {
     setUserEmail(props.User.email);
     setUserPassword('');
+    setIsStayLoggedIn(false);
     setLoading(false);
     setErrorText('');
   };
@@ -70,6 +72,7 @@ const LoginScreen = (props) => {
       }
 
       props.dispatch({ type: SET_USER, user: result.result });
+      props.dispatch({ type: SET_CURRENT_PAGE, page: 'ViewAllKTBScreen' });
       resetState();
       navigation.replace('ViewAllKTBScreen');
     };
@@ -79,7 +82,7 @@ const LoginScreen = (props) => {
       setErrorText(error.message);
     };
 
-    loginapi.login(userEmail, userPassword, callback, errorHandler);
+    loginapi.login(userEmail, userPassword, isStayLoggedIn ? 1 : 0, callback, errorHandler);
   };
 
   const {
@@ -87,48 +90,56 @@ const LoginScreen = (props) => {
     basicInputStyle,
     inputStyle,
     passwordInputStyle,
-    errorSectionStyle,
-    errorMessageContainerStyle,
-    errorMessageTextStyle,
-    errorMessageButtonStyle,
-    errorMessageButtonTextStyle,
     customActivityIndicatorStyle,
-    customActivityIndicatorSizeStyle,
   } = BasicStyles;
 
   const {
     bodyContainerStyle,
     logoContainerStyle,
     logoStyle,
-    bodySectionStyle,
-    buttonStyle,
-    buttonTextStyle,
+    emailSectionStyle,
+    passwordSectionStyle,
+    stayLoggedInSectionStyle,
+    stayLoggedInInnerStyle,
+    stayLoggedInCheckBoxStyle,
+    stayLoggedInCheckBoxActiveStyle,
+    stayLoggedInCheckBoxActiveInnerStyle,
+    stayLoggedInTextContainerStyle,
+    stayLoggedInTextStyle,
+    stayLoggedInTextActiveStyle,
+    loginButtonSectionStyle,
+    loginButtonStyle,
+    loginButtonTextStyle,
+    forgotPwdSectionStyle,
     forgotPwdTextStyle,
+    signupSectionStyle,
     signupTextStyle,
     signupTextButtonStyle,
+    techProblemDescSectionStyle,
     techProblemDescStyle,
+    techProblemSectionStyle,
     techProblemStyle,
   } = LoginStyles;
 
+  const loadingScreen = (
+    <View style={customActivityIndicatorStyle}>
+      <ActivityIndicator
+        animating={loading}
+        color={BasicColor}
+        size={ProportionateScreenSizeValue(30)}
+      />
+    </View>
+  );
+
+  const errorScreen = (
+    <Error
+      buttonClick={() => setErrorText('')}
+      message={errorText}
+    />
+  );
+
   const baseScreenItems = (
     <View style={bodyContainerStyle}>
-      {
-        (errorText !== '') ? (
-          <View style={errorSectionStyle}>
-            <View style={errorMessageContainerStyle}>
-              <Text style={errorMessageTextStyle}>
-                {`Error! ${errorText}`}
-              </Text>
-              <TouchableOpacity
-                style={errorMessageButtonStyle}
-                onPress={() => setErrorText('')}
-              >
-              <Text style={errorMessageButtonTextStyle}>Back</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : null
-      }
       <View style={logoContainerStyle}>
         <Image
           source={require('../asset/img/logo.png')}
@@ -136,7 +147,7 @@ const LoginScreen = (props) => {
         />
       </View>
       <KeyboardAvoidingView
-        style={[bodySectionStyle, {marginTop: ProportionateScreenSizeValue(150)}]}
+        style={emailSectionStyle}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <TextInput style={[globalFontStyle, basicInputStyle, inputStyle]}
@@ -149,11 +160,11 @@ const LoginScreen = (props) => {
           underlineColorAndroid="#f000"
           blurOnSubmit={false}
           ref={emailInputRef}
-          value={userEmail.toString()}
+          value={userEmail ? userEmail.toString() : ''}
         />
       </KeyboardAvoidingView>
       <KeyboardAvoidingView
-        style={bodySectionStyle}
+        style={passwordSectionStyle}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <PasswordToggle
@@ -170,26 +181,47 @@ const LoginScreen = (props) => {
           underlineColorAndroid="#f000"
           returnKeyType="next"
           refChild={passwordInputRef}
-          value={userPassword.toString()}
+          value={userPassword ? userPassword.toString() : ''}
           iconSize={ProportionateScreenSizeValue(20)}
         />
       </KeyboardAvoidingView>
       <KeyboardAvoidingView
-        style={bodySectionStyle}
+        style={stayLoggedInSectionStyle}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <TouchableOpacity style={stayLoggedInInnerStyle}
+          activeOpacity={0.5}
+          onPress={() => setIsStayLoggedIn(!isStayLoggedIn)}
+        >
+          <View style={isStayLoggedIn ? stayLoggedInCheckBoxActiveStyle : stayLoggedInCheckBoxStyle}>
+            {
+              (isStayLoggedIn) ?
+              <Text style={stayLoggedInCheckBoxActiveInnerStyle}>✔</Text>
+              :
+              null
+            }
+          </View>
+          <View style={stayLoggedInTextContainerStyle}>
+            <Text style={isStayLoggedIn ? stayLoggedInTextActiveStyle : stayLoggedInTextStyle}>tetap login</Text>
+          </View>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+      <KeyboardAvoidingView
+        style={loginButtonSectionStyle}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <TouchableOpacity
-          style={buttonStyle}
+          style={loginButtonStyle}
           activeOpacity={0.5}
-          onPress={handleSubmitPress}
+          onPress={() => handleSubmitPress()}
           >
-          <Text style={[globalFontStyle, buttonTextStyle]}>
+          <Text style={[globalFontStyle, loginButtonTextStyle]}>
             Masuk
           </Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
       <KeyboardAvoidingView
-        style={[bodySectionStyle, {justifyContent: 'flex-start'}]}
+        style={forgotPwdSectionStyle}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <TouchableOpacity
@@ -205,30 +237,28 @@ const LoginScreen = (props) => {
           </Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
-      <View style={[bodySectionStyle, {justifyContent: 'flex-start'}]}>
-        <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+      <View style={signupSectionStyle}>
+        <Text
+          style={[globalFontStyle, signupTextStyle]}>
+          Belum memiliki akun?
+        </Text>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={() => {
+            resetState();
+            navigation.navigate('RegisterScreen');
+          }}
+          >
           <Text
-            style={[globalFontStyle, signupTextStyle]}>
-            Belum memiliki akun?
+            style={[globalFontStyle, signupTextButtonStyle]}>
+            &nbsp;Sign Up
           </Text>
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => {
-              resetState();
-              navigation.navigate('RegisterScreen');
-            }}
-            >
-            <Text
-              style={[globalFontStyle, signupTextButtonStyle]}>
-              &nbsp;Sign Up
-            </Text>
-          </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
       </View>
-      <View style={[bodySectionStyle, {justifyContent: 'flex-end'}]}>
+      <View style={techProblemDescSectionStyle}>
         <Text style={[globalFontStyle, techProblemDescStyle]}>Kesulitan mengakses akun MURIDKU?</Text>
       </View>
-      <View style={[bodySectionStyle, {justifyContent: 'flex-start'}]}>
+      <View style={techProblemSectionStyle}>
         <TouchableOpacity activeOpacity={0.5}>
           <Text
             style={[globalFontStyle, techProblemStyle]}>
@@ -236,26 +266,24 @@ const LoginScreen = (props) => {
           </Text>
         </TouchableOpacity>
       </View>
-      {(loading) ?
-        (<View style={customActivityIndicatorStyle}>
-          <ActivityIndicator
-            style={customActivityIndicatorSizeStyle}
-            animating={loading}
-            color={BasicColor}
-          />
-        </View>) : null
-      }
     </View>
   );
 
   return (
-    <BodyBaseScreen items={baseScreenItems} statusBarColor={BackgroundColor} />
+    <BodyBaseScreen
+      loadingScreen={loading ? loadingScreen : null}
+      errorScreen={errorText ? errorScreen : null}
+      items={baseScreenItems}
+      statusBarColor={BackgroundColor}
+      childName="LoginScreen"
+      navigation={navigation}
+    />
   );
 };
 
 const mapStateToProps = state => {
-  const { User } = state;
-  return { User };
+  const { Page, User } = state;
+  return { Page, User };
 };
 
 export default connect(mapStateToProps)(LoginScreen);

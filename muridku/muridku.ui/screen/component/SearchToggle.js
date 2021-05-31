@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TextInput, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   ProportionateScreenSizeValue,
@@ -27,13 +27,15 @@ export default class SearchToggle extends React.Component {
         {this.props.icon && <Icon name={this.props.icon} size={this.props.iconSize} color={this.props.iconColor} />}
         <TextInput {...this.props} style={[this.props.inputStyle]} ref={this.props.refChild}/>
         <TouchableOpacity
+          style={this.props.buttonStyle}
           onPress={() => {
             this.props.onSearchSubmit(this.props.value);
           }}>
-          <Icon
-            name="search"
-            size={this.props.iconSize}
-          />
+          <Text
+            style={this.props.buttonTextStyle}
+          >
+            Go
+          </Text>
         </TouchableOpacity>
       </View>
     );

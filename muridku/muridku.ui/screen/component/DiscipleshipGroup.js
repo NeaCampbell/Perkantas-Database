@@ -1,12 +1,11 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable curly */
-/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
-import { View, Text, TouchableOpacity, CheckBox as CheckBoxReact, Platform, ScrollView } from 'react-native';
-// import CheckBox from '@react-native-community/checkbox';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { BasicStyles } from '../../asset/style-template/BasicStyles';
 import { DiscipleshipGroupStyles } from '../../asset/style-template/DiscipleshipGroupStyles';
+import Checkbox from './Checkbox';
 
 const DiscipleshipGroup = (props) => {
   const [isChecked, setIsChecked] = useState(false);
@@ -20,7 +19,7 @@ const DiscipleshipGroup = (props) => {
 
     if (props.forceGroupUncheck)
       setIsChecked(false);
-  }, []);
+  }, [props.forceGroupCheck, props.forceGroupUncheck]);
 
   const getFirstLetterName = (name) => {
     let nameArr = name.split(' ');
@@ -61,8 +60,10 @@ const DiscipleshipGroup = (props) => {
   } = BasicStyles;
 
   const {
+    bodyContainerStyle,
     ktbBoxSectionStyle,
-    checkBoxSectionStyle,
+    ktbBoxSectionCheckStyle,
+    ktbBoxSectionUncheckStyle,
     scrollViewSectionStyle,
     descSectionStyle,
     otherDescSectionStyle,
@@ -74,6 +75,7 @@ const DiscipleshipGroup = (props) => {
     otherDescTitleStyle,
     otherDescValueStyle,
     otherDescTextStyle,
+    checkBoxSectionStyle,
   } = DiscipleshipGroupStyles;
 
   props.members.forEach(element => {
@@ -90,9 +92,9 @@ const DiscipleshipGroup = (props) => {
   });
 
   return (
-    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+    <View style={bodyContainerStyle}>
       <TouchableOpacity
-        style={[globalFontStyle, ktbBoxSectionStyle, {backgroundColor: props.colorHolder}]}
+        style={[globalFontStyle, ktbBoxSectionStyle, (props.isCheckedMode ? ktbBoxSectionCheckStyle : ktbBoxSectionUncheckStyle)]}
         activeOpacity={0.8}
         onPress={() => onGroupClick(props.group.id, props.onGroupClick)}
         delayLongPress={250}
@@ -100,7 +102,7 @@ const DiscipleshipGroup = (props) => {
       >
         <View style={descSectionStyle}>
           <View style={groupSectionStyle}>
-            <Text style={groupNameStyle}>
+            <Text style={groupNameStyle} numberOfLines={1} selectable>
               {props.group.name}
             </Text>
           </View>
@@ -111,36 +113,36 @@ const DiscipleshipGroup = (props) => {
         <ScrollView style={scrollViewSectionStyle}>
           <View style={[descSectionStyle, otherDescSectionStyle]}>
             <View style={otherDescTitleStyle}>
-              <Text style={otherDescTextStyle}>
+              <Text style={otherDescTextStyle} numberOfLines={1} selectable>
                 Pertemuan Terakhir
               </Text>
             </View>
             <View style={otherDescValueStyle}>
-              <Text style={otherDescTextStyle}>
+              <Text style={otherDescTextStyle} numberOfLines={1} selectable>
                 {props.group.last_meet_dt ?? '-'}
               </Text>
             </View>
           </View>
           <View style={[descSectionStyle, otherDescSectionStyle]}>
             <View style={otherDescTitleStyle}>
-              <Text style={otherDescTextStyle}>
+              <Text style={otherDescTextStyle} numberOfLines={1} selectable>
                 Bahan Terakhir
               </Text>
             </View>
             <View style={otherDescValueStyle}>
-              <Text style={otherDescTextStyle}>
+              <Text style={otherDescTextStyle} numberOfLines={1} selectable>
                 {props.group.last_meet_name ?? '-'}
               </Text>
             </View>
           </View>
           <View style={[descSectionStyle, otherDescSectionStyle]}>
             <View style={otherDescTitleStyle}>
-              <Text style={otherDescTextStyle}>
+              <Text style={otherDescTextStyle} numberOfLines={1} selectable>
                 Bab Terakhir
               </Text>
             </View>
             <View style={otherDescValueStyle}>
-              <Text style={otherDescTextStyle}>
+              <Text style={otherDescTextStyle} numberOfLines={1} selectable>
                 {props.group.last_meet_chapter ?? '-'}
               </Text>
             </View>
@@ -151,20 +153,10 @@ const DiscipleshipGroup = (props) => {
         (props.isCheckedMode) ?
         (
           <View style={checkBoxSectionStyle}>
-            {
-              (Platform.OS === 'web') ?
-              <CheckBoxReact
-                value={isChecked && props.isCheckedMode}
-                onValueChange={() => onGroupChecked(props.group.id, !(isChecked && props.isCheckedMode), props.onGroupChecked)}
-                style={{borderWidth: 0}}
-              />
-              :
-              <CheckBox
-                value={isChecked && props.isCheckedMode}
-                onValueChange={() => onGroupChecked(props.group.id, !(isChecked && props.isCheckedMode), props.onGroupChecked)}
-                style={{borderWidth: 0}}
-              />
-            }
+            <Checkbox
+              checked={isChecked}
+              onCheck={(value) => onGroupChecked(props.group.id, !value, props.onGroupChecked)}
+            />
           </View>
         ) : null
       }

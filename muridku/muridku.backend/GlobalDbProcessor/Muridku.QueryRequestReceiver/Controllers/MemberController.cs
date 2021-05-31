@@ -107,9 +107,9 @@ namespace Muridku.QueryRequestReceiver.Controllers
       IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>()
       {
         () => ValidateParamInputLong( new Tuple<string, long?>( "ktb_id", data.ktb_id ) ),
-        () => ValidateParamInputString( new Tuple<string, string, int>( "email", data.email, 100 ) ),
-        () => ValidateParamInputString( new Tuple<string, string, int>( "name", data.name, 100 ) ),
-        () => ValidateParamInputString( new Tuple<string, string, int>( "address", data.address, 200 ) ),
+        () => ValidateParamInputString( new Tuple<string, string, int>( "email", data.email, 100 ),
+                                        new Tuple<string, string, int>( "name", data.name, 100 ),
+                                        new Tuple<string, string, int>( "address", data.address, 200 ) ),
         () => ValidateStringLength( string.IsNullOrEmpty(data.birth_place) ? string.Empty : data.birth_place, 100, "birth_place" ),
         () => ValidateStringLength( string.IsNullOrEmpty(data.mobile_phn) ? string.Empty : data.mobile_phn, 20, "mobile_phn" )
       };
@@ -145,9 +145,9 @@ namespace Muridku.QueryRequestReceiver.Controllers
       IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>()
       {
         () => ValidateParamInputLong( new Tuple<string, long?>( "id", data.id ) ),
-        () => ValidateParamInputString( new Tuple<string, string, int>( "email", data.email, 100 ) ),
-        () => ValidateParamInputString( new Tuple<string, string, int>( "name", data.name, 100 ) ),
-        () => ValidateParamInputString( new Tuple<string, string, int>( "address", data.address, 200 ) ),
+        () => ValidateParamInputString( new Tuple<string, string, int>( "email", data.email, 100 ),
+                                        new Tuple<string, string, int>( "name", data.name, 100 ),
+                                        new Tuple<string, string, int>( "address", data.address, 200 ) ),
         () => ValidateStringLength( string.IsNullOrEmpty(data.birth_place) ? string.Empty : data.birth_place, 100, "birth_place" ),
         () => ValidateStringLength( string.IsNullOrEmpty(data.mobile_phn) ? string.Empty : data.mobile_phn, 20, "mobile_phn" )
       };

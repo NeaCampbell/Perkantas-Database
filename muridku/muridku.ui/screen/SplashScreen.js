@@ -15,6 +15,10 @@ import {
   BasicColor,
 } from '../asset/style-template/BasicStyles';
 import { SplashStyles } from '../asset/style-template/SplashStyles';
+import {
+  ProportionateScreenSizeValue,
+} from '../helper/CommonHelper';
+import { SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
 
 // Import reducer dependencies
 import { connect } from 'react-redux';
@@ -23,37 +27,46 @@ import { connect } from 'react-redux';
 import BodyBaseScreen from './BodyBaseScreen';
 
 const checkuserapi = require('../api/out/checkuserloginstatus');
+const checkuserondeviceapi = require('../api/out/checkuseractiveondevice');
 const appJson = require('../app.json');
 
 const SplashScreen = (props) => {
   //State for ActivityIndicator animation
   const [animating, setAnimating] = useState(true);
+  const { navigation } = props;
 
   useEffect(() => {
     let result = false;
 
     const callback = (resultapi) => {
-      result = resultapi.result;
-    };
-
-    if (props.User.email !== undefined && props.User.email !== null && props.User.email !== '')
-      checkuserapi.checkuserloginstatus(props.User.email, callback);
-
-    setTimeout(() => {
       setAnimating(false);
+      result = resultapi.result;
 
       if (!result) {
+        props.dispatch({ type: SET_CURRENT_PAGE, page: 'LoginScreen' });
         props.navigation.replace('LoginScreen');
         return;
       }
 
+      props.dispatch({ type: SET_CURRENT_PAGE, page: 'ViewAllKTBScreen' });
       props.navigation.replace('ViewAllKTBScreen');
-    }, 3000);
+    };
+
+    const errorHandler = (error) => {
+      setAnimating(false);
+      console.log(error.message);
+      props.dispatch({ type: SET_CURRENT_PAGE, page: 'LoginScreen' });
+      props.navigation.replace('LoginScreen');
+    };
+
+    if (props.User.email !== undefined && props.User.email !== null && props.User.email !== '')
+      checkuserapi.checkuserloginstatus(props.User.email, callback, errorHandler);
+    else
+      checkuserondeviceapi.checkuseractiveondevice(callback, errorHandler);
   }, []);
 
   const {
     customActivityIndicatorStyle,
-    customActivityIndicatorSizeStyle,
   } = BasicStyles;
 
   const {
@@ -95,14 +108,18 @@ const SplashScreen = (props) => {
       <ActivityIndicator
         animating={animating}
         color={BasicColor}
-        style={customActivityIndicatorSizeStyle}
+        size={ProportionateScreenSizeValue(30)}
       />
       </View>
     </>
   );
 
   return (
-    <BodyBaseScreen items={baseScreenItems} />
+    <BodyBaseScreen
+      items={baseScreenItems}
+      childName="SplashScreen"
+      navigation={navigation}
+    />
   );
 };
 

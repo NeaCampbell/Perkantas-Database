@@ -13,7 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { SET_USER } from '../reducer/action/ActionConst';
+import { SET_USER, SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
 import { connect } from 'react-redux';
 import BodyBaseScreen from './BodyBaseScreen';
 import PasswordToggle from './component/PasswordToggle';
@@ -90,6 +90,7 @@ const RegisterScreen = (props) => {
       }
 
       props.dispatch({ type: SET_USER, user: {email: userEmail} });
+      props.dispatch({ type: SET_CURRENT_PAGE, page: 'LoginScreen' });
       resetState();
       navigation.replace('LoginScreen');
     };
@@ -313,13 +314,18 @@ const RegisterScreen = (props) => {
   );
 
   return (
-    <BodyBaseScreen items={baseScreenItems} statusBarColor={BackgroundColor} />
+    <BodyBaseScreen
+      items={baseScreenItems}
+      statusBarColor={BackgroundColor}
+      childName="RegisterScreen"
+      navigation={navigation}
+    />
   );
 };
 
 const mapStateToProps = state => {
-  const { User } = state;
-  return { User };
+  const { Page, User } = state;
+  return { Page, User };
 };
 
 export default connect(mapStateToProps)(RegisterScreen);

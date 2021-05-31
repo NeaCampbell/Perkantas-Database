@@ -6,7 +6,7 @@ import { requesttemplate } from './requesttemplate';
 import publicIP from 'react-native-public-ip';
 import { getUniqueId } from 'react-native-device-info';
 
-export const checkuserloginstatus = (email, callback, errorHandler) => {
+export const checkuseractiveondevice = (callback, errorHandler) => {
   publicIP().then((ip) => {
     let unique_id = ip;
 
@@ -16,7 +16,7 @@ export const checkuserloginstatus = (email, callback, errorHandler) => {
     const options = {
       hostname: URL,
       port: PORT,
-      path: `/user/checkuserloginstatus?email=${email}&deviceid=${unique_id}`,
+      path: `/user/checkuserloginstatus?deviceid=${unique_id}`,
       method: GET,
       headers: {
         'Token': TOKEN,

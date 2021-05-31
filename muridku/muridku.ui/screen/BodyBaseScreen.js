@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable curly */
 import React, { useEffect } from 'react';
 import {
   SafeAreaView,
@@ -8,6 +9,7 @@ import {
 } from 'react-native';
 import { BasicStyles } from '../asset/style-template/BasicStyles';
 import { SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
+import { connect } from 'react-redux';
 
 const BodyBaseScreen = (props) => {
   const { mainBodyStyle } = BasicStyles;
@@ -15,8 +17,12 @@ const BodyBaseScreen = (props) => {
   const { navigation } = props;
 
   const backAction = () => {
+    const currentPages = props.Page.Pages.filter((item) => item.name === props.childName);
+    if (currentPages.length === 0)
+      return true;
+
     if (props.childName !== props.Page.RootLockedPage && props.childName !== props.Page.RootUnlockedPage) {
-      const currentPage = props.Page.Pages.filter((item) => item.name === props.childName)[0];
+      const currentPage = currentPages[0];
       const nextPage = props.Page.Pages.filter((item) => item.id === currentPage.backid)[0];
       props.dispatch({ type: SET_CURRENT_PAGE, page: nextPage.name });
       navigation.replace(nextPage.name);
@@ -34,10 +40,21 @@ const BodyBaseScreen = (props) => {
     <SafeAreaView style={mainBodyStyle}>
       <StatusBar
         animated={true}
-        backgroundColor={backgroundColor} />
+        backgroundColor={backgroundColor}
+        hidden={props.statusBarColor ? false : true}
+      />
+      {props.overlayScreen}
+      {props.loadingScreen}
+      {props.confirmScreen}
+      {props.errorScreen}
       {props.items}
     </SafeAreaView>
   );
 };
 
-export default BodyBaseScreen;
+const mapStateToProps = state => {
+  const { Page } = state;
+  return { Page };
+};
+
+export default connect(mapStateToProps)(BodyBaseScreen);

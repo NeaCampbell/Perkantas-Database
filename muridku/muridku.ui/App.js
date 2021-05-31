@@ -20,8 +20,6 @@ import LoginScreen from './screen/LoginScreen';
 import RegisterScreen from './screen/RegisterScreen';
 import UserScreen from './screen/UserScreen';
 import ViewAllKTBScreen from './screen/ViewAllKTBScreen';
-import EditKTBScreen from './screen/EditKTBScreen';
-import MenuBurgerScreen from './screen/MenuBurgerScreen';
 import AddKTBHistoryScreen from './screen/AddKTBHistoryScreen';
 import ViewDataKTBScreen from './screen/ViewDataKTBScreen';
 import EntryDataAKKScreen from './screen/EntryDataAKKScreen';
@@ -81,20 +79,6 @@ const App = () => {
             <Stack.Screen
               name="EntryDataAKKScreen"
               component={EntryDataAKKScreen}
-              // Hiding header for User Screen
-              options={{headerShown: false}}
-            />
-            {/* Edit KTB Screen */}
-            <Stack.Screen
-              name="EditKTBScreen"
-              component={EditKTBScreen}
-              // Hiding header for User Screen
-              options={{headerShown: false}}
-            />
-            {/* Menu Burger Screen */}
-            <Stack.Screen
-              name="MenuBurgerScreen"
-              component={MenuBurgerScreen}
               // Hiding header for User Screen
               options={{headerShown: false}}
             />

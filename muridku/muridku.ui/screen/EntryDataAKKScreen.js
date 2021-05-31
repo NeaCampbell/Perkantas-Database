@@ -15,6 +15,7 @@ import {
 import { connect } from 'react-redux';
 import BodyMenuBaseScreen from './BodyMenuBaseScreen';
 import { BasicStyles, BasicColor, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
+import { BackgroundColor } from '../asset/style-template/MenuBasicStyles';
 import { DataAKKStyles } from '../asset/style-template/DataAKKStyles';
 import {
   ProportionateScreenSizeValue,
@@ -24,6 +25,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {
   SET_SELECTED_KTB,
 } from '../reducer/action/ActionConst';
+import Error from './component/Error';
 
 const getinstitutionapi = require('../api/out/getinstitutionbytype');
 const getfacultyapi = require('../api/out/getfacultybyinstitutionid');
@@ -49,9 +51,6 @@ const EntryDataAKKScreen = (props) => {
     user = props.Member.user;
     institution = props.Member.institution;
     faculty = props.Member.faculty;
-    console.log(props.Member);
-    console.log(member);
-    console.log(props.KTB);
   }
   const { navigation } = props;
   const [loading, setLoading] = useState(false);
@@ -60,7 +59,8 @@ const EntryDataAKKScreen = (props) => {
   const [name, setName] = useState(member ? member.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
   const [address, setAddress] = useState(member && member.address ? member.address : '');
-  const [birthDt, setBirthDt] = useState(member && member.birth_dt ? member.birth_dt : null);
+  const [birthDt, setBirthDt] = useState(member && member.birth_dt ? member.birth_dt : new Date());
+  const [isBirthDtSet, setIsBirthDtSet] = useState(false);
   const [birthPlace, setBirthPlace] = useState(member && member.birth_place ? member.birth_place : '');
   const [mobilePhn, setMobilePhn] = useState(member && member.mobile_phn ? member.mobile_phn : '');
   const [institutionId, setInstitutionId] = useState(institution ? institution.id : null);
@@ -70,10 +70,6 @@ const EntryDataAKKScreen = (props) => {
   const [facListOpen, setFacListOpen] = useState(false);
   const [institutionList, setInstitutionList] = useState([]);
   const [facultyList, setFacultyList] = useState([]);
-
-  const resetState = () => {
-    setLoading(false);
-  };
 
   const errorHandler = (error) => {
     setLoading(false);
@@ -157,7 +153,6 @@ const EntryDataAKKScreen = (props) => {
     }
 
     props.dispatch({type: SET_SELECTED_KTB, ktb: result.result});
-    resetState();
     navigation.replace('ViewDataKTBScreen');
   };
 
@@ -172,12 +167,12 @@ const EntryDataAKKScreen = (props) => {
   };
 
   const onSubmitClick = () => {
-    if (name === '') {
-      setErrorText('nama belum diisi.');
-      return;
-    }
     if (email === '') {
       setErrorText('email belum diisi.');
+      return;
+    }
+    if (name === '') {
+      setErrorText('nama belum diisi.');
       return;
     }
     if (address === '') {
@@ -193,7 +188,7 @@ const EntryDataAKKScreen = (props) => {
         member.id,
         name,
         address,
-        birthDt,
+        isBirthDtSet ? birthDt : null,
         birthPlace,
         mobilePhn,
         institutionId,
@@ -225,11 +220,6 @@ const EntryDataAKKScreen = (props) => {
   const {
     globalFontStyle,
     inputStyle,
-    errorSectionStyle,
-    errorMessageContainerStyle,
-    errorMessageTextStyle,
-    errorMessageButtonStyle,
-    errorMessageButtonTextStyle,
   } = BasicStyles;
 
   const {
@@ -322,8 +312,29 @@ const EntryDataAKKScreen = (props) => {
           </View>
         </View>
       </View>
-      <ScrollView style={[formSectionStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}>
-        <KeyboardAvoidingView
+      <ScrollView
+        style={[formSectionStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+        contentContainerStyle={{
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+        }}
+      >
+        <View
+          style={formBodySectionStyle}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <TextInput style={[globalFontStyle, inputStyle, formStyle, {
+              backgroundColor: !(!isEnabled || (user && user.is_active === 1) || isUpdate) ? enabledBackgroundColor : disabledBackgroundColor,
+            }]}
+            placeholder="Email"
+            placeholderTextColor={PlaceholderTextColor}
+            value={email}
+            disabled={(!isEnabled || (user && user.is_active === 1) || isUpdate)}
+            onChangeText={(value) => setEmail(value)}
+            onFocus={() => onTextFocus()}
+          />
+        </View>
+        <View
           style={formBodySectionStyle}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
@@ -336,21 +347,8 @@ const EntryDataAKKScreen = (props) => {
             onFocus={() => onTextFocus()}
             disabled={!isEnabled}
           />
-        </KeyboardAvoidingView>
-        <KeyboardAvoidingView
-          style={formBodySectionStyle}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-          <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-            placeholder="Email"
-            placeholderTextColor={PlaceholderTextColor}
-            value={email}
-            disabled={!isEnabled || (user && user.is_active === 1)}
-            onChangeText={(value) => setEmail(value)}
-            onFocus={() => onTextFocus()}
-          />
-        </KeyboardAvoidingView>
-        <KeyboardAvoidingView
+        </View>
+        <View
           style={formBodySectionStyle}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
@@ -362,8 +360,8 @@ const EntryDataAKKScreen = (props) => {
             onFocus={() => onTextFocus()}
             disabled={!isEnabled}
           />
-        </KeyboardAvoidingView>
-        <KeyboardAvoidingView
+        </View>
+        <View
           style={formBodySectionStyle}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
@@ -375,8 +373,8 @@ const EntryDataAKKScreen = (props) => {
             onFocus={() => onTextFocus()}
             disabled={!isEnabled}
           />
-        </KeyboardAvoidingView>
-        <KeyboardAvoidingView
+        </View>
+        <View
           style={formBodySectionStyle}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
@@ -388,8 +386,8 @@ const EntryDataAKKScreen = (props) => {
             onFocus={() => onTextFocus()}
             disabled={!isEnabled}
           />
-        </KeyboardAvoidingView>
-        <KeyboardAvoidingView
+        </View>
+        <View
           style={formBodySectionStyle}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
@@ -398,7 +396,7 @@ const EntryDataAKKScreen = (props) => {
             placeholderTextColor={PlaceholderTextColor}
             onFocus={() => onTextFocus()}
           /> */}
-          <DateTimePicker
+          {/* <DateTimePicker
             testID="dateTimePicker"
             value={birthDt}
             minimumDate={minDt}
@@ -407,12 +405,13 @@ const EntryDataAKKScreen = (props) => {
             is24Hour={true}
             display="default"
             onChange={(event, selectedDate) => {
+              setIsBirthDtSet(true);
               setBirthDt(selectedDate || new Date());
             }}
             disabled={!isEnabled}
-          />
-        </KeyboardAvoidingView>
-        <KeyboardAvoidingView
+          /> */}
+        </View>
+        <View
           style={formBodySectionStyle}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
@@ -441,8 +440,8 @@ const EntryDataAKKScreen = (props) => {
             onChangeValue={(value) => onInstitutionChange(value)}
             disabled={!isEnabled}
           />
-        </KeyboardAvoidingView>
-        <KeyboardAvoidingView
+        </View>
+        <View
           style={formBodySectionStyle}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
@@ -469,7 +468,7 @@ const EntryDataAKKScreen = (props) => {
             value={facultyId}
             setValue={setFacultyId}
           />
-        </KeyboardAvoidingView>
+        </View>
       </ScrollView>
       {
       (loading) ?
@@ -484,20 +483,11 @@ const EntryDataAKKScreen = (props) => {
     </View>
   );
 
-  const error = (
-    <View style={errorSectionStyle}>
-      <View style={errorMessageContainerStyle}>
-        <Text style={errorMessageTextStyle}>
-          {`Error! ${errorText}`}
-        </Text>
-        <TouchableOpacity
-          style={errorMessageButtonStyle}
-          onPress={() => setErrorText('')}
-        >
-        <Text style={errorMessageButtonTextStyle}>Back</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+  const errorScreen = (
+    <Error
+      buttonClick={() => setErrorText('')}
+      message={errorText}
+    />
   );
 
   const footer = (
@@ -514,13 +504,21 @@ const EntryDataAKKScreen = (props) => {
   );
 
   return (
-    <BodyMenuBaseScreen title="Data AKK" child={child} footer={footer} isError={errorText !== ''} error={error} />
+    <BodyMenuBaseScreen
+      title="Data AKK"
+      child={child}
+      footer={footer}
+      errorScreen={errorText !== '' ? errorScreen : null}
+      childName="EntryDataAKKScreen"
+      navigation={navigation}
+      statusBarColor={BackgroundColor}
+    />
   );
 };
 
 const mapStateToProps = state => {
-  const { User, KTB, Member } = state;
-  return { User, KTB, Member };
+  const { Page, User, KTB, Member } = state;
+  return { Page, User, KTB, Member };
 };
 
 export default connect(mapStateToProps)(EntryDataAKKScreen);

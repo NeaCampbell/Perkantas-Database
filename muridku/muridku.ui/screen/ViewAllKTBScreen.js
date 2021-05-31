@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable curly */
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -14,16 +14,19 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import BodyMenuBaseScreen from './BodyMenuBaseScreen';
+import EntryKTBScreen, { KTBAddMode } from './EntryKTBScreen';
 import SearchToggle from './component/SearchToggle';
 import DiscipleshipGroup from './component/DiscipleshipGroup';
+import Confirmation, { AlertMode } from './component/Confirmation';
 import { BasicStyles, BasicColor, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
+import { BackgroundColor } from '../asset/style-template/MenuBasicStyles';
 import { ViewAllKTBStyles } from '../asset/style-template/ViewAllKTBStyles';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   ProportionateScreenSizeValue,
   ChangeColorFunction,
 } from '../helper/CommonHelper';
-import { SET_SELECTED_KTB, SET_SELECTED_MEMBER } from '../reducer/action/ActionConst';
+import { SET_SELECTED_KTB, SET_SELECTED_MEMBER, SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
+import Error from './component/Error';
 
 const getktbapi = require('../api/out/getktbsbypktbid');
 const getsinglektbapi = require('../api/out/getktbbyktbid');
@@ -43,24 +46,38 @@ const ViewALLKTBScreen = (props) => {
   const [selectedKtbs, setSelectedKtbs] = useState([]);
   const [selectAllText, setSelectAllText] = useState(selectAll);
   const [forceGroupCheck, setForceGroupCheck] = useState(false);
-  const [forceGroupUncheck, setForceGroupUncheck] = useState(false);
+  const [forceGroupUncheck, setForceGroupUncheck] = useState(true);
+  const [showAddGroupScreen, setShowAddGroupScreen] = useState(false);
+  const [shouldBackToAddScreen, setShouldBackToAddScreen] = useState(false);
+  const [showConfirmScreen, setShowConfirmScreen] = useState(false);
 
-  const resetState = (needResetData = true) => {
-    setSearchKey('');
-    setSearchPressed(false);
-    setCheckedMode(false);
-    setSelectedKtbs([]);
-    setSelectAllText(selectAll);
-    setForceGroupCheck(false);
-    setForceGroupUncheck(false);
+  useEffect(() => {
+    if (!checkedMode) {
+      setSelectAllText(selectAll);
+      setForceGroupCheck(false);
+      setForceGroupUncheck(true);
+      setSelectedKtbs([]);
+    }
+    else {
+      setForceGroupUncheck(false);
+
+      if (!searchedKtbs || searchedKtbs.length === 0) {
+        setSelectedKtbs([]);
+        setSelectAllText(selectAll);
+      }
+    }
+  }, [checkedMode, searchedKtbs]);
+
+  const onErrorBackClick = () => {
     setErrorText('');
 
-    if (needResetData)
-      setIsFirstEntry(true);
+    if (shouldBackToAddScreen) {
+      setShouldBackToAddScreen(false);
+      setShowAddGroupScreen(true);
+    }
   };
 
   const callback = (result) => {
-    setIsFirstEntry(false);
     setLoading(false);
 
     if (!result.succeed) {
@@ -109,6 +126,7 @@ const ViewALLKTBScreen = (props) => {
     const selectedKtb = selectedKtbsTmp[0];
 
     props.dispatch({type: SET_SELECTED_KTB, ktb: selectedKtb});
+    props.dispatch({ type: SET_CURRENT_PAGE, page: 'ViewDataKTBScreen' });
     navigation.replace('ViewDataKTBScreen');
   };
 
@@ -119,9 +137,9 @@ const ViewALLKTBScreen = (props) => {
       selectedKtbsTemp.push(item);
     });
 
-    if (!selectedKtbs.find((idx) => idx === id) && checked)
+    if (checked)
       selectedKtbsTemp.push(id);
-    else if (selectedKtbs.find((idx) => idx === id) && !checked)
+    else
       selectedKtbsTemp = selectedKtbsTemp.filter((idx) => idx !== id);
 
     const isAllKtbSelected = selectedKtbsTemp.length === searchedKtbs.length;
@@ -150,10 +168,39 @@ const ViewALLKTBScreen = (props) => {
 
     props.dispatch({type: SET_SELECTED_KTB, ktb: result.result});
     props.dispatch({ type: SET_SELECTED_MEMBER, member: selectedMember[0] });
+    props.dispatch({ type: SET_CURRENT_PAGE, page: 'EntryDataAKKScreen' });
     navigation.replace('EntryDataAKKScreen');
   };
 
+  const onCancelClick = () => {
+    setCheckedMode(false);
+  };
+
+  const onSelectAllClick = (text) => {
+    let forceGroupCheckTmp = false;
+
+    if (text === selectAll)
+      forceGroupCheckTmp = true;
+
+    setForceGroupCheck(forceGroupCheckTmp);
+    setForceGroupUncheck(!forceGroupCheckTmp);
+
+    if (!forceGroupCheckTmp)
+      setSelectedKtbs([]);
+    else {
+      const selectedKtbsTemp = [];
+
+      searchedKtbs.forEach(item => {
+        selectedKtbsTemp.push(item.ktb.id);
+      });
+
+      setSelectedKtbs(selectedKtbsTemp);
+    }
+    setSelectAllText(forceGroupCheckTmp ? unselectAll : selectAll);
+  };
+
   const onMemberClick = (id) => {
+    setLoading(true);
     const selectedKtbsTmp = searchedKtbs.filter((data) => {
       let result = false;
       data.members.forEach(element => {
@@ -179,15 +226,49 @@ const ViewALLKTBScreen = (props) => {
   };
 
   const addGroup = () => {
-    console.log('add group');
+    console.log('tambah');
+    setShowAddGroupScreen(true);
+  };
+
+  const callbackAddGroup = (result) => {
+
+  };
+
+  const onAddGroupNextClick = (value) => {
+    setShowAddGroupScreen(false);
+
+    if (!value || value === '') {
+      setShouldBackToAddScreen(true);
+      setErrorText('Nama belum diisi.');
+    }
+  };
+
+  const onAddGroupCancelClick = () => {
+    setShowAddGroupScreen(false);
   };
 
   const deleteGroup = () => {
-    console.log('delete group');
+    setShowConfirmScreen(true);
   };
 
-  if (isFirstEntry)
+  const callbackDeleteGroup = (result) => {
+
+  };
+
+  const onDeleteConfirmClick = () => {
+    console.log('delete');
+    setShowConfirmScreen(false);
+  };
+
+  const onDeleteCancelClick = () => {
+    console.log('cancel delete');
+    setShowConfirmScreen(false);
+  };
+
+  if (isFirstEntry) {
+    setIsFirstEntry(false);
     getktbapi.getktbsbypktbid(props.User.member_id, callback, errorHandler);
+  }
 
   const groupCount = ktbs.length;
   const groupColors = [];
@@ -200,11 +281,6 @@ const ViewALLKTBScreen = (props) => {
   const {
     globalFontStyle,
     basicInputStyle,
-    errorSectionStyle,
-    errorMessageContainerStyle,
-    errorMessageTextStyle,
-    errorMessageButtonStyle,
-    errorMessageButtonTextStyle,
   } = BasicStyles;
 
   const {
@@ -215,10 +291,18 @@ const ViewALLKTBScreen = (props) => {
     headerSelectAllTextStyle,
     bodyContainerStyle,
     searchSectionStyle,
-    searchContainerStyle,
+    searchSectionContainerStyle,
     searchTextStyle,
-    footerViewStyle,
+    searchButtonStyle,
+    searchButtonTextStyle,
+    footerSectionStyle,
+    footerButtonSectionStyle,
     buttonStyle,
+    buttonEnableStyle,
+    buttonDisableStyle,
+    buttonTextStyle,
+    buttonTextEnableStyle,
+    buttonTextDisableStyle,
     customActivityIndicatorStyle,
   } = ViewAllKTBStyles;
 
@@ -259,105 +343,23 @@ const ViewALLKTBScreen = (props) => {
       groups = setKtbsComp(ktbs);
   }
 
-  const additionalHeader = (
-    <KeyboardAvoidingView style={[searchSectionStyle, searchContainerStyle]}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <SearchToggle
-        containerStyle={[basicInputStyle, searchContainerStyle]}
-        inputStyle={[globalFontStyle, basicInputStyle, searchTextStyle]}
-        placeholder="Cari KTB"
-        placeholderTextColor={PlaceholderTextColor}
-        keyboardType="default"
-        onSubmitEditing={Keyboard.dismiss}
-        blurOnSubmit={false}
-        underlineColorAndroid="#f000"
-        returnKeyType="next"
-        iconSize={ProportionateScreenSizeValue(20)}
-        value={searchKey}
-        onChangeText={setSearchKey}
-        onSearchSubmit={(param) => onSearch(param, ktbs)}
+  const entryKTBScreen = (
+    <EntryKTBScreen
+      onNextClick={(value) => onAddGroupNextClick(value)}
+      onCancelClick={() => onAddGroupCancelClick()}
+      mode={KTBAddMode}
+    />
+  );
+
+  const loadingScreen = (
+    <View style={customActivityIndicatorStyle}>
+      <ActivityIndicator
+        animating={loading}
+        color={BasicColor}
+        size={ProportionateScreenSizeValue(30)}
       />
-    </KeyboardAvoidingView>
-  );
-
-  const child = (
-    <KeyboardAvoidingView style={bodyContainerStyle}>
-      {
-        (errorText !== '') ? (
-          <View style={errorSectionStyle}>
-            <View style={errorMessageContainerStyle}>
-              <Text style={errorMessageTextStyle}>
-                {`Error! ${errorText}`}
-              </Text>
-              <TouchableOpacity
-                style={errorMessageButtonStyle}
-                onPress={() => setErrorText('')}
-              >
-              <Text style={errorMessageButtonTextStyle}>Back</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : null
-      }
-      <ScrollView>
-        <View style={[{flexDirection: 'column', flex: 1}]}>
-          {groups}
-        </View>
-      </ScrollView>
-      {(loading) ?
-        (<View style={customActivityIndicatorStyle}>
-          <ActivityIndicator
-            animating={loading}
-            color={BasicColor}
-            size={ProportionateScreenSizeValue(ProportionateScreenSizeValue(30))}
-          />
-        </View>) : null
-      }
-    </KeyboardAvoidingView>
-  );
-
-  const footer = (
-    <View style={searchSectionStyle}>
-      <View style={footerViewStyle}>
-        <TouchableOpacity
-          style={buttonStyle}
-          activeOpacity={0.5}
-          onPress={() => addGroup()}
-        >
-          <Icon name="add" size={ProportionateScreenSizeValue(25)} color="white"/>
-        </TouchableOpacity>
-      </View>
-      <View style={footerViewStyle}>
-        <TouchableOpacity
-          style={buttonStyle}
-          activeOpacity={0.5}
-          onPress={() => deleteGroup()}
-          disabled={selectedKtbs.length === 0}
-        >
-          <Icon name="delete" size={ProportionateScreenSizeValue(25)} color="white"/>
-        </TouchableOpacity>
-      </View>
     </View>
   );
-
-  const onCancelClick = () => {
-    resetState(false);
-  };
-
-  const onSelectAllClick = (text) => {
-    let forceGroupCheckTmp = false;
-
-    if (text === selectAll)
-      forceGroupCheckTmp = true;
-
-    setForceGroupCheck(forceGroupCheckTmp);
-    setForceGroupUncheck(!forceGroupCheckTmp);
-
-    if (!forceGroupCheckTmp)
-      setSelectedKtbs([]);
-
-    setSelectAllText(forceGroupCheckTmp ? unselectAll : selectAll);
-  };
 
   const customHeader = (
     <View
@@ -388,22 +390,109 @@ const ViewALLKTBScreen = (props) => {
     </View>
   );
 
+  const additionalHeader = (
+    <KeyboardAvoidingView style={searchSectionStyle}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        {/* <TextInput style={{width: '90%', borderWidth: 1, height: '70%'}}/> */}
+      <SearchToggle
+        containerStyle={searchSectionContainerStyle}
+        inputStyle={[globalFontStyle, basicInputStyle, searchTextStyle]}
+        buttonStyle={searchButtonStyle}
+        buttonTextStyle={searchButtonTextStyle}
+        placeholder="Cari KTB"
+        placeholderTextColor={PlaceholderTextColor}
+        keyboardType="default"
+        onSubmitEditing={Keyboard.dismiss}
+        blurOnSubmit={false}
+        underlineColorAndroid="#f000"
+        returnKeyType="next"
+        iconSize={ProportionateScreenSizeValue(20)}
+        value={searchKey}
+        onChangeText={setSearchKey}
+        onSearchSubmit={(param) => onSearch(param, ktbs)}
+      />
+    </KeyboardAvoidingView>
+  );
+
+  const errorScreen = (
+    <Error
+      buttonClick={() => onErrorBackClick()}
+      message={errorText}
+    />
+  );
+
+  const confirmScreen = (
+    <Confirmation
+      confirmText="Apakah anda yakin akan menghapus data KTB ini?"
+      firstButtonText="Ya"
+      secondButtonText="Tidak"
+      mode={AlertMode}
+      onFirstButtonClick={() => onDeleteConfirmClick()}
+      onSecondButtonClick={() => onDeleteCancelClick()}
+    />
+  );
+
+  const child = (
+    <KeyboardAvoidingView style={bodyContainerStyle}>
+      <ScrollView>
+        <View style={[{flexDirection: 'column', flex: 1}]}>
+          {groups}
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+
+  const footer = (
+    <View style={footerSectionStyle}>
+      <View style={footerButtonSectionStyle}>
+        <TouchableOpacity
+          style={[buttonStyle, buttonEnableStyle]}
+          activeOpacity={0.5}
+          onPress={() => addGroup()}
+        >
+          <Text style={[buttonTextStyle, buttonTextEnableStyle]}>
+            Tambah
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <View style={footerButtonSectionStyle}>
+        <TouchableOpacity
+          style={[buttonStyle, (selectedKtbs.length === 0) ? buttonDisableStyle : buttonEnableStyle]}
+          activeOpacity={0.5}
+          onPress={() => deleteGroup()}
+          disabled={selectedKtbs.length === 0 || !checkedMode}
+        >
+          <Text style={[buttonTextStyle, (selectedKtbs.length === 0) ? buttonTextDisableStyle : buttonTextEnableStyle]}>
+            Hapus
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <BodyMenuBaseScreen
       title="KTB"
+      overlayScreen={showAddGroupScreen ? entryKTBScreen : null}
+      loadingScreen={loading ? loadingScreen : null}
+      confirmScreen={showConfirmScreen ? confirmScreen : null}
+      errorScreen={errorText !== '' ? errorScreen : null}
       customHeader={
         (checkedMode) ? customHeader : undefined
       }
       additionalHeader={additionalHeader}
       child={child}
       footer={footer}
+      childName="ViewAllKTBScreen"
+      navigation={navigation}
+      statusBarColor={BackgroundColor}
     />
   );
 };
 
 const mapStateToProps = state => {
-  const { User } = state;
-  return { User };
+  const { Page, User } = state;
+  return { Page, User };
 };
 
 export default connect(mapStateToProps)(ViewALLKTBScreen);

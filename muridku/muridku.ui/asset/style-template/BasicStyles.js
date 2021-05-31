@@ -4,6 +4,7 @@ import {
   Platform,
 } from 'react-native';
 import {
+  WindowSize,
   ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
 
@@ -15,8 +16,8 @@ export const DefaultPasswordInputHeight = 30;
 export const BasicStyles = StyleSheet.create({
   mainBodyStyle: {
     position: 'absolute',
-    width: '100%',
-    height: '100%',
+    width: WindowSize.width,
+    height: WindowSize.height,
     justifyContent: 'center',
   },
   globalFontStyle: {
@@ -69,19 +70,20 @@ export const BasicStyles = StyleSheet.create({
   },
   errorMessageContainerStyle: {
     width: '90%',
-    height: ProportionateScreenSizeValue(90),
+    height: ProportionateScreenSizeValue(100),
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    opacity: 1,
-    backgroundColor: '#FFF',
+    backgroundColor: 'rgba(255, 255, 255, 1)',
     borderRadius: ProportionateScreenSizeValue(10),
+    shadowOpacity: 0.5,
+    shadowRadius: ProportionateScreenSizeValue(20),
+    shadowColor: '#000',
+    elevation: ProportionateScreenSizeValue(20),
   },
   errorMessageTextStyle: {
     fontSize: ProportionateScreenSizeValue(14),
-    color: 'red',
-    fontWeight: 'bold',
-    opacity: 1,
+    color: 'rgba(0, 0, 0, 1)',
   },
   errorMessageButtonStyle: {
     backgroundColor: 'red',
@@ -90,10 +92,10 @@ export const BasicStyles = StyleSheet.create({
     marginTop: ProportionateScreenSizeValue(10),
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: ProportionateScreenSizeValue(8),
   },
   errorMessageButtonTextStyle: {
     color: '#FFF',
+    fontSize: ProportionateScreenSizeValue(12),
   },
   customActivityIndicatorStyle: {
     alignItems: 'center',
@@ -101,7 +103,7 @@ export const BasicStyles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.3)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
   customActivityIndicatorSizeStyle: {
     height: '60%',

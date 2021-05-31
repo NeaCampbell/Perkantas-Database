@@ -85,7 +85,6 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    opacity: 0.3,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
 });

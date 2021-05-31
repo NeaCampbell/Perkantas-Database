@@ -2,6 +2,9 @@
 import {
   StyleSheet,
 } from 'react-native';
+import {
+  ProportionateScreenSizeValue,
+} from '../../helper/CommonHelper';
 
 export const UserStyles = StyleSheet.create({
   bodyContainerStyle: {
@@ -31,6 +34,7 @@ export const UserStyles = StyleSheet.create({
     shadowColor: 'black',
     shadowOpacity: 0.2,
     width: 300,
+    elevation: ProportionateScreenSizeValue(5),
   },
   bodySectionTitleStyle: {
     flexDirection: 'row',
@@ -63,6 +67,7 @@ export const UserStyles = StyleSheet.create({
     },
     shadowColor: 'black',
     shadowOpacity: 0.2,
+    elevation: ProportionateScreenSizeValue(5),
   },
   buttonTextStyle: {
     color: '#FFFFFF',
@@ -88,6 +93,7 @@ export const UserStyles = StyleSheet.create({
     },
     shadowColor: 'black',
     shadowOpacity: 0.2,
+    elevation: ProportionateScreenSizeValue(5),
   },
   buttonInvertTextStyle: {
     color: '#E37550',
@@ -122,7 +128,6 @@ export const UserStyles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    opacity: 0.3,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
 });
