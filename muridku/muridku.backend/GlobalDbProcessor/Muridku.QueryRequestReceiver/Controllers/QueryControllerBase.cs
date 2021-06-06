@@ -344,6 +344,22 @@ namespace Muridku.QueryRequestReceiver.Controllers
       };
     }
 
+    protected CheckParam ValidateList<TModel>(IList<TModel> list_id, string errorMessage)
+    {
+      if (list_id == null || list_id.Count == 0)
+        return new CheckParam()
+        {
+          CheckResult = false,
+          Message = errorMessage
+        };
+
+      return new CheckParam()
+      {
+        CheckResult = true,
+        Message = string.Empty
+      };
+    }
+
     protected string GetUsernameFromHeader( HttpContext context )
     {
       if( context.Request.Headers.ContainsKey( "Username" ) )
@@ -366,8 +382,6 @@ namespace Muridku.QueryRequestReceiver.Controllers
       logApi.error_message = string.Empty;
       logApi.response_status = 200;
       logApi.param_output = string.Empty;
-
-      Logger.LogInformation( "request id = {0}", RequestId );
 
       if( isNeedValidUser && username == USER_SYSTEM )
       {
@@ -473,7 +487,6 @@ namespace Muridku.QueryRequestReceiver.Controllers
     {
       logApi.param_output = JsonConvert.SerializeObject( result );
       SaveLogApi( logApi );
-      Logger.LogInformation( "request succeed! response={0}", logApi.param_output );
       return result;
     }
 

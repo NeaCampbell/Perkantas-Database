@@ -42,7 +42,7 @@ const Confirmation = (props) => {
     <View style={bodyContainerStyle}>
       <View style={messageBoxSectionStyle}>
         <View style={messageBoxTextSectionStyle}>
-          <Text style={messageBoxTextStyle}>
+          <Text style={messageBoxTextStyle} numberOfLines={2}>
             {props.confirmText}
           </Text>
         </View>
@@ -52,7 +52,7 @@ const Confirmation = (props) => {
               style={[messageBoxButtonStyle, (props.mode === AlertMode ? messageBoxButtonAlertStyle : messageBoxButtonConfirmStyle)]}
               onPress={() => onFirstButtonClick()}
             >
-              <Text style={messageBoxButtonTextStyle}>
+              <Text style={messageBoxButtonTextStyle} numberOfLines={1}>
                 {props.firstButtonText}
               </Text>
             </TouchableOpacity>
@@ -62,7 +62,7 @@ const Confirmation = (props) => {
               style={[messageBoxButtonStyle, (props.mode === AlertMode ? messageBoxButtonAlertInverseStyle : messageBoxButtonConfirmInverseStyle)]}
               onPress={() => onSecondButtonClick()}
             >
-              <Text style={props.mode === AlertMode ? messageBoxButtonTextAlertInverseStyle : messageBoxButtonTextConfirmInverseStyle}>
+              <Text style={props.mode === AlertMode ? messageBoxButtonTextAlertInverseStyle : messageBoxButtonTextConfirmInverseStyle} numberOfLines={1}>
                 {props.secondButtonText}
               </Text>
             </TouchableOpacity>

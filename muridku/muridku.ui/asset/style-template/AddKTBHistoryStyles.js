@@ -2,82 +2,161 @@
 import {
   StyleSheet,
 } from 'react-native';
+import {
+  ProportionateScreenSizeValue,
+} from '../../helper/CommonHelper';
 
-const BackgroundColor = '#FFFFFF';
+const ButtonColor = '#815BF0';
 
 export const AddKTBHistoryStyles = StyleSheet.create({
   bodyContainerStyle: {
-    position: 'absolute',
+    flexDirection: 'column',
     width: '100%',
     height: '100%',
+    backgroundColor: 'white',
     justifyContent: 'center',
-    backgroundColor: BackgroundColor,
+    alignItems: 'center',
   },
-  logoContainerStyle: {
-    width: '100%',
-    height: '100%',
-  },
-  logoStyle: {
-    width: '100%',
-    height: 100,
-    resizeMode: 'center',
-  },
-  bodySectionStyle: {
-    flexDirection: 'row',
-    height: 40,
-    marginTop: 5,
-    marginLeft: 15,
-    marginRight: 15,
-    justifyContent: 'center',
-  },
-  buttonStyle: {
-    backgroundColor: '#E37550',
-    color: '#FFFFFF',
-    height: 35,
+  menuButtonSectionStyle: {
     width: '100%',
     alignItems: 'center',
-    marginTop: 10,
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
-  buttonTextStyle: {
-    color: '#FFFFFF',
-    paddingVertical: 8,
-    fontStyle: 'normal',
-    fontSize: 14,
-    lineHeight: 17,
+  menuButtonEnableSectionStyle: {
+    height: ProportionateScreenSizeValue(45),
+    marginBottom: 0,
+    backgroundColor: '#366BC6',
   },
-  forgotPwdTextStyle: {
-    color: '#E37550',
-    textAlign: 'center',
-    fontStyle: 'normal',
-    fontSize: 12,
-    alignSelf: 'center',
+  menuButtonDisableSectionStyle: {
+    height: ProportionateScreenSizeValue(35),
+    marginBottom: ProportionateScreenSizeValue(2),
+    backgroundColor: 'rgba(54, 107, 198, 0.6)',
   },
-  signupTextStyle: {
-    color: '#FFFFFF',
-    textAlign: 'center',
-    fontSize: 12,
+  menuButtonTitleSectionStyle: {
+    height: '100%',
+    justifyContent: 'center',
+    paddingHorizontal: ProportionateScreenSizeValue(10),
   },
-  signupTextButtonStyle: {
-    color: '#E37550',
-    textAlign: 'center',
-    fontSize: 12,
+  menuButtonTitleEnableSectionStyle: {
+    alignItems: 'center',
   },
-  errorTextStyle: {
-    color: '#FF4D05',
-    textAlign: 'center',
-    fontSize: 12,
+  menuButtonTitleDisableSectionStyle: {
+    alignItems: 'flex-start',
+  },
+  menuButtonTitleDateSectionStyle: {
+    width: '60%',
+  },
+  menuButtonTitleAKKSectionStyle: {
+    width: '20%',
+  },
+  menuButtonTitleMaterialSectionStyle: {
+    width: '40%',
+  },
+  menuButtonTitleViewHistorySectionStyle: {
+    width: '100%',
+  },
+  menuButtonDataSectionStyle: {
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingHorizontal: ProportionateScreenSizeValue(10),
+  },
+  menuButtonDataDateSectionStyle: {
+    width: '40%',
+  },
+  menuButtonDataAKKSectionStyle: {
+    width: '80%',
+  },
+  menuButtonDataMaterialSectionStyle: {
+    width: '60%',
+  },
+  menuButtonTextStyle: {
     fontStyle: 'italic',
+    color: '#FFF',
   },
-  techProblemDescStyle: {
-    fontSize: 12,
-    lineHeight: 17,
-    color: 'white',
+  menuButtonTitleEnableTextStyle: {
+    fontSize: ProportionateScreenSizeValue(16),
   },
-  techProblemStyle: {
-    fontSize: 12,
-    lineHeight: 17,
-    color: '#FF4D05',
-    textDecorationLine: 'underline',
+  menuButtonTitleDisableTextStyle: {
+    fontSize: ProportionateScreenSizeValue(12),
+  },
+  menuButtonDataTextStyle: {
+    fontSize: ProportionateScreenSizeValue(10),
+  },
+  dropdownListMainSectionStyle: {
+    width: '90%',
+    height: ProportionateScreenSizeValue(300),
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowOpacity: 0.5,
+    shadowRadius: ProportionateScreenSizeValue(20),
+    shadowColor: '#000',
+    elevation: ProportionateScreenSizeValue(20),
+  },
+  dropdownListViewSectionStyle: {
+    width: '100%',
+    padding: ProportionateScreenSizeValue(10),
+  },
+  dropdownListViewItemSectionStyle: {
+    width: '100%',
+    height: ProportionateScreenSizeValue(45),
+    padding: ProportionateScreenSizeValue(5),
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownListViewItemTextSectionStyle: {
+    width: '80%',
+    height: '100%',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  dropdownListViewItemTextStyle: {
+    fontSize: ProportionateScreenSizeValue(12),
+  },
+  dropdownListButtonSectionStyle: {
+    width: '100%',
+    height: '25%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownListButtonStyle: {
+    width: '50%',
+    height: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTopWidth: ProportionateScreenSizeValue(1),
+    borderTopColor: '#CECECE',
+  },
+  dropdownListButtonContentStyle: {
+    width: '80%',
+    height: '60%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownListButtonSelectStyle: {
+    backgroundColor: ButtonColor,
+  },
+  dropdownListButtonCancelStyle: {
+    backgroundColor: '#FFF',
+    borderWidth: ProportionateScreenSizeValue(1),
+    borderColor: ButtonColor,
+  },
+  dropdownListButtonTextStyle: {
+    fontSize: ProportionateScreenSizeValue(12),
+  },
+  dropdownListButtonSelectTextStyle: {
+    color: '#FFF',
+  },
+  dropdownListButtonCancelTextStyle: {
+    fontSize: ProportionateScreenSizeValue(12),
+    color: ButtonColor,
   },
   customActivityIndicatorStyle: {
     alignItems: 'center',

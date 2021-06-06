@@ -12,7 +12,7 @@ import {
 import {
   ProportionateScreenSizeValue,
 } from '../helper/CommonHelper';
-import { SET_USER, SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
+import { SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
 import Error from './component/Error';
 
 // Import reducer dependencies
@@ -29,13 +29,17 @@ const MenuScreen = (props) => {
     navigation.replace('ViewAllKTBScreen');
   };
 
+  const onActivationClick = () => {
+    props.dispatch({ type: SET_CURRENT_PAGE, page: 'ActivationScreen' });
+    navigation.replace('ActivationScreen');
+  };
+
   const callback = (result) => {
     if (!result.succeed) {
       setErrorText(result.errorMessage);
       return;
     }
 
-    props.dispatch({ type: SET_USER, user: {} });
     props.dispatch({ type: SET_CURRENT_PAGE, page: 'LoginScreen' });
     navigation.replace('LoginScreen');
   };
@@ -70,14 +74,11 @@ const MenuScreen = (props) => {
         (errorText !== '') ? errorScreen : null
       }
       <View style={styles.titleSectionStyle}>
-        <View style={styles.titleTextSectionStyle}>
-          <Text style={styles.titleTextStyle}>MURIDKU</Text>
-        </View>
         <TouchableOpacity
           style={styles.titleExitSectionStyle}
           onPress={() => onExitClick()}
         >
-          <Text style={styles.titleExitTextStyle}>kembali</Text>
+          <Text style={styles.titleExitTextStyle} numberOfLines={1}>kembali</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity
@@ -89,7 +90,7 @@ const MenuScreen = (props) => {
           style={styles.menuSectionStyle}
           resizeMode="contain"
         />
-        <Text style={styles.bodyTextStyle}>Data KTB</Text>
+        <Text style={styles.bodyTextStyle} numberOfLines={1}>Data KTB</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.burgerMenuStyle}
@@ -99,24 +100,27 @@ const MenuScreen = (props) => {
           style={styles.menuSectionStyle}
           resizeMode="contain"
         />
-        <Text style={styles.bodyTextStyle}>Profile</Text>
+        <Text style={styles.bodyTextStyle} numberOfLines={1}>Profile</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.burgerMenuStyle}>
+      <TouchableOpacity
+        style={styles.burgerMenuStyle}
+        onPress={() => onActivationClick()}
+      >
         <Image
           source={require('../asset/img/b-aktivasi.png')}
           style={styles.menuSectionStyle}
           resizeMode="contain"
         />
-        <Text style={styles.bodyTextStyle}>Aktivasi</Text>
+        <Text style={styles.bodyTextStyle} numberOfLines={1}>Aktivasi</Text>
       </TouchableOpacity>
       <View style={styles.burgerLogoutTitleSectionStyle}>
-        <Text style={styles.burgerLogoutTitleTextStyle}>Logout</Text>
+        <Text style={styles.burgerLogoutTitleTextStyle} numberOfLines={1}>Logout</Text>
       </View>
       <TouchableOpacity
         style={styles.burgerLogoutSectionStyle}
         onPress={() => onLogoutClick()}
       >
-        <Text style={styles.burgerLogoutTextStyle}>x</Text>
+        <Text style={styles.burgerLogoutTextStyle} numberOfLines={1}>✖</Text>
       </TouchableOpacity>
     </ImageBackground>
   );
@@ -165,14 +169,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   titleExitSectionStyle: {
-    width: '20%',
+    width: '100%',
     height: '100%',
     justifyContent: 'center',
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
     paddingHorizontal: ProportionateScreenSizeValue(10),
   },
   titleExitTextStyle: {
-    fontSize: ProportionateScreenSizeValue(10),
+    fontSize: ProportionateScreenSizeValue(14),
     fontStyle: 'italic',
     textDecorationLine: 'underline',
     color: '#000',
@@ -225,6 +229,7 @@ const styles = StyleSheet.create({
   },
   burgerLogoutTextStyle: {
     fontSize: ProportionateScreenSizeValue(20),
+    lineHeight: ProportionateScreenSizeValue(22),
     color: 'red',
     alignItems: 'center',
     justifyContent: 'center',

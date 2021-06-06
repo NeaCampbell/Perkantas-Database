@@ -2,7 +2,7 @@
 import { URL, PORT, PUT, TOKEN, IS_HTTP } from '../apiconst';
 import { requesttemplate } from './requesttemplate';
 
-export const activateuser = (email, callback) => {
+export const activateuser = (email, usr, callback) => {
   const options = {
     hostname: URL,
     port: PORT,
@@ -10,6 +10,7 @@ export const activateuser = (email, callback) => {
     method: PUT,
     headers: {
       'Token': TOKEN,
+      'Username': usr,
     },
   };
 

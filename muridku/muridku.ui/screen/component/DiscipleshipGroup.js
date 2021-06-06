@@ -1,5 +1,4 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable curly */
 import React, {useState, useEffect} from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
@@ -13,13 +12,17 @@ const DiscipleshipGroup = (props) => {
   useEffect(() => {
     if (!props.isCheckedMode)
       setIsChecked(false);
+  }, [props.isCheckedMode]);
 
+  useEffect(() => {
     if (props.forceGroupCheck)
       setIsChecked(true);
+  }, [props.forceGroupCheck]);
 
+  useEffect(() => {
     if (props.forceGroupUncheck)
       setIsChecked(false);
-  }, [props.forceGroupCheck, props.forceGroupUncheck]);
+  }, [props.forceGroupUncheck]);
 
   const getFirstLetterName = (name) => {
     let nameArr = name.split(' ');
@@ -78,6 +81,7 @@ const DiscipleshipGroup = (props) => {
     checkBoxSectionStyle,
   } = DiscipleshipGroupStyles;
 
+  if (props.members)
   props.members.forEach(element => {
     members.push(
       <TouchableOpacity
@@ -86,7 +90,7 @@ const DiscipleshipGroup = (props) => {
         key={element.member.id}
         onPress={() => onMemberClick(element.member.id, props.onMemberClick)}
       >
-        <Text style={iconUserTextStyle}>{getFirstLetterName(element.member.name)}</Text>
+        <Text style={iconUserTextStyle} numberOfLines={1}>{getFirstLetterName(element.member.name)}</Text>
       </TouchableOpacity>
     );
   });

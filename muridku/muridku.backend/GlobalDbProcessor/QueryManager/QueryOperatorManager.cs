@@ -85,7 +85,6 @@ namespace QueryManager
             if( !_queueRequest.TryDequeue( out reqParam ) )
               break;
 
-          Console.WriteLine( "    [{0}] task {1} status = {2}", Thread.CurrentThread.ManagedThreadId, taskId, _queryTasks[ taskId ].Status );
           bool freeTaskFound = _queryTasks[ taskId ].Status == TaskStatus.Created ||
               _queryTasks[ taskId ].Status == TaskStatus.RanToCompletion ||
               _queryTasks[ taskId ].Status == TaskStatus.Faulted ||
@@ -97,7 +96,6 @@ namespace QueryManager
               _queryTasks[ taskId ] = new Task( () =>
               {
                 ExecuteQuery( reqParam, taskId, true );
-                Console.WriteLine( "    [{0}] Executed enqueue query from task {1}, queue residue = {2}", Thread.CurrentThread.ManagedThreadId, taskId, _queueRequest.Count );
               } );
               _queryTasks[ taskId ].Start();
             }
@@ -144,13 +142,12 @@ namespace QueryManager
         }
 
         InvokeEvent( reqParam, result, null, isNeedReturnValue, isFromQueue );
-        Console.WriteLine( "    [{0}] Query executed", Thread.CurrentThread.ManagedThreadId );
       }
       catch( Exception e )
       {
         queryExecutor.ChangeDbTransState( DbTransactionState.Rollback );
         InvokeEvent( reqParam, null, e, isNeedReturnValue, isFromQueue );
-        Console.WriteLine( "    [{0}] Error! {1}", Thread.CurrentThread.ManagedThreadId, e.Message );
+        Console.WriteLine("    [{0}] Error! {1}", Thread.CurrentThread.ManagedThreadId, e.Message);
       }
     }
 
@@ -206,7 +203,6 @@ namespace QueryManager
       try
       {
         Task.Run( () => ExecuteQuery( queryRequestParam, -1, isNeedReturnValue ) );
-        Console.WriteLine( "    [{0}] Query execution requested", Thread.CurrentThread.ManagedThreadId );
         return new RequestResult( true, CommonMessage.SUCCESS );
       }
       catch( Exception e )
@@ -227,7 +223,6 @@ namespace QueryManager
           _queueRequest.Enqueue( queryRequestParam );
         }
 
-        Console.WriteLine( "    Query Enqueued" );
         return new RequestResult( true, CommonMessage.SUCCESS );
       }
       catch( Exception e )

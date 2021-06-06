@@ -15,7 +15,7 @@ import {
 } from '../asset/style-template/EntryKTBStyles';
 
 const EntryKTBScreen = (props) => {
-  const [ktbName, setKtbName] = useState('');
+  const [ktbName, setKtbName] = useState(props.name);
 
   const onNextClick = () => {
     if (props.onNextClick)
@@ -47,8 +47,8 @@ const EntryKTBScreen = (props) => {
     <View style={bodyContainerStyle}>
       <View style={boxSectionStyle}>
         <View style={titleSectionStyle}>
-          <Text style={titleTextStyle}>
-            {props.mode === KTBAddMode ? 'Add KTB' : 'Edit KTB'}
+          <Text style={titleTextStyle} numberOfLines={1}>
+            {props.mode === KTBAddMode ? 'Tambah Kelompok KTB' : 'Edit Nama KTB'}
           </Text>
         </View>
         <View style={inputSectionStyle}>
@@ -58,6 +58,7 @@ const EntryKTBScreen = (props) => {
             placeholderTextColor={PlaceholderTextColor}
             value={ktbName}
             onChangeText={(value) => setKtbName(value)}
+            autoFocus={true}
           />
         </View>
         <View style={buttonSectionStyle}>
@@ -66,7 +67,7 @@ const EntryKTBScreen = (props) => {
               style={[buttonStyle, buttonNextStyle]}
               onPress={() => onNextClick()}
             >
-              <Text style={buttonNextTextStyle}>
+              <Text style={buttonNextTextStyle} numberOfLines={1}>
                 {props.mode === KTBAddMode ? 'Next' : 'Save'}
               </Text>
             </TouchableOpacity>
@@ -76,7 +77,7 @@ const EntryKTBScreen = (props) => {
               style={[buttonStyle, buttonCancelStyle]}
               onPress={() => onCancelClick()}
             >
-              <Text style={buttonCancelTextStyle}>
+              <Text style={buttonCancelTextStyle} numberOfLines={1}>
                 Cancel
               </Text>
             </TouchableOpacity>

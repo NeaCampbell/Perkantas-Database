@@ -58,6 +58,7 @@ const DiscipleShort = (props) => {
             fontWeight: 'bold',
             color: checked ? '#000' : '#CCC',
           }}
+          numberOfLines={1}
         >
           {props.member ? props.member.name : ''}
         </Text>
@@ -80,6 +81,7 @@ const DiscipleShort = (props) => {
               fontWeight: 'bold',
               color: '#FFF',
             }}
+            numberOfLines={1}
           >
             ✔
           </Text>

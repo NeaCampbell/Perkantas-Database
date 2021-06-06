@@ -22,6 +22,7 @@ export const MenuBasicStyles = StyleSheet.create({
     width: '100%',
     justifyContent: 'flex-start',
     backgroundColor: BackgroundColor,
+    zIndex: 3,
   },
   otherHeaderSectionStyle: {
     flexDirection: 'row',
@@ -57,10 +58,12 @@ export const MenuBasicStyles = StyleSheet.create({
   childSectionStyle: {
     width: '100%',
     justifyContent: 'center',
+    zIndex: 1,
   },
   footerSectionStyle: {
     width: '100%',
     height: WindowSize.height * 11 / 100,
     justifyContent: 'center',
+    zIndex: 2,
   },
 });

@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   ProportionateScreenSizeValue,
@@ -11,7 +11,7 @@ export default class PasswordToggle extends React.Component {
     super(props);
 
     this.state = {
-      visible: true,
+      visible: false,
     };
   }
 
@@ -26,20 +26,24 @@ export default class PasswordToggle extends React.Component {
       <View style={[this.props.containerStyle, styles.container]}>
         {this.props.icon && <Icon name={this.props.icon} size={this.props.iconSize} color={this.props.iconColor} />}
         <TextInput
-          secureTextEntry={this.state.visible}
+          secureTextEntry={!this.state.visible}
           {...this.props}
-          style={this.props.textInputStyle}
+          style={[this.props.textInputStyle]}
           ref={this.props.refChild}
         />
         <TouchableOpacity
           onPress={() => {
             this.setVisible(!this.state.visible);
-          }}>
-          <Icon
-            name={this.state.visible ? 'thumb-up' : 'thumb-up'}
-            size={this.props.iconSize}
-            color={this.state.visible ? this.props.iconInvisibleColor : this.props.iconVisibleColor}
-          />
+          }}
+          style={this.props.buttonStyle}
+        >
+            <Text style={[
+                this.props.buttonTextStyle,
+                {color: this.state.visible ? this.props.enableButtonColor : this.props.disableButtonColor},
+              ]} numberOfLines={1}
+            >
+              SHOW
+            </Text>
         </TouchableOpacity>
       </View>
     );

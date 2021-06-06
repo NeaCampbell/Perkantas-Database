@@ -7,6 +7,7 @@ import {
 } from '../../helper/CommonHelper';
 
 const IdColor = '#08D49A';
+const BorderColor = '#CDCDCD';
 
 export const DiscipleshipGroupStyles = StyleSheet.create({
   bodyContainerStyle: {
@@ -21,22 +22,16 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
     flex: 1,
     marginLeft: ProportionateScreenSizeValue(15),
     marginRight: ProportionateScreenSizeValue(15),
-    marginBottom: ProportionateScreenSizeValue(10),
+    marginTop: ProportionateScreenSizeValue(10),
     padding: ProportionateScreenSizeValue(10),
     borderLeftWidth: ProportionateScreenSizeValue(10),
     borderLeftColor: IdColor,
+    borderBottomWidth: ProportionateScreenSizeValue(1),
+    borderBottomColor: BorderColor,
     justifyContent: 'center',
     alignItems: 'center',
     color: '#000000',
     backgroundColor: '#FFFFFF',
-    shadowOffset: {
-      width: 0,
-      height: ProportionateScreenSizeValue(5),
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: ProportionateScreenSizeValue(5),
-    shadowColor: '#000',
-    elevation: ProportionateScreenSizeValue(5),
   },
   ktbBoxSectionUncheckStyle: {
     marginRight: ProportionateScreenSizeValue(15),
@@ -96,12 +91,12 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
     height: ProportionateScreenSizeValue(15),
   },
   otherDescTitleStyle: {
-    width: '35%',
+    width: '40%',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
   otherDescValueStyle: {
-    width: '65%',
+    width: '60%',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },

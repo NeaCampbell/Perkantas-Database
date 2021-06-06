@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable curly */
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-native/no-inline-styles */
 // Import React and Component
 import React, { useState, useEffect } from 'react';
 import {
@@ -12,7 +11,6 @@ import {
 } from 'react-native';
 import {
   BasicStyles,
-  BasicColor,
 } from '../asset/style-template/BasicStyles';
 import { SplashStyles } from '../asset/style-template/SplashStyles';
 import {
@@ -36,13 +34,10 @@ const SplashScreen = (props) => {
   const { navigation } = props;
 
   useEffect(() => {
-    let result = false;
-
     const callback = (resultapi) => {
       setAnimating(false);
-      result = resultapi.result;
 
-      if (!result) {
+      if (!resultapi.result) {
         props.dispatch({ type: SET_CURRENT_PAGE, page: 'LoginScreen' });
         props.navigation.replace('LoginScreen');
         return;
@@ -59,7 +54,7 @@ const SplashScreen = (props) => {
       props.navigation.replace('LoginScreen');
     };
 
-    if (props.User.email !== undefined && props.User.email !== null && props.User.email !== '')
+    if (props.User && props.User !== {} && props.User.email !== undefined && props.User.email !== null && props.User.email !== '')
       checkuserapi.checkuserloginstatus(props.User.email, callback, errorHandler);
     else
       checkuserondeviceapi.checkuseractiveondevice(callback, errorHandler);
@@ -76,6 +71,7 @@ const SplashScreen = (props) => {
     logoContainerStyle,
     logo2ContainerStyle,
     logoStyle,
+    versionContainerStyle,
     versionTextStyle,
   } = SplashStyles;
 
@@ -100,17 +96,20 @@ const SplashScreen = (props) => {
             style={logoStyle}
           />
         </View>
-        <View>
+        <View style={versionContainerStyle}>
           <Text style={versionTextStyle}>Version {appJson.version}</Text>
         </View>
       </View>
-      <View style={[customActivityIndicatorStyle, {backgroundColor: 'transparent'}]}>
-      <ActivityIndicator
-        animating={animating}
-        color={BasicColor}
-        size={ProportionateScreenSizeValue(30)}
-      />
-      </View>
+      {
+        (animating) ?
+        (<View style={[customActivityIndicatorStyle]}>
+          <ActivityIndicator
+            animating={animating}
+            color="#000"
+            size={ProportionateScreenSizeValue(30)}
+          />
+        </View>) : null
+      }
     </>
   );
 

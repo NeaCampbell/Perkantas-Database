@@ -46,7 +46,6 @@ export const ViewAllKTBStyles = StyleSheet.create({
     height: '100%',
     justifyContent: 'flex-start',
     backgroundColor: 'white',
-    paddingVertical: ProportionateScreenSizeValue(12),
   },
   searchSectionStyle: {
     flexDirection: 'row',
@@ -87,6 +86,10 @@ export const ViewAllKTBStyles = StyleSheet.create({
   searchButtonTextStyle: {
     fontSize: ProportionateScreenSizeValue(12),
     color: '#000',
+  },
+  dataSectionStyle: {
+    height: '100%',
+    width: '100%',
   },
   footerSectionStyle: {
     backgroundColor: 'white',

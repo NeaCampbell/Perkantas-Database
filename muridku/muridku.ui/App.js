@@ -18,6 +18,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import SplashScreen from './screen/SplashScreen';
 import LoginScreen from './screen/LoginScreen';
 import RegisterScreen from './screen/RegisterScreen';
+import ActivationScreen from './screen/ActivationScreen';
 import UserScreen from './screen/UserScreen';
 import ViewAllKTBScreen from './screen/ViewAllKTBScreen';
 import AddKTBHistoryScreen from './screen/AddKTBHistoryScreen';
@@ -52,6 +53,13 @@ const App = () => {
               name="RegisterScreen"
               component={RegisterScreen}
               // Hiding header for Register Screen
+              options={{headerShown: false}}
+            />
+            {/* Acttivation Screen */}
+            <Stack.Screen
+              name="ActivationScreen"
+              component={ActivationScreen}
+              // Hiding header for Login Screen
               options={{headerShown: false}}
             />
             {/* User Screen */}

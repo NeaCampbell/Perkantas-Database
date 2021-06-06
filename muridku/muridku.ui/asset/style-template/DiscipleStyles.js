@@ -8,6 +8,7 @@ import {
 
 const DetailTextColor = '#000';
 export const IdColor = '#77C0ED';
+const BorderColor = '#CDCDCD';
 
 export const DiscipleStyles = StyleSheet.create({
   bodyContainerStyle: {
@@ -25,18 +26,12 @@ export const DiscipleStyles = StyleSheet.create({
     marginLeft: ProportionateScreenSizeValue(15),
     borderLeftWidth: ProportionateScreenSizeValue(10),
     borderLeftColor: IdColor,
+    borderBottomWidth: ProportionateScreenSizeValue(1),
+    borderBottomColor: BorderColor,
     justifyContent: 'center',
     alignItems: 'center',
     color: '#000000',
     backgroundColor: '#FFFFFF',
-    shadowOffset: {
-      width: 0,
-      height: ProportionateScreenSizeValue(5),
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: ProportionateScreenSizeValue(5),
-    shadowColor: '#000',
-    elevation: ProportionateScreenSizeValue(5),
   },
   discipleBoxSectionCheckStyle: {
     marginRight: 0,
@@ -57,20 +52,74 @@ export const DiscipleStyles = StyleSheet.create({
     height: '100%',
   },
   nameSectionStyle: {
-    paddingLeft: ProportionateScreenSizeValue(5),
-    paddingRight: ProportionateScreenSizeValue(5),
-    paddingTop: ProportionateScreenSizeValue(5),
-    paddingBottom: ProportionateScreenSizeValue(5),
     backgroundColor: 'rgba(255,255,255,1)',
     borderBottomWidth: ProportionateScreenSizeValue(2),
     borderBottomColor: '#E7E7E7',
     width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   nameTextStyle: {
     fontStyle: 'normal',
     fontSize: ProportionateScreenSizeValue(14),
     fontWeight: 'bold',
     color: '#000',
+  },
+  nameTitleSectionStyle: {
+    padding: ProportionateScreenSizeValue(5),
+    width: '78%',
+    height: '100%',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  nameButtonSectionStyle: {
+    width: '22%',
+    height: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  nameButtonInnerSectionStyle: {
+    width: '50%',
+    height: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  nameButtonStyle: {
+    width: ProportionateScreenSizeValue(24),
+    height: ProportionateScreenSizeValue(24),
+    borderRadius: ProportionateScreenSizeValue(12),
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  nameActiveEnableButtonStyle: {
+    backgroundColor: '#08D49A',
+  },
+  nameActiveDisableButtonStyle: {
+    backgroundColor: '#CDCDCD',
+  },
+  nameInactiveEnableButtonStyle: {
+    backgroundColor: 'red',
+  },
+  nameInactiveDisableButtonStyle: {
+    backgroundColor: '#CDCDCD',
+  },
+  nameInactiveButtonSectionStyle: {
+    width: '50%',
+    height: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  nameButtonTextStyle: {
+    fontSize: ProportionateScreenSizeValue(10),
+    color: '#FFF',
+    lineHeight: ProportionateScreenSizeValue(11),
   },
   descTextStyle: {
     paddingLeft: ProportionateScreenSizeValue(5),

@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable curly */
-/* eslint-disable react-native/no-inline-styles */
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -22,6 +21,7 @@ import { BasicStyles, BasicColor, PlaceholderTextColor } from '../asset/style-te
 import { BackgroundColor } from '../asset/style-template/MenuBasicStyles';
 import { ViewAllKTBStyles } from '../asset/style-template/ViewAllKTBStyles';
 import {
+  CommonMessages,
   ProportionateScreenSizeValue,
   ChangeColorFunction,
 } from '../helper/CommonHelper';
@@ -30,6 +30,8 @@ import Error from './component/Error';
 
 const getktbapi = require('../api/out/getktbsbypktbid');
 const getsinglektbapi = require('../api/out/getktbbyktbid');
+const savesinglektbapi = require('../api/out/savesinglektb');
+const deletektbapi = require('../api/out/deletektbsbylistid');
 
 const ViewALLKTBScreen = (props) => {
   const selectAll = 'Select All';
@@ -81,7 +83,10 @@ const ViewALLKTBScreen = (props) => {
     setLoading(false);
 
     if (!result.succeed) {
-      setErrorText(result.errorMessage);
+      if (result.errorMessage !== CommonMessages.DATA_NOT_FOUND)
+        setErrorText(result.errorMessage);
+      setKtbs([]);
+      setSearchedKtbs([]);
       return;
     }
 
@@ -113,6 +118,12 @@ const ViewALLKTBScreen = (props) => {
     setSearchedKtbs(paramGroup.filter(filterKtbs));
   };
 
+  const goToViewKTBScreen = (ktb) => {
+    props.dispatch({type: SET_SELECTED_KTB, ktb: ktb});
+    props.dispatch({ type: SET_CURRENT_PAGE, page: 'ViewDataKTBScreen' });
+    navigation.replace('ViewDataKTBScreen');
+  };
+
   const onGroupClick = (id) => {
     setLoading(true);
     const selectedKtbsTmp = searchedKtbs.filter((data) => {return data.ktb.id === id;});
@@ -124,10 +135,7 @@ const ViewALLKTBScreen = (props) => {
     }
 
     const selectedKtb = selectedKtbsTmp[0];
-
-    props.dispatch({type: SET_SELECTED_KTB, ktb: selectedKtb});
-    props.dispatch({ type: SET_CURRENT_PAGE, page: 'ViewDataKTBScreen' });
-    navigation.replace('ViewDataKTBScreen');
+    goToViewKTBScreen(selectedKtb);
   };
 
   const onGroupChecked = (id, checked) => {
@@ -218,7 +226,7 @@ const ViewALLKTBScreen = (props) => {
       return;
     }
 
-    getsinglektbapi.getktbbyktbid(selectedKtbsTmp[0].ktb.id, (result) => callbackGetKtb(result, id), errorHandler);
+    getsinglektbapi.getktbbyktbid(selectedKtbsTmp[0].ktb.id, props.User.email, (result) => callbackGetKtb(result, id), errorHandler);
   };
 
   const onGroupLongPress = () => {
@@ -226,12 +234,27 @@ const ViewALLKTBScreen = (props) => {
   };
 
   const addGroup = () => {
-    console.log('tambah');
     setShowAddGroupScreen(true);
   };
 
-  const callbackAddGroup = (result) => {
+  const callbackGetNewKtb = (result) => {
+    setLoading(false);
 
+    if (!result.succeed) {
+      setErrorText(result.errorMessage);
+      return;
+    }
+
+    goToViewKTBScreen(result.result);
+  };
+
+  const callbackAddGroup = (result) => {
+    if (!result.succeed) {
+      setLoading(false);
+      setErrorText(result.errorMessage);
+      return;
+    }
+    getsinglektbapi.getktbbyktbid(result.result.ktb.id, props.User.email, callbackGetNewKtb, errorHandler);
   };
 
   const onAddGroupNextClick = (value) => {
@@ -241,6 +264,9 @@ const ViewALLKTBScreen = (props) => {
       setShouldBackToAddScreen(true);
       setErrorText('Nama belum diisi.');
     }
+
+    setLoading(true);
+    savesinglektbapi.savesinglektb(props.User.member_id, value, props.User.email, callbackAddGroup, errorHandler);
   };
 
   const onAddGroupCancelClick = () => {
@@ -252,22 +278,30 @@ const ViewALLKTBScreen = (props) => {
   };
 
   const callbackDeleteGroup = (result) => {
+    setLoading(false);
 
+    if (!result.succeed) {
+      setErrorText(result.errorMessage);
+      return;
+    }
+
+    setShowConfirmScreen(false);
+    setIsFirstEntry(true);
   };
 
   const onDeleteConfirmClick = () => {
-    console.log('delete');
-    setShowConfirmScreen(false);
+    setLoading(true);
+
+    deletektbapi.deletektbsbylistid(selectedKtbs, props.User.email, callbackDeleteGroup, errorHandler);
   };
 
   const onDeleteCancelClick = () => {
-    console.log('cancel delete');
     setShowConfirmScreen(false);
   };
 
   if (isFirstEntry) {
     setIsFirstEntry(false);
-    getktbapi.getktbsbypktbid(props.User.member_id, callback, errorHandler);
+    getktbapi.getktbsbypktbid(props.User.member_id, props.User.email, callback, errorHandler);
   }
 
   const groupCount = ktbs.length;
@@ -295,6 +329,7 @@ const ViewALLKTBScreen = (props) => {
     searchTextStyle,
     searchButtonStyle,
     searchButtonTextStyle,
+    dataSectionStyle,
     footerSectionStyle,
     footerButtonSectionStyle,
     buttonStyle,
@@ -434,10 +469,11 @@ const ViewALLKTBScreen = (props) => {
 
   const child = (
     <KeyboardAvoidingView style={bodyContainerStyle}>
-      <ScrollView>
-        <View style={[{flexDirection: 'column', flex: 1}]}>
-          {groups}
-        </View>
+      <ScrollView
+        keyboardDismissMode="on-drag"
+        style={dataSectionStyle}
+      >
+        {groups}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -450,7 +486,7 @@ const ViewALLKTBScreen = (props) => {
           activeOpacity={0.5}
           onPress={() => addGroup()}
         >
-          <Text style={[buttonTextStyle, buttonTextEnableStyle]}>
+          <Text style={[buttonTextStyle, buttonTextEnableStyle]} numberOfLines={1}>
             Tambah
           </Text>
         </TouchableOpacity>
@@ -462,7 +498,7 @@ const ViewALLKTBScreen = (props) => {
           onPress={() => deleteGroup()}
           disabled={selectedKtbs.length === 0 || !checkedMode}
         >
-          <Text style={[buttonTextStyle, (selectedKtbs.length === 0) ? buttonTextDisableStyle : buttonTextEnableStyle]}>
+          <Text style={[buttonTextStyle, (selectedKtbs.length === 0) ? buttonTextDisableStyle : buttonTextEnableStyle]} numberOfLines={1}>
             Hapus
           </Text>
         </TouchableOpacity>

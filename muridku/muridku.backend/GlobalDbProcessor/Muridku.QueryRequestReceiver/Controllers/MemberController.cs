@@ -121,6 +121,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       IList<string> paramQuery = new List<string>()
       {
         data.ktb_id.ToString(),
+        data.member_id.HasValue ? data.member_id.ToString() : string.Empty,
         data.email,
         encryptedPassword,
         data.name,
@@ -128,6 +129,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         data.birth_dt.HasValue ? data.birth_dt.Value.ToString( CommonFormat.YYYY_MM_DD ) : string.Empty,
         data.birth_place,
         data.mobile_phn,
+        data.inst_type,
         data.institution_id.HasValue ? data.institution_id.Value.ToString() : string.Empty,
         data.faculty_id.HasValue ? data.faculty_id.Value.ToString() : string.Empty,
         GetUsernameFromHeader( HttpContext )
@@ -161,6 +163,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         data.birth_dt.HasValue ? data.birth_dt.Value.ToString( CommonFormat.YYYY_MM_DD ) : string.Empty,
         data.birth_place,
         data.mobile_phn,
+        data.inst_type,
         data.institution_id.HasValue ? data.institution_id.Value.ToString() : string.Empty,
         data.faculty_id.HasValue ? data.faculty_id.Value.ToString() : string.Empty,
         GetUsernameFromHeader( HttpContext )

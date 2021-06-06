@@ -2,7 +2,7 @@
 import { URL, PORT, GET, TOKEN, IS_HTTP } from '../apiconst';
 import { requesttemplate } from './requesttemplate';
 
-export const getmembersbylistid = (arrId, callback, errorHandler) => {
+export const getmembersbylistid = (arrId, usr, callback, errorHandler) => {
   const options = {
     hostname: URL,
     port: PORT,
@@ -10,6 +10,7 @@ export const getmembersbylistid = (arrId, callback, errorHandler) => {
     method: GET,
     headers: {
       'Token': TOKEN,
+      'Username': usr,
     },
   };
 

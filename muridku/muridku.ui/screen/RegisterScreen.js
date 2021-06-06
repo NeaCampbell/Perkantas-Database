@@ -6,12 +6,10 @@ import {
   TextInput,
   View,
   Text,
-  ScrollView,
   Image,
   Keyboard,
   TouchableOpacity,
   KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { SET_USER, SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
 import { connect } from 'react-redux';
@@ -20,6 +18,7 @@ import PasswordToggle from './component/PasswordToggle';
 import { BasicStyles, BasicColor, LoadingViewSize, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
 import { RegisterStyles, BackgroundColor } from '../asset/style-template/RegisterStyles';
 import { ProportionateScreenSizeValue } from '../helper/CommonHelper';
+import Error from './component/Error';
 
 const registerapi = require('../api/out/registeruser');
 
@@ -31,6 +30,7 @@ const RegisterScreen = (props) => {
   const [userPassword, setUserPassword] = useState('');
   const [userPasswordConfirm, setUserPasswordConfirm] = useState('');
   const [loading, setLoading] = useState(false);
+  const [agrmntAccepted, setAgrmntAccepted] = useState(false);
   const [errorText, setErrorText] = useState('');
   const fullnameInputRef = createRef();
   const emailInputRef = createRef();
@@ -45,6 +45,10 @@ const RegisterScreen = (props) => {
     setUserPasswordConfirm('');
     setLoading(false);
     setErrorText('');
+  };
+
+  const onAgrmntAcceptanceClick = (value) => {
+    setAgrmntAccepted(value);
   };
 
   const handleSubmitPress = () => {
@@ -101,27 +105,31 @@ const RegisterScreen = (props) => {
   const {
     globalFontStyle,
     inputStyle,
-    passwordInputStyle,
-    errorSectionStyle,
-    errorMessageContainerStyle,
-    errorMessageTextStyle,
-    errorMessageButtonStyle,
-    errorMessageButtonTextStyle,
   } = BasicStyles;
 
   const {
     bodyContainerStyle,
     logoContainerStyle,
     logoStyle,
+    formContainerStyle,
+    formContainerContentStyle,
     titleContainerStyle,
     titleStyle,
+    formInputContainerStyle,
+    formInputSectionStyle,
     bodySectionStyle,
     customInputStyle,
-    customInputPasswordStyle,
-    buttonStyle,
+    customPasswordContainerStyle,
+    customPasswordInputStyle,
+    passwordButtonStyle,
+    passwordButtonTextStyle,
+    buttonContainerStyle,
+    buttonSubmitStyle,
+    buttonSubmitDisableStyle,
     buttonTextStyle,
-    signupTextStyle,
-    signupTextButtonStyle,
+    loginContainerStyle,
+    loginTextStyle,
+    loginTextButtonStyle,
     techProblemDescStyle,
     techProblemStyle,
     customActivityIndicatorStyle,
@@ -129,42 +137,35 @@ const RegisterScreen = (props) => {
 
   // const showScrollBar = Platform.OS === 'web';
 
+  const errorScreen = (
+    <Error
+      buttonClick={() => setErrorText('')}
+      message={errorText}
+    />
+  );
+
   const baseScreenItems = (
     <View style={bodyContainerStyle}>
-      {
-        (errorText !== '') ? (
-          <View style={errorSectionStyle}>
-            <View style={errorMessageContainerStyle}>
-              <Text style={errorMessageTextStyle}>
-                {`Error! ${errorText}`}
-              </Text>
-              <TouchableOpacity
-                style={errorMessageButtonStyle}
-                onPress={() => setErrorText('')}
-              >
-              <Text style={errorMessageButtonTextStyle}>Back</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : null
-      }
       <View style={logoContainerStyle}>
         <Image
           source={require('../asset/img/logo.png')}
           style={logoStyle}
         />
       </View>
-      <View style={[bodySectionStyle, titleContainerStyle]}>
-        <Text style={[titleStyle, {paddingTop: ProportionateScreenSizeValue(10)}]}>
-          Daftar MURIDKU
-        </Text>
-      </View>
-      <ScrollView>
-        <View style={{backgroundColor: '#FFFFFF', paddingTop: ProportionateScreenSizeValue(15)}}>
-          <KeyboardAvoidingView
-            style={bodySectionStyle}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          >
+      <KeyboardAvoidingView
+        style={formContainerStyle}
+        contentContainerStyle={formContainerContentStyle}
+        behavior="position"
+      >
+        <View style={titleContainerStyle}>
+          <Text style={titleStyle} numberOfLines={1}>
+            Daftar MURIDKU
+          </Text>
+        </View>
+        <View
+          style={formInputContainerStyle}
+        >
+          <View style={formInputSectionStyle}>
             <TextInput
               style={[globalFontStyle, customInputStyle, inputStyle]}
               onChangeText={(UserFullname) => setUserFullname(UserFullname)}
@@ -176,29 +177,24 @@ const RegisterScreen = (props) => {
               blurOnSubmit={false}
               ref={emailInputRef}
               value={userFullname}
+              autoFocus={true}
             />
-          </KeyboardAvoidingView>
-          <KeyboardAvoidingView
-            style={bodySectionStyle}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          >
+          </View>
+          <View style={formInputSectionStyle}>
             <TextInput
               style={[globalFontStyle, customInputStyle, inputStyle]}
               onChangeText={(addr) => setUserAddress(addr)}
               placeholder="Alamat"
               placeholderTextColor={PlaceholderTextColor}
-              autoCapitalize="none"
+              autoCapitalize="sentences"
               returnKeyType="next"
               underlineColorAndroid="#f000"
               blurOnSubmit={false}
               ref={fullnameInputRef}
               value={userAddress}
             />
-          </KeyboardAvoidingView>
-          <KeyboardAvoidingView
-            style={bodySectionStyle}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          >
+          </View>
+          <View style={formInputSectionStyle}>
             <TextInput
               style={[globalFontStyle, customInputStyle, inputStyle]}
               onChangeText={(UserEmail) => setUserEmail(UserEmail)}
@@ -212,14 +208,15 @@ const RegisterScreen = (props) => {
               ref={fullnameInputRef}
               value={userEmail}
             />
-          </KeyboardAvoidingView>
-          <KeyboardAvoidingView
-            style={bodySectionStyle}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          >
+          </View>
+          <View style={formInputSectionStyle}>
             <PasswordToggle
-              containerStyle={[globalFontStyle, customInputStyle, inputStyle]}
-              textInputStyle={[globalFontStyle, customInputPasswordStyle, passwordInputStyle]}
+              containerStyle={[globalFontStyle, customInputStyle, customPasswordContainerStyle]}
+              textInputStyle={[globalFontStyle, inputStyle, customPasswordInputStyle]}
+              buttonStyle={[globalFontStyle, passwordButtonStyle]}
+              buttonTextStyle={passwordButtonTextStyle}
+              enableButtonColor="#000"
+              disableButtonColor="rgba(0, 0, 0, 0.2)"
               onChangeText={
                 (UserPassword) => setUserPassword(UserPassword)
               }
@@ -233,14 +230,15 @@ const RegisterScreen = (props) => {
               refChild={passwordInputRef}
               iconSize={ProportionateScreenSizeValue(20)}
             />
-          </KeyboardAvoidingView>
-          <KeyboardAvoidingView
-            style={bodySectionStyle}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          >
+          </View>
+          <View style={formInputSectionStyle}>
             <PasswordToggle
-              containerStyle={[globalFontStyle, customInputStyle, inputStyle]}
-              textInputStyle={[globalFontStyle, customInputPasswordStyle, passwordInputStyle]}
+              containerStyle={[globalFontStyle, customInputStyle, customPasswordContainerStyle]}
+              textInputStyle={[globalFontStyle, inputStyle, customPasswordInputStyle]}
+              buttonStyle={[globalFontStyle, passwordButtonStyle]}
+              buttonTextStyle={passwordButtonTextStyle}
+              enableButtonColor="#000"
+              disableButtonColor="rgba(0, 0, 0, 0.2)"
               onChangeText={
                 (UserPassword) => setUserPasswordConfirm(UserPassword)
               }
@@ -254,62 +252,103 @@ const RegisterScreen = (props) => {
               refChild={passwordConfirmInputRef}
               iconSize={ProportionateScreenSizeValue(20)}
             />
-          </KeyboardAvoidingView>
-        </View>
-        <View style={{backgroundColor: '#FFFFFF'}}>
-          <View style={bodySectionStyle}>
-            <TouchableOpacity
-              style={buttonStyle}
-              activeOpacity={0.5}
-              onPress={handleSubmitPress}
-              >
-              <Text style={[globalFontStyle, buttonTextStyle]}>
-                Daftar
-              </Text>
-            </TouchableOpacity>
           </View>
-          <View style={[bodySectionStyle, {marginTop: ProportionateScreenSizeValue(10), alignItems: 'center'}]}>
-            <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-              <Text
-                style={[globalFontStyle, signupTextStyle]}>
-                Sudah memiliki akun?
+          <View style={[formInputSectionStyle, {justifyContent: 'flex-start', alignItems: 'flex-start', flexDirection: 'row'}]}>
+            <TouchableOpacity
+              style={{
+                width: ProportionateScreenSizeValue(20),
+                height: ProportionateScreenSizeValue(20),
+                borderWidth: ProportionateScreenSizeValue(1),
+                borderRadius: ProportionateScreenSizeValue(3),
+                borderColor: 'gray',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              onPress={() => onAgrmntAcceptanceClick(!agrmntAccepted)}
+            >
+              {
+                (agrmntAccepted) ?
+                <Text>✔</Text>
+                :
+                null
+              }
+            </TouchableOpacity>
+            <View style={{
+              paddingHorizontal: ProportionateScreenSizeValue(5),
+              height: ProportionateScreenSizeValue(20),
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+              <Text style={{
+                fontSize: ProportionateScreenSizeValue(11),
+              }} numberOfLines={1}>
+                Saya menyetujui&nbsp;
               </Text>
-              <TouchableOpacity
-                activeOpacity={0.5}
-                onPress={() => {
-                  resetState();
-                  navigation.navigate('LoginScreen');
-                }}
-                >
-                <Text
-                  style={[globalFontStyle, signupTextButtonStyle]}>
-                  &nbsp;Login
-                </Text>
+              <TouchableOpacity>
+              <Text style={{
+                fontSize: ProportionateScreenSizeValue(11),
+                color: '#E37550',
+              }}>
+                ketentuan yang berlaku.
+              </Text>
               </TouchableOpacity>
             </View>
           </View>
-          <View style={[bodySectionStyle, {alignItems: 'flex-end'}]}>
-            <Text style={[globalFontStyle, techProblemDescStyle]}>Kesulitan mengakses akun MURIDKU?</Text>
-          </View>
-          <View style={[bodySectionStyle, {alignItems: 'flex-start'}]}>
-            <TouchableOpacity activeOpacity={0.5}>
-              <Text
-                style={[globalFontStyle, techProblemStyle]}>
-                Laporkan masalah teknis
-              </Text>
-            </TouchableOpacity>
-          </View>
-          {(loading) ?
-            (<View style={customActivityIndicatorStyle}>
-              <ActivityIndicator
-                animating={loading}
-                color={BasicColor}
-                size={LoadingViewSize}
-              />
-            </View>) : null
-          }
         </View>
-      </ScrollView>
+      </KeyboardAvoidingView>
+      <View style={buttonContainerStyle}>
+        <View style={bodySectionStyle}>
+          <TouchableOpacity
+            style={agrmntAccepted ? buttonSubmitStyle : buttonSubmitDisableStyle}
+            activeOpacity={0.5}
+            onPress={handleSubmitPress}
+            disabled={!agrmntAccepted}
+            >
+            <Text style={[globalFontStyle, buttonTextStyle]}>
+              Daftar
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={loginContainerStyle}>
+          <Text
+            style={[globalFontStyle, loginTextStyle]}>
+            Sudah memiliki akun?
+          </Text>
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => {
+              resetState();
+              navigation.navigate('LoginScreen');
+            }}
+            >
+            <Text
+              style={[globalFontStyle, loginTextButtonStyle]}>
+              &nbsp;Login
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={[bodySectionStyle, {alignItems: 'flex-end'}]}>
+          <Text style={[globalFontStyle, techProblemDescStyle]}>Kesulitan mengakses akun MURIDKU?</Text>
+        </View>
+        <View style={[bodySectionStyle, {alignItems: 'flex-start'}]}>
+          <TouchableOpacity activeOpacity={0.5}>
+            <Text
+              style={[globalFontStyle, techProblemStyle]}>
+              Laporkan masalah teknis
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {(loading) ?
+          (<View style={customActivityIndicatorStyle}>
+            <ActivityIndicator
+              animating={loading}
+              color={BasicColor}
+              size={LoadingViewSize}
+            />
+          </View>) : null
+        }
+      </View>
     </View>
   );
 
@@ -319,6 +358,7 @@ const RegisterScreen = (props) => {
       statusBarColor={BackgroundColor}
       childName="RegisterScreen"
       navigation={navigation}
+      errorScreen={errorText !== '' ? errorScreen : null}
     />
   );
 };

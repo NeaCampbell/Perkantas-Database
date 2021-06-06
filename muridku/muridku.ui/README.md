@@ -34,6 +34,7 @@ Mobile App untuk PKTB.
 npx create-react-native-app muridku.ui or npx react-native init muridku.ui
 npm install -g expo-cli
 npm install
+react-native link
 
 ## Dependencies installation (*NIX, macOS)
 

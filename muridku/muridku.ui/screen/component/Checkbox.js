@@ -27,6 +27,7 @@ const Checkbox = (props) => {
         alignItems: 'center',
       }}
       onPress={() => onCheck(props.checked)}
+      disabled={props.disabled}
     >
       {
         (props.checked) ?

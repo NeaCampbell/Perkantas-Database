@@ -5,6 +5,10 @@ import {
 import {
   ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
+import {
+  DefaultInputFontSize,
+  DefaultPasswordInputHeight,
+} from './BasicStyles';
 
 export const BackgroundColor = '#2A2C4E';
 
@@ -13,14 +17,15 @@ export const RegisterStyles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: BackgroundColor,
   },
   logoContainerStyle: {
     width: '100%',
-    height: ProportionateScreenSizeValue(125),
+    height: ProportionateScreenSizeValue(60),
+    justifyContent: 'center',
     alignItems: 'center',
-    position: 'absolute',
   },
   logoStyle: {
     width: '60%',
@@ -28,28 +33,65 @@ export const RegisterStyles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
   },
+  formContainerStyle: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  formContainerContentStyle: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
   titleContainerStyle: {
+    height: ProportionateScreenSizeValue(40),
+    marginTop: ProportionateScreenSizeValue(40),
+    width: '70%',
+    paddingLeft: ProportionateScreenSizeValue(15),
+    paddingRight: ProportionateScreenSizeValue(15),
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: ProportionateScreenSizeValue(10),
     borderTopRightRadius: ProportionateScreenSizeValue(10),
-    marginTop: ProportionateScreenSizeValue(120),
   },
   titleStyle: {
     color: '#000000',
     fontStyle: 'normal',
     fontSize: ProportionateScreenSizeValue(20),
     textAlign: 'center',
+    paddingTop: ProportionateScreenSizeValue(10),
+  },
+  formInputContainerStyle: {
+    flexDirection: 'column',
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    height: ProportionateScreenSizeValue(280),
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingTop: ProportionateScreenSizeValue(10),
+  },
+  formInputSectionStyle: {
+    flexDirection: 'row',
+    height: ProportionateScreenSizeValue(40),
+    width: '100%',
+    marginTop: ProportionateScreenSizeValue(5),
+    paddingLeft: ProportionateScreenSizeValue(15),
+    paddingRight: ProportionateScreenSizeValue(15),
+    justifyContent: 'center',
   },
   bodySectionStyle: {
     flexDirection: 'row',
     height: ProportionateScreenSizeValue(40),
-    marginTop: ProportionateScreenSizeValue(5),
-    marginLeft: ProportionateScreenSizeValue(15),
-    marginRight: ProportionateScreenSizeValue(15),
+    width: '100%',
+    paddingLeft: ProportionateScreenSizeValue(15),
+    paddingRight: ProportionateScreenSizeValue(15),
     justifyContent: 'center',
+    alignItems: 'center',
   },
   customInputStyle: {
-    flex: 1,
     color: '#000000',
     backgroundColor: '#FFFFFF',
     width: '100%',
@@ -57,20 +99,44 @@ export const RegisterStyles = StyleSheet.create({
     borderWidth: ProportionateScreenSizeValue(1),
     borderColor: '#DDDDDD',
   },
-  customInputPasswordStyle: {
-    flex: 1,
+  customPasswordContainerStyle: {
+    height: ProportionateScreenSizeValue(DefaultPasswordInputHeight),
+  },
+  customPasswordInputStyle: {
+    fontSize: ProportionateScreenSizeValue(DefaultInputFontSize),
+    height: ProportionateScreenSizeValue(32),
+    width: '80%',
     color: '#000000',
     backgroundColor: '#FFFFFF',
-    width: '100%',
-    fontSize: ProportionateScreenSizeValue(12),
   },
-  buttonStyle: {
-    backgroundColor: '#E37550',
-    color: '#FFFFFF',
-    height: ProportionateScreenSizeValue(35),
-    width: '100%',
+  passwordButtonStyle: {
+    height: '100%',
+    width: '20%',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: ProportionateScreenSizeValue(10),
+  },
+  passwordButtonTextStyle: {
+    fontSize: ProportionateScreenSizeValue(8),
+  },
+  buttonContainerStyle: {
+    backgroundColor: '#FFF',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonSubmitStyle: {
+    backgroundColor: '#E37550',
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonSubmitDisableStyle: {
+    backgroundColor: 'rgba(227, 117, 80, 0.6)',
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonTextStyle: {
     color: '#FFFFFF',
@@ -79,12 +145,22 @@ export const RegisterStyles = StyleSheet.create({
     fontSize: ProportionateScreenSizeValue(14),
     lineHeight: ProportionateScreenSizeValue(17),
   },
-  signupTextStyle: {
+  loginContainerStyle: {
+    flexDirection: 'row',
+    height: ProportionateScreenSizeValue(40),
+    width: '100%',
+    marginTop: ProportionateScreenSizeValue(10),
+    paddingLeft: ProportionateScreenSizeValue(15),
+    paddingRight: ProportionateScreenSizeValue(15),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loginTextStyle: {
     color: '#000000',
     textAlign: 'center',
     fontSize: ProportionateScreenSizeValue(12),
   },
-  signupTextButtonStyle: {
+  loginTextButtonStyle: {
     color: '#E37550',
     textAlign: 'center',
     fontSize: ProportionateScreenSizeValue(12),

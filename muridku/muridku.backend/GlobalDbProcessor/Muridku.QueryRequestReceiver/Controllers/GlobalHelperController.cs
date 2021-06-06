@@ -35,8 +35,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       {
         result.Members = new List<CombinedMemberUserInstituteFaculty>();
         IList<Member> members = GetModelListFromQueryResult<Member>(reqResultMember);
-        Console.WriteLine("member count = {0}", members.Count);
-
+        
         foreach (Member member in members)
           result.Members.Add(GetCompleteMemberData(member, logApi, requestCode));
       }

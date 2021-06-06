@@ -1,0 +1,120 @@
+/* eslint-disable prettier/prettier */
+import {
+  StyleSheet,
+} from 'react-native';
+import {
+  ProportionateScreenSizeValue,
+} from '../../helper/CommonHelper';
+import {
+  DefaultInputHeight,
+  DefaultInputFontSize,
+} from './BasicStyles';
+
+export const AddKTBHistoryMaterialStyles = StyleSheet.create({
+  bodyMaterialContainerStyle: {
+    width: '100%',
+    paddingVertical: ProportionateScreenSizeValue(5),
+  },
+  bodyMaterialContainerContentStyle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  materialSectionStyle: {
+    height: ProportionateScreenSizeValue(300),
+    paddingVertical: ProportionateScreenSizeValue(5),
+    width: '100%',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  materialBookInputContainerStyle: {
+    width: '90%',
+    height: ProportionateScreenSizeValue(DefaultInputHeight),
+    fontSize: ProportionateScreenSizeValue(DefaultInputFontSize),
+    borderWidth: ProportionateScreenSizeValue(1.5),
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: '#000',
+    backgroundColor: '#FFFFFF',
+    borderColor: '#D1D5E0',
+    borderRadius: ProportionateScreenSizeValue(10),
+  },
+  materialBookInputStyle: {
+    width: '80%',
+    height: '100%',
+    paddingLeft: ProportionateScreenSizeValue(15),
+    paddingRight: ProportionateScreenSizeValue(15),
+    color: '#000',
+    fontSize: ProportionateScreenSizeValue(DefaultInputFontSize),
+  },
+  materialBookResetButtonContainerStyle: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  materialBookResetButtonStyle: {
+    marginLeft: ProportionateScreenSizeValue(130),
+    zIndex: 2,
+    width: ProportionateScreenSizeValue(16),
+    height: ProportionateScreenSizeValue(16),
+    borderRadius: ProportionateScreenSizeValue(8),
+    borderWidth: ProportionateScreenSizeValue(1),
+    borderColor: 'red',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+  },
+  materialBookResetButtonTextStyle: {
+    fontSize: ProportionateScreenSizeValue(10),
+    lineHeight: ProportionateScreenSizeValue(12),
+    color: 'red',
+    fontWeight: 'bold',
+  },
+  materialBookButtonContainerStyle: {
+    width: '20%',
+    height: '70%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderLeftWidth: ProportionateScreenSizeValue(1),
+    borderLeftColor: '#CBCBCB',
+  },
+  materialBookButtonStyle: {
+    fontSize: ProportionateScreenSizeValue(8),
+  },
+  materialOtherInputSectionStyle: {
+    width: '100%',
+    height: ProportionateScreenSizeValue(DefaultInputHeight),
+    marginTop: ProportionateScreenSizeValue(5),
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  materialOtherInputStyle: {
+    width: '90%',
+    height: '100%',
+    borderWidth: ProportionateScreenSizeValue(1.5),
+    borderColor: '#D1D5E0',
+    borderRadius: ProportionateScreenSizeValue(10),
+    paddingLeft: ProportionateScreenSizeValue(15),
+    paddingRight: ProportionateScreenSizeValue(15),
+    color: '#000',
+    fontSize: ProportionateScreenSizeValue(DefaultInputFontSize),
+  },
+  materialChapterInputStyle: {
+    width: '50%',
+    height: '100%',
+    borderWidth: ProportionateScreenSizeValue(1.5),
+    borderColor: '#D1D5E0',
+    borderRadius: ProportionateScreenSizeValue(10),
+    paddingLeft: ProportionateScreenSizeValue(15),
+    paddingRight: ProportionateScreenSizeValue(15),
+    color: '#000',
+    fontSize: ProportionateScreenSizeValue(DefaultInputFontSize),
+  },
+});

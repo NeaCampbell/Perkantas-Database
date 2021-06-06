@@ -40,7 +40,6 @@ export const ConfirmationStyles = StyleSheet.create({
   messageBoxTextStyle: {
     fontSize: ProportionateScreenSizeValue(14),
     color: '#000',
-    textAlign: 'justify',
   },
   messageBoxButtonSectionStyle: {
     width: '100%',

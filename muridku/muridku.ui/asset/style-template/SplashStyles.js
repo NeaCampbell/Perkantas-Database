@@ -29,25 +29,27 @@ export const SplashStyles = StyleSheet.create({
   logoContainerStyle: {
     width: '100%',
     height: ProportionateScreenSizeValue(125),
+    justifyContent: 'center',
     alignItems: 'center',
     marginTop: ProportionateScreenSizeValue(WindowSize.width > WindowSize.height ? 250 : 300),
   },
   logo2ContainerStyle: {
     width: '100%',
     height: ProportionateScreenSizeValue(50),
-    justifyContent: 'flex-end',
+    marginTop: ProportionateScreenSizeValue(60),
+    justifyContent: 'center',
     alignItems: 'center',
   },
   logoStyle: {
-    height: '70%',
-    width: '70%',
+    height: '60%',
+    width: '60%',
     resizeMode: 'contain',
     position: 'absolute',
   },
   versionContainerStyle: {
     width: '100%',
-    height: ProportionateScreenSizeValue(50),
-    justifyContent: 'flex-start',
+    marginTop: ProportionateScreenSizeValue(5),
+    justifyContent: 'center',
     alignItems: 'center',
   },
   versionTextStyle: {

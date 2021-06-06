@@ -2,7 +2,7 @@
 import { URL, PORT, GET, TOKEN, IS_HTTP } from '../apiconst';
 import { requesttemplate } from './requesttemplate';
 
-export const getfacultybyinstitutionid = (institution_id, callback, errorHandler) => {
+export const getfacultybyinstitutionid = (institution_id, usr, callback, errorHandler) => {
   const options = {
     hostname: URL,
     port: PORT,
@@ -10,6 +10,7 @@ export const getfacultybyinstitutionid = (institution_id, callback, errorHandler
     method: GET,
     headers: {
       'Token': TOKEN,
+      'Username': usr,
     },
   };
 

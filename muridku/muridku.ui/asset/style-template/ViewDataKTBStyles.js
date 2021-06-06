@@ -49,14 +49,10 @@ export const ViewDataKTBStyles = StyleSheet.create({
     backgroundColor: 'white',
   },
   dataSectionStyle: {
-    width: '100%',
-    height: '87%',
-    backgroundColor: 'white',
-  },
-  dataContentSectionStyle: {
-    justifyContent: 'flex-start',
     height: '100%',
     width: '100%',
+    flexDirection: 'column',
+    flex: 1,
   },
   headerRightButtonSectionStyle: {
     justifyContent: 'center',
@@ -133,6 +129,8 @@ export const ViewDataKTBStyles = StyleSheet.create({
   },
   buttonFooterTextStyle: {
     fontSize: ProportionateScreenSizeValue(12),
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonFooterTextEnableStyle: {
     color: ButtonColor,
@@ -147,6 +145,6 @@ export const ViewDataKTBStyles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     justifyContent: 'center',
-    color: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
 });

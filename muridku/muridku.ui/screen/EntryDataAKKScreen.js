@@ -1,13 +1,12 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable curly */
-import React, {useState} from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react';
 import {
   View,
-  ScrollView,
   Keyboard,
   TouchableOpacity,
   KeyboardAvoidingView,
-  Platform,
   ActivityIndicator,
   Text,
   TextInput,
@@ -16,17 +15,21 @@ import { connect } from 'react-redux';
 import BodyMenuBaseScreen from './BodyMenuBaseScreen';
 import { BasicStyles, BasicColor, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
 import { BackgroundColor } from '../asset/style-template/MenuBasicStyles';
-import { DataAKKStyles } from '../asset/style-template/DataAKKStyles';
+import { EntryDataAKKStyles } from '../asset/style-template/EntryDataAKKStyles';
 import {
   ProportionateScreenSizeValue,
+  DateToString,
 } from '../helper/CommonHelper';
-import DropDownPicker from 'react-native-dropdown-picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import {
   SET_SELECTED_KTB,
 } from '../reducer/action/ActionConst';
 import Error from './component/Error';
+import CustomInputButton from './component/CustomInputButton';
+import ModalList from './component/ModalList';
+import ModalDatePicker from './component/ModalDatePicker';
 
+const getinactivememberapi = require('../api/out/getallinactivektbmembers');
+const getmemberbyidapi = require('../api/out/getmemberbyid');
 const getinstitutionapi = require('../api/out/getinstitutionbytype');
 const getfacultyapi = require('../api/out/getfacultybyinstitutionid');
 const updatememberapi = require('../api/out/updatesinglemember');
@@ -38,6 +41,7 @@ const EntryDataAKKScreen = (props) => {
   const AKK_TYPE_SCHOOL = 'SCH';
   const AKK_TYPE_COLLEGE = 'CLG';
   const AKK_TYPE_ALUMNI = 'ALM';
+  const AKK_TYPE_ALL = 'ALL';
   const enabledBackgroundColor = '#FFF';
   const disabledBackgroundColor = '#EFEFEF';
   const isUpdate = props.Member ? true : false;
@@ -53,35 +57,140 @@ const EntryDataAKKScreen = (props) => {
     faculty = props.Member.faculty;
   }
   const { navigation } = props;
+  const [firstEntry, setFirstEntry] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [selectedAKKType, setSelectedAKKType] = useState(institution ? institution.type : AKK_TYPE_NONE);
-  const [isEnabled, setIsEnabled] = useState(selectedAKKType !== AKK_TYPE_NONE);
+  const [selectedAKKType, setSelectedAKKType] = useState(member && member.inst_type ? member.inst_type : AKK_TYPE_NONE);
+  const [isEnabled, setIsEnabled] = useState(member && member.inst_type ? true : false);
   const [name, setName] = useState(member ? member.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
   const [address, setAddress] = useState(member && member.address ? member.address : '');
-  const [birthDt, setBirthDt] = useState(member && member.birth_dt ? member.birth_dt : new Date());
-  const [isBirthDtSet, setIsBirthDtSet] = useState(false);
+  const [birthDt, setBirthDt] = useState(member && member.birth_dt ? new Date(member.birth_dt) : null);
   const [birthPlace, setBirthPlace] = useState(member && member.birth_place ? member.birth_place : '');
   const [mobilePhn, setMobilePhn] = useState(member && member.mobile_phn ? member.mobile_phn : '');
   const [institutionId, setInstitutionId] = useState(institution ? institution.id : null);
+  const [institutionName, setInstitutionName] = useState(institution ? institution.name : '');
   const [facultyId, setFacultyId] = useState(faculty ? faculty.id : null);
+  const [facultyName, setFacultyName] = useState(faculty ? faculty.name : '');
   const [errorText, setErrorText] = useState('');
+  const [inactiveMembers, setInactiveMembers] = useState([]);
+  const [selectedInactiveMemberId, setSelectedInactiveMemberId] = useState(null);
+  const [nameOpen, setNameOpen] = useState(false);
+  const [birthDtPickerOpen, setBirthDtPickerOpen] = useState(false);
   const [instListOpen, setInstListOpen] = useState(false);
   const [facListOpen, setFacListOpen] = useState(false);
   const [institutionList, setInstitutionList] = useState([]);
   const [facultyList, setFacultyList] = useState([]);
+
+  useEffect(() => {
+    if (!firstEntry)
+      return;
+
+    if (firstEntry && selectedAKKType === AKK_TYPE_NONE) {
+      setFirstEntry(false);
+      return;
+    }
+
+    getinstitutionapi.getinstitutionbytype(selectedAKKType === AKK_TYPE_ALUMNI ? AKK_TYPE_ALL : selectedAKKType, props.User.email, callbackInstitution, errorHandler);
+  }, [firstEntry, selectedAKKType]);
 
   const errorHandler = (error) => {
     setLoading(false);
     setErrorText(error.message);
   };
 
-  const callbackFaculty = (result) => {
-    if (loading)
-      setLoading(false);
+  const callbackNameOpen = (result, openValue) => {
+    setLoading(false);
 
-    if (!result.succeed)
+    if (!result.succeed) {
+      setErrorText(result.errorMessage);
       return;
+    }
+
+    setInactiveMembers(result.result);
+    setNameOpen(openValue);
+  };
+
+  const onNameOpen = (value) => {
+    if (!value)
+      return;
+
+    setLoading(true);
+    getinactivememberapi.getallinactivektbmembers(props.User.email, (result) => callbackNameOpen(result, value), errorHandler);
+  };
+
+  const callbackOnNameChange = (result) => {
+    if (!result.succeed) {
+      setLoading(false);
+      setErrorText(result.errorMessage);
+      return;
+    }
+
+    const mbr = result.result;
+    console.log(mbr);
+    setName(mbr.member.name);
+    setEmail(mbr.user.email);
+    setAddress(mbr.member.address ? mbr.member.address : '');
+    setBirthPlace(mbr.member.birth_place ? mbr.member.birth_place : '');
+    setBirthDt(mbr.birthDt ? new Date(mbr.member.birthDt) : null);
+    setMobilePhn(mbr.member.mobile_phn ? mbr.member.mobile_phn : '');
+    onInstitutionChange(mbr.institution ? mbr.institution.id : null, mbr.institution ? mbr.institution.name : '');
+    onFacultyChange(mbr.faculty ? mbr.faculty.id : null, mbr.faculty ? mbr.faculty.name : '');
+    onNameClose();
+    setLoading(false);
+  };
+
+  const onNameChange = (id, memberName) => {
+    setLoading(true);
+    setSelectedInactiveMemberId(id);
+    setName(memberName);
+
+
+    if (id && id !== selectedInactiveMemberId)
+      getmemberbyidapi.getmemberbyid(id, props.User.email, callbackOnNameChange, errorHandler);
+    else {
+      if (!id) {
+        setName('');
+        setEmail('');
+        setAddress('');
+        setBirthPlace('');
+        setBirthDt(null);
+        setMobilePhn('');
+        onInstitutionChange(null, '');
+      }
+
+      setLoading(false);
+      setNameOpen(false);
+    }
+  };
+
+  const onNameClose = () => {
+    setNameOpen(false);
+  };
+
+  const onManualNameChange = (value) => {
+    setSelectedInactiveMemberId(null);
+    setName(value);
+  };
+
+  const onBirthDtPickerOpen = (value) => {
+    setBirthDtPickerOpen(value);
+  };
+
+  const onBirthDtPickerSelect = (value) => {
+    setBirthDt(value);
+    onBirthDtPickerClose();
+  };
+
+  const onBirthDtPickerClose = () => {
+    setBirthDtPickerOpen(false);
+  };
+
+  const callbackFaculty = (result) => {
+    if (!result.succeed) {
+      setLoading(false);
+      setFacultyList([]);
+      return;
+    }
 
     const facList = result.result;
 
@@ -91,17 +200,47 @@ const EntryDataAKKScreen = (props) => {
     });
 
     setFacultyList(facList);
+
+    if (instListOpen)
+      onInstClose();
+
+    setLoading(false);
   };
 
-  const onInstitutionChange = (value) => {
-    getfacultyapi.getfacultybyinstitutionid(value, callbackFaculty, errorHandler);
+  const onInstitutionChange = (id, instName) => {
+    setLoading(true);
+    setInstitutionId(id);
+    setInstitutionName(instName);
+
+    if (id && id !== institutionId) {
+      setFacultyId(null);
+      setFacultyName('');
+      getfacultyapi.getfacultybyinstitutionid(id, props.User.email, callbackFaculty, errorHandler);
+    }
+    else {
+      if (!id) {
+        setFacultyId(null);
+        setFacultyName('');
+        setFacultyList([]);
+      }
+
+      setLoading(false);
+    }
+  };
+
+  const onFacultyChange = (id, facName) => {
+    setFacultyId(id);
+    setFacultyName(facName);
+    onFacClose();
   };
 
   const callbackInstitution = (result) => {
-    setLoading(false);
-
-    if (!result.succeed)
+    if (!result.succeed) {
+      setLoading(false);
+      setInstitutionList([]);
+      setFacultyList([]);
       return;
+    }
 
     const instList = result.result;
 
@@ -111,37 +250,55 @@ const EntryDataAKKScreen = (props) => {
     });
 
     setInstitutionList(instList);
+    setLoading(false);
+
+    if (institutionId)
+      getfacultyapi.getfacultybyinstitutionid(institutionId, props.User.email, callbackFaculty, errorHandler);
   };
 
   const onSelectAKKType = (akkType) => {
+    if (akkType === selectedAKKType)
+      return;
+
     setLoading(true);
     setSelectedAKKType(akkType);
     setIsEnabled(akkType !== AKK_TYPE_NONE);
-    getinstitutionapi.getinstitutionbytype(akkType, callbackInstitution, errorHandler);
+    setInstitutionId(null);
+    setInstitutionName('');
+    setFacultyId(null);
+    setFacultyName('');
 
-    if (akkType !== AKK_TYPE_COLLEGE) {
-      setFacultyId(null);
-      setFacListOpen(false);
+    getinstitutionapi.getinstitutionbytype(akkType === AKK_TYPE_ALUMNI ? AKK_TYPE_ALL : akkType, props.User.email, callbackInstitution, errorHandler);
+  };
+
+  const onInstOpen = (value) => {
+    if (institutionList.length === 0) {
+      if (instListOpen)
+      setInstListOpen(false);
+
+      return;
     }
+
+    setInstListOpen(value);
   };
 
-  const resetDropdownList = () => {
-    setFacListOpen(false);
+  const onInstClose = () => {
     setInstListOpen(false);
   };
 
-  const onInstOpen = () => {
+  const onFacOpen = (value) => {
+    if (facultyList.length === 0) {
+      if (facListOpen)
+        setFacListOpen(false);
+
+      return;
+    }
+
+    setFacListOpen(value);
+  };
+
+  const onFacClose = () => {
     setFacListOpen(false);
-    setInstListOpen(true);
-  };
-
-  const onFacOpen = () => {
-    setInstListOpen(false);
-    setFacListOpen(true);
-  };
-
-  const onTextFocus = () => {
-    resetDropdownList();
   };
 
   const callbackRefreshKtb = (result) => {
@@ -163,7 +320,7 @@ const EntryDataAKKScreen = (props) => {
       return;
     }
 
-    getktbapi.getktbbyktbid(props.KTB.ktb.id, callbackRefreshKtb, errorHandler);
+    getktbapi.getktbbyktbid(props.KTB.ktb.id, props.User.email, callbackRefreshKtb, errorHandler);
   };
 
   const onSubmitClick = () => {
@@ -181,6 +338,13 @@ const EntryDataAKKScreen = (props) => {
     }
 
     setLoading(true);
+    let birthDtStr = null;
+
+    if (birthDt) {
+      const birthMonth = birthDt.getMonth() + 1 < 10 ? `0${birthDt.getMonth() + 1}` : (birthDt.getMonth() + 1).toString();
+      const birthDay = birthDt.getDate()  < 10 ? `0${birthDt.getDate()}` : (birthDt.getDate()).toString();
+      birthDtStr = `${birthDt.getFullYear()}-${birthMonth}-${birthDay}`;
+    }
 
     if (isUpdate) {
       updatememberapi.updatesinglemember(
@@ -188,9 +352,10 @@ const EntryDataAKKScreen = (props) => {
         member.id,
         name,
         address,
-        isBirthDtSet ? birthDt : null,
+        birthDtStr,
         birthPlace,
         mobilePhn,
+        selectedAKKType,
         institutionId,
         facultyId,
         props.User.email,
@@ -203,12 +368,14 @@ const EntryDataAKKScreen = (props) => {
 
     savememberapi.savesinglemember(
       props.KTB.ktb.id,
+      selectedInactiveMemberId,
       email,
       name,
       address,
-      birthDt,
+      birthDtStr,
       birthPlace,
       mobilePhn,
+      selectedAKKType,
       institutionId,
       facultyId,
       props.User.email,
@@ -226,6 +393,7 @@ const EntryDataAKKScreen = (props) => {
     bodyContainerStyle,
     welcomingSectionStyle,
     welcomingTextStyle,
+    accTypeSectionStyle,
     accTypeTextStyle,
     instSectionStyle,
     instButtonStyle,
@@ -236,16 +404,31 @@ const EntryDataAKKScreen = (props) => {
     formSectionStyle,
     formBodySectionStyle,
     formStyle,
-    dropDownContainerStyle,
-    dropDownPlaceholderStyle,
-    dropDownItemStyle,
-    dropDownSearchContainerStyle,
-    dropDownSearchInputStyle,
+    dropdownInputContainerStyle,
+    dropdownInputStyle,
+    dropdownResetButtonContainerStyle,
+    dropdownResetButtonStyle,
+    dropdownResetButtonTextStyle,
+    dropdownButtonContainerStyle,
+    dropdownButtonStyle,
+    dropdownListMainSectionStyle,
+    dropdownListViewSectionStyle,
+    dropdownListViewItemSectionStyle,
+    dropdownListViewItemTextSectionStyle,
+    dropdownListViewItemTextStyle,
+    dropdownListButtonSectionStyle,
+    dropdownListButtonStyle,
+    dropdownListButtonContentStyle,
+    dropdownListButtonSelectStyle,
+    dropdownListButtonCancelStyle,
+    dropdownListButtonTextStyle,
+    dropdownListButtonSelectTextStyle,
+    dropdownListButtonCancelTextStyle,
     customActivityIndicatorStyle,
     footerViewStyle,
     buttonFooterStyle,
     submitButtonTextStyle,
-  } = DataAKKStyles;
+  } = EntryDataAKKStyles;
 
   const minBirthDtYear = new Date().getFullYear() - 90;
   const maxBirthDtYear = new Date().getFullYear();
@@ -258,26 +441,112 @@ const EntryDataAKKScreen = (props) => {
   const minDt = new Date(minDtStr);
   const maxDt = new Date(maxDtStr);
 
+  const modalNameData = [];
+
+  if (nameOpen)
+    inactiveMembers.forEach(item => {
+      modalNameData.push({
+        id: item.id,
+        name: item.name,
+      });
+    });
+
+  const modalInstData = [];
+
+  if (instListOpen)
+    institutionList.forEach(item => {
+      modalInstData.push({
+        id: item.id,
+        name: item.name,
+      });
+    });
+
+  const modalFacData = [];
+
+  if (facListOpen)
+    facultyList.forEach(item => {
+      modalFacData.push({
+        id: item.id,
+        name: item.name,
+      });
+    });
+
+  let modalScreen = null;
+
+  if ((nameOpen && modalNameData.length > 0) || (instListOpen && modalInstData.length > 0) || (facListOpen && modalFacData.length > 0))
+    modalScreen = (
+      <ModalList
+        selectedId={nameOpen ? selectedInactiveMemberId : (instListOpen ? institutionId : facultyId)}
+        selectedName={nameOpen ? name : (instListOpen ? institutionName : facultyName)}
+        mainSectionStyle={dropdownListMainSectionStyle}
+        listSectionStyle={dropdownListViewSectionStyle}
+        listItemSectionStyle={dropdownListViewItemSectionStyle}
+        listItemTextSectionStyle={dropdownListViewItemTextSectionStyle}
+        listItemTextStyle={dropdownListViewItemTextStyle}
+        buttonSectionStyle={dropdownListButtonSectionStyle}
+        buttonStyle={dropdownListButtonStyle}
+        selectButtonStyle={[dropdownListButtonContentStyle, dropdownListButtonSelectStyle]}
+        cancelButtonStyle={[dropdownListButtonContentStyle, dropdownListButtonCancelStyle]}
+        selectTextStyle={[globalFontStyle, dropdownListButtonTextStyle, dropdownListButtonSelectTextStyle]}
+        cancelTextStyle={[globalFontStyle, dropdownListButtonTextStyle, dropdownListButtonCancelTextStyle]}
+        list={nameOpen ? modalNameData : (instListOpen ? modalInstData : modalFacData)}
+        onCancelClick={nameOpen ? onNameClose : (instListOpen ? onInstClose : onFacClose)}
+        onSelectClick={nameOpen ? onNameChange : (instListOpen ? onInstitutionChange : onFacultyChange)}
+      />
+    );
+
+  if (birthDtPickerOpen)
+    modalScreen = (
+      <ModalDatePicker
+        selectedDate={birthDt}
+        minDt={minDt}
+        maxDt={maxDt}
+        mode="date"
+        onSelectClick={onBirthDtPickerSelect}
+        onCancelClick={onBirthDtPickerClose}
+        mainSectionStyle={dropdownListMainSectionStyle}
+        dateSectionStyle={dropdownListViewSectionStyle}
+        buttonSectionStyle={dropdownListButtonSectionStyle}
+        buttonStyle={dropdownListButtonStyle}
+        selectButtonStyle={[dropdownListButtonContentStyle, dropdownListButtonSelectStyle]}
+        cancelButtonStyle={[dropdownListButtonContentStyle, dropdownListButtonCancelStyle]}
+        selectTextStyle={[globalFontStyle, dropdownListButtonTextStyle, dropdownListButtonSelectTextStyle]}
+        cancelTextStyle={[globalFontStyle, dropdownListButtonTextStyle, dropdownListButtonCancelTextStyle]}
+      />
+    );
+
+  const loadingScreen = (
+    <View style={customActivityIndicatorStyle}>
+      <ActivityIndicator
+        animating={loading}
+        color={BasicColor}
+        size={ProportionateScreenSizeValue(30)}
+      />
+    </View>
+  );
+
   const child = (
-    <View style={bodyContainerStyle}>
+    <KeyboardAvoidingView
+      style={bodyContainerStyle}
+      behavior="position"
+    >
       <View style={welcomingSectionStyle}>
-        <Text style={[globalFontStyle, welcomingTextStyle]}>
+        <Text style={[globalFontStyle, welcomingTextStyle]} numberOfLines={1}>
           {isUpdate ? 'Update' : 'Create'}
         </Text>
-        <Text style={[globalFontStyle, accTypeTextStyle]}>
-          Pilih Tipe Institusi AKK
-        </Text>
+        <View style={accTypeSectionStyle}>
+          <Text style={[globalFontStyle, accTypeTextStyle]} numberOfLines={1}>
+            Pilih Tipe Institusi AKK
+          </Text>
+        </View>
         <View style={instSectionStyle}>
           <View style={instButtonStyle}>
             <TouchableOpacity
               style={selectedAKKType === AKK_TYPE_SCHOOL ? buttonStyle : buttonUnselectedStyle}
               activeOpacity={0.5}
-              onPress={() => {
-                resetDropdownList();
-                onSelectAKKType(AKK_TYPE_SCHOOL);
-              }}
+              onPress={() => onSelectAKKType(AKK_TYPE_SCHOOL)}
             >
-              <Text style={[globalFontStyle, selectedAKKType === AKK_TYPE_SCHOOL ? nameButtonTextStyle : nameButtonUselectedTextStyle]}>
+              <Text style={[globalFontStyle, selectedAKKType === AKK_TYPE_SCHOOL ? nameButtonTextStyle : nameButtonUselectedTextStyle]} numberOfLines={1}>
                 Siswa
               </Text>
             </TouchableOpacity>
@@ -286,12 +555,9 @@ const EntryDataAKKScreen = (props) => {
             <TouchableOpacity
               style={selectedAKKType === AKK_TYPE_COLLEGE ? buttonStyle : buttonUnselectedStyle}
               activeOpacity={0.5}
-              onPress={() => {
-                resetDropdownList();
-                onSelectAKKType(AKK_TYPE_COLLEGE);
-              }}
+              onPress={() => onSelectAKKType(AKK_TYPE_COLLEGE)}
             >
-              <Text style={[globalFontStyle, selectedAKKType === AKK_TYPE_COLLEGE ? nameButtonTextStyle : nameButtonUselectedTextStyle]}>
+              <Text style={[globalFontStyle, selectedAKKType === AKK_TYPE_COLLEGE ? nameButtonTextStyle : nameButtonUselectedTextStyle]} numberOfLines={1}>
                 Mahasiswa
               </Text>
             </TouchableOpacity>
@@ -300,187 +566,154 @@ const EntryDataAKKScreen = (props) => {
             <TouchableOpacity
               style={selectedAKKType === AKK_TYPE_ALUMNI ? buttonStyle : buttonUnselectedStyle}
               activeOpacity={0.5}
-              onPress={() => {
-                resetDropdownList();
-                onSelectAKKType(AKK_TYPE_ALUMNI);
-              }}
+              onPress={() => onSelectAKKType(AKK_TYPE_ALUMNI)}
             >
-              <Text style={[globalFontStyle, selectedAKKType === AKK_TYPE_ALUMNI ? nameButtonTextStyle : nameButtonUselectedTextStyle]}>
+              <Text style={[globalFontStyle, selectedAKKType === AKK_TYPE_ALUMNI ? nameButtonTextStyle : nameButtonUselectedTextStyle]} numberOfLines={1}>
                 Alumni
               </Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
-      <ScrollView
+      <View
         style={[formSectionStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-        contentContainerStyle={{
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-        }}
+        behavior="position"
       >
-        <View
-          style={formBodySectionStyle}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
+        <View style={formBodySectionStyle}>
+          {
+            (isUpdate) ?
+            (
+              <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+                placeholder="Nama Lengkap"
+                placeholderTextColor={PlaceholderTextColor}
+                value={name}
+                onChangeText={(value) => setName(value)}
+                onSubmitEditing={Keyboard.dismiss}
+                editable={isEnabled}
+                disabled={!isEnabled}
+              />
+            ) : (
+              <CustomInputButton
+                inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+                inputStyle={[globalFontStyle, dropdownInputStyle]}
+                resetContainerStyle={dropdownResetButtonContainerStyle}
+                resetButtonStyle={dropdownResetButtonStyle}
+                resetButtonTextStyle={dropdownResetButtonTextStyle}
+                buttonContainerStyle={dropdownButtonContainerStyle}
+                buttonStyle={dropdownButtonStyle}
+                buttonText="CARI"
+                disabled={(!isEnabled)}
+                placeholder="Nama Lengkap"
+                placeholderTextColor={PlaceholderTextColor}
+                enableTextInput={isEnabled}
+                onInputButtonClick={(value) => onNameOpen(value)}
+                onChangeText={(value) => onManualNameChange(value)}
+                onDeleteButtonClick={() => onNameChange(null, '')}
+                value={name}
+              />
+            )
+          }
+        </View>
+        <View style={formBodySectionStyle}>
           <TextInput style={[globalFontStyle, inputStyle, formStyle, {
-              backgroundColor: !(!isEnabled || (user && user.is_active === 1) || isUpdate) ? enabledBackgroundColor : disabledBackgroundColor,
+              backgroundColor: !(!isEnabled || (user && user.is_active === 1)) ? enabledBackgroundColor : disabledBackgroundColor,
             }]}
             placeholder="Email"
             placeholderTextColor={PlaceholderTextColor}
             value={email}
-            disabled={(!isEnabled || (user && user.is_active === 1) || isUpdate)}
+            editable={(isEnabled && (!user || user.is_active === 0))}
+            disabled={(!isEnabled || (user && user.is_active === 1))}
             onChangeText={(value) => setEmail(value)}
-            onFocus={() => onTextFocus()}
           />
         </View>
-        <View
-          style={formBodySectionStyle}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-          <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-            placeholder="Nama Lengkap"
-            placeholderTextColor={PlaceholderTextColor}
-            value={name}
-            onChangeText={(value) => setName(value)}
-            onSubmitEditing={Keyboard.dismiss}
-            onFocus={() => onTextFocus()}
-            disabled={!isEnabled}
-          />
-        </View>
-        <View
-          style={formBodySectionStyle}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
+        <View style={formBodySectionStyle}>
           <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
             placeholder="Alamat"
             placeholderTextColor={PlaceholderTextColor}
             value={address}
             onChangeText={(value) => setAddress(value)}
-            onFocus={() => onTextFocus()}
+            editable={isEnabled}
             disabled={!isEnabled}
           />
         </View>
-        <View
-          style={formBodySectionStyle}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
+        <View style={formBodySectionStyle}>
           <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
             placeholder="No. Handphone"
             placeholderTextColor={PlaceholderTextColor}
             value={mobilePhn}
             onChangeText={(value) => setMobilePhn(value)}
-            onFocus={() => onTextFocus()}
+            editable={isEnabled}
             disabled={!isEnabled}
           />
         </View>
-        <View
-          style={formBodySectionStyle}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
+        <View style={formBodySectionStyle}>
           <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
             placeholder="Tempat Lahir"
             placeholderTextColor={PlaceholderTextColor}
             value={birthPlace}
             onChangeText={(value) => setBirthPlace(value)}
-            onFocus={() => onTextFocus()}
+            editable={isEnabled}
             disabled={!isEnabled}
           />
         </View>
-        <View
-          style={formBodySectionStyle}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-          {/* <TextInput style={[globalFontStyle, inputStyle, formStyle]}
-            placeholder="Tanggal Lahir"
+        <View style={formBodySectionStyle}>
+          <CustomInputButton
+            inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+            inputStyle={[globalFontStyle, dropdownInputStyle]}
+            resetContainerStyle={dropdownResetButtonContainerStyle}
+            resetButtonStyle={dropdownResetButtonStyle}
+            resetButtonTextStyle={dropdownResetButtonTextStyle}
+            buttonContainerStyle={dropdownButtonContainerStyle}
+            buttonStyle={dropdownButtonStyle}
+            buttonText="PILIH"
+            disabled={(!isEnabled)}
+            placeholder="Tanggal Lahir (dd-MM-yyyy)"
             placeholderTextColor={PlaceholderTextColor}
-            onFocus={() => onTextFocus()}
-          /> */}
-          {/* <DateTimePicker
-            testID="dateTimePicker"
-            value={birthDt}
-            minimumDate={minDt}
-            maximumDate={maxDt}
-            mode="date"
-            is24Hour={true}
-            display="default"
-            onChange={(event, selectedDate) => {
-              setIsBirthDtSet(true);
-              setBirthDt(selectedDate || new Date());
-            }}
-            disabled={!isEnabled}
-          /> */}
+            onInputButtonClick={(value) => onBirthDtPickerOpen(value)}
+            onDeleteButtonClick={() => onBirthDtPickerSelect(null)}
+            value={DateToString(birthDt) ?? ''}
+          />
         </View>
-        <View
-          style={formBodySectionStyle}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-          <DropDownPicker
-            defaultNull
-            searchable={true}
-            searchPlaceholder="Cari Institusi..."
-            searchContainerStyle={dropDownSearchContainerStyle}
-            searchTextinputStyle={[globalFontStyle, dropDownSearchInputStyle]}
-            searchPlaceholderTextColor={PlaceholderTextColor}
+        <View style={formBodySectionStyle}>
+          <CustomInputButton
+            inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+            inputStyle={[globalFontStyle, dropdownInputStyle]}
+            resetContainerStyle={dropdownResetButtonContainerStyle}
+            resetButtonStyle={dropdownResetButtonStyle}
+            resetButtonTextStyle={dropdownResetButtonTextStyle}
+            buttonContainerStyle={dropdownButtonContainerStyle}
+            buttonStyle={dropdownButtonStyle}
+            buttonText="CARI"
+            disabled={(!isEnabled)}
             placeholder="Institusi"
-            containerStyle={[inputStyle, dropDownContainerStyle]}
-            style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-            placeholderStyle={[globalFontStyle, dropDownPlaceholderStyle]}
-            dropDownContainerStyle={dropDownContainerStyle}
-            listItemLabelStyle={[globalFontStyle, dropDownItemStyle]}
-            open={instListOpen}
-            setOpen={onInstOpen}
-            closeAfterSelecting={true}
-            items={institutionList}
-            setItems={setInstitutionList}
-            zIndex={99}
-            zIndexInverse={199}
-            value={institutionId}
-            setValue={setInstitutionId}
-            onChangeValue={(value) => onInstitutionChange(value)}
-            disabled={!isEnabled}
+            placeholderTextColor={PlaceholderTextColor}
+            showList={instListOpen}
+            onInputButtonClick={(value) => onInstOpen(value)}
+            onDeleteButtonClick={() => onInstitutionChange(null, '')}
+            value={institutionName}
           />
         </View>
-        <View
-          style={formBodySectionStyle}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-          <DropDownPicker
-            defaultNull
-            disabled={selectedAKKType !== AKK_TYPE_COLLEGE || facultyId === 0 && !isEnabled}
-            searchable={true}
-            searchPlaceholder="Cari Fakultas..."
-            searchContainerStyle={dropDownSearchContainerStyle}
-            searchTextinputStyle={[globalFontStyle, dropDownSearchInputStyle]}
-            searchPlaceholderTextColor={PlaceholderTextColor}
+        <View style={formBodySectionStyle}>
+          <CustomInputButton
+            inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+            inputStyle={[globalFontStyle, dropdownInputStyle]}
+            resetContainerStyle={dropdownResetButtonContainerStyle}
+            resetButtonStyle={dropdownResetButtonStyle}
+            resetButtonTextStyle={dropdownResetButtonTextStyle}
+            buttonContainerStyle={dropdownButtonContainerStyle}
+            buttonStyle={dropdownButtonStyle}
+            buttonText="CARI"
+            disabled={(!isEnabled)}
             placeholder="Fakultas"
-            containerStyle={[inputStyle, dropDownContainerStyle]}
-            style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-            placeholderStyle={[globalFontStyle, dropDownPlaceholderStyle]}
-            dropDownContainerStyle={dropDownContainerStyle}
-            listItemLabelStyle={[globalFontStyle, dropDownItemStyle]}
-            open={facListOpen}
-            setOpen={onFacOpen}
-            items={facultyList}
-            setItems={setFacultyList}
-            zIndex={199}
-            zIndexInverse={99}
-            value={facultyId}
-            setValue={setFacultyId}
+            placeholderTextColor={PlaceholderTextColor}
+            showList={facListOpen}
+            onInputButtonClick={(value) => onFacOpen(value)}
+            onDeleteButtonClick={() => onFacultyChange(null, '')}
+            value={facultyName}
           />
         </View>
-      </ScrollView>
-      {
-      (loading) ?
-        (<View style={customActivityIndicatorStyle}>
-          <ActivityIndicator
-            animating={loading}
-            color={BasicColor}
-            size={ProportionateScreenSizeValue(ProportionateScreenSizeValue(30))}
-          />
-        </View>) : null
-      }
-    </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 
   const errorScreen = (
@@ -495,16 +728,17 @@ const EntryDataAKKScreen = (props) => {
       <TouchableOpacity
         style={buttonFooterStyle}
         activeOpacity={0.5}
-        onFocus={() => onTextFocus()}
         onPress={() => onSubmitClick()}
       >
-        <Text style={[globalFontStyle, submitButtonTextStyle]}>Save</Text>
+        <Text style={[globalFontStyle, submitButtonTextStyle]} numberOfLines={1}>Save</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 
   return (
     <BodyMenuBaseScreen
+      overlayScreen={modalScreen}
+      loadingScreen={loading ? loadingScreen : null}
       title="Data AKK"
       child={child}
       footer={footer}

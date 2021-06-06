@@ -44,6 +44,15 @@ export const LoginStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  passwordButtonStyle: {
+    height: '100%',
+    width: '20%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  passwordButtonTextStyle: {
+    fontSize: ProportionateScreenSizeValue(8),
+  },
   stayLoggedInSectionStyle: {
     height: ProportionateScreenSizeValue(20),
     marginTop: ProportionateScreenSizeValue(5),

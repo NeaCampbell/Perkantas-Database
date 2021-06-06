@@ -4,6 +4,10 @@ import {
     Dimensions,
   } from 'react-native';
 
+export const CommonMessages = {
+  DATA_NOT_FOUND: 'data not found!',
+};
+
 export const WindowSize = {
   width: Dimensions.get('window').width,
   height: Dimensions.get('window').height,
@@ -50,6 +54,67 @@ export const ChangeColorFunction = (oldColors) => {
 
   if (oldColors.find((col) => col === result))
     return ChangeColorFunction(oldColors);
+
+  return result;
+};
+
+export const DateToString = (date) => {
+  if (!date)
+    return '';
+
+  const year = date.getFullYear().toString();
+  const month = (date.getMonth() + 1).toString();
+  const day = date.getDate().toString();
+
+  return `${day < 10 ? '0' + day : day}-${month < 10 ? '0' + month : month}-${year}`;
+};
+
+const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+
+export const DateToStringWithMonthAsString = (date) => {
+  if (!date)
+    return '';
+
+  const year = date.getFullYear().toString();
+  const month = months[date.getMonth()];
+  const dayNum = date.getDate().toString();
+
+  return `${dayNum < 10 ? '0' + dayNum : dayNum} ${month} ${year}`;
+};
+
+export const DateToStringWithDay = (date) => {
+  if (!date)
+    return '';
+
+  const year = date.getFullYear().toString();
+  const month = months[date.getMonth()];
+  const dayNum = date.getDate().toString();
+  const dayStr = days[date.getDay()];
+
+  return `${dayStr}, ${dayNum < 10 ? '0' + dayNum : dayNum} ${month} ${year}`;
+};
+
+export const GetFirstWord = (value) => {
+  if (!value || value === '')
+    return '';
+
+  return value.split(' ')[0];
+};
+
+export const ListToString = (list, onlyFirstWord = true) => {
+  if (!list || list.length === 0)
+    return '';
+
+  let result = '';
+
+  list.forEach(item => {
+    if (result !== '')
+      result += ', ';
+
+    result += onlyFirstWord ? GetFirstWord(item.value) : item.value;
+  });
 
   return result;
 };

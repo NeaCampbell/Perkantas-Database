@@ -2,7 +2,7 @@
 import { URL, PORT, GET, TOKEN, IS_HTTP } from '../apiconst';
 import { requesttemplate } from './requesttemplate';
 
-export const getktbbyktbid = (ktbid, callback, errorHandler) => {
+export const getktbbyktbid = (ktbid, usr, callback, errorHandler) => {
   const options = {
     hostname: URL,
     port: PORT,
@@ -10,6 +10,7 @@ export const getktbbyktbid = (ktbid, callback, errorHandler) => {
     method: GET,
     headers: {
       'Token': TOKEN,
+      'Username': usr,
     },
   };
 

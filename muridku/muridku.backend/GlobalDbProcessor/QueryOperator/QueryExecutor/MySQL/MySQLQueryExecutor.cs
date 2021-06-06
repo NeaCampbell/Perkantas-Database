@@ -174,9 +174,7 @@ namespace QueryOperator.QueryExecutor.MySQL
                                 _queryConfigSource.GetValue( queryRequestParam.RequestCode, string.Empty )
                                 );
 
-      Console.WriteLine( "    [{0}] query {1}: {2}", Thread.CurrentThread.ManagedThreadId, queryRequestParam.Uuid, query );
-
-      if( !queryRequestParam.IsSingleRow )
+      if ( !queryRequestParam.IsSingleRow )
       {
         RawQueryResult result = ExecuteQuerySimple( query, queryRequestParam.ProcessType );
 

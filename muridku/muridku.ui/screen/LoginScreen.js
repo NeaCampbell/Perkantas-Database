@@ -64,9 +64,8 @@ const LoginScreen = (props) => {
 
     setLoading(true);
     const callback = (result) => {
-      setLoading(false);
-
       if (!result.succeed) {
+        setLoading(false);
         setErrorText(result.errorMessage);
         return;
       }
@@ -74,6 +73,7 @@ const LoginScreen = (props) => {
       props.dispatch({ type: SET_USER, user: result.result });
       props.dispatch({ type: SET_CURRENT_PAGE, page: 'ViewAllKTBScreen' });
       resetState();
+      setLoading(false);
       navigation.replace('ViewAllKTBScreen');
     };
 
@@ -99,6 +99,8 @@ const LoginScreen = (props) => {
     logoStyle,
     emailSectionStyle,
     passwordSectionStyle,
+    passwordButtonStyle,
+    passwordButtonTextStyle,
     stayLoggedInSectionStyle,
     stayLoggedInInnerStyle,
     stayLoggedInCheckBoxStyle,
@@ -161,6 +163,7 @@ const LoginScreen = (props) => {
           blurOnSubmit={false}
           ref={emailInputRef}
           value={userEmail ? userEmail.toString() : ''}
+          autoFocus={userEmail ? false : true}
         />
       </KeyboardAvoidingView>
       <KeyboardAvoidingView
@@ -168,8 +171,12 @@ const LoginScreen = (props) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <PasswordToggle
-          containerStyle={[basicInputStyle, inputStyle]}
-          textInputStyle={[globalFontStyle, basicInputStyle, passwordInputStyle]}
+          containerStyle={[globalFontStyle, basicInputStyle]}
+          textInputStyle={[globalFontStyle, inputStyle, passwordInputStyle]}
+          buttonStyle={[globalFontStyle, passwordButtonStyle]}
+          buttonTextStyle={passwordButtonTextStyle}
+          enableButtonColor="#FFF"
+          disableButtonColor="rgba(255, 255, 255, 0.2)"
           onChangeText={
             (UserPassword) => setUserPassword(UserPassword)
           }
@@ -183,6 +190,7 @@ const LoginScreen = (props) => {
           refChild={passwordInputRef}
           value={userPassword ? userPassword.toString() : ''}
           iconSize={ProportionateScreenSizeValue(20)}
+          autoFocus={userEmail ? true : false}
         />
       </KeyboardAvoidingView>
       <KeyboardAvoidingView
@@ -196,13 +204,13 @@ const LoginScreen = (props) => {
           <View style={isStayLoggedIn ? stayLoggedInCheckBoxActiveStyle : stayLoggedInCheckBoxStyle}>
             {
               (isStayLoggedIn) ?
-              <Text style={stayLoggedInCheckBoxActiveInnerStyle}>✔</Text>
+              <Text style={stayLoggedInCheckBoxActiveInnerStyle} numberOfLines={1}>✔</Text>
               :
               null
             }
           </View>
           <View style={stayLoggedInTextContainerStyle}>
-            <Text style={isStayLoggedIn ? stayLoggedInTextActiveStyle : stayLoggedInTextStyle}>tetap login</Text>
+            <Text style={isStayLoggedIn ? stayLoggedInTextActiveStyle : stayLoggedInTextStyle} numberOfLines={1}>tetap login</Text>
           </View>
         </TouchableOpacity>
       </KeyboardAvoidingView>
@@ -215,7 +223,7 @@ const LoginScreen = (props) => {
           activeOpacity={0.5}
           onPress={() => handleSubmitPress()}
           >
-          <Text style={[globalFontStyle, loginButtonTextStyle]}>
+          <Text style={[globalFontStyle, loginButtonTextStyle]} numberOfLines={1}>
             Masuk
           </Text>
         </TouchableOpacity>
@@ -256,7 +264,7 @@ const LoginScreen = (props) => {
         </TouchableOpacity>
       </View>
       <View style={techProblemDescSectionStyle}>
-        <Text style={[globalFontStyle, techProblemDescStyle]}>Kesulitan mengakses akun MURIDKU?</Text>
+        <Text style={[globalFontStyle, techProblemDescStyle]} numberOfLines={1}>Kesulitan mengakses akun MURIDKU?</Text>
       </View>
       <View style={techProblemSectionStyle}>
         <TouchableOpacity activeOpacity={0.5}>

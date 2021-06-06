@@ -25,14 +25,14 @@ const Error = (props) => {
   return (
     <View style={errorSectionStyle}>
       <View style={errorMessageContainerStyle}>
-        <Text style={errorMessageTextStyle}>
+        <Text style={errorMessageTextStyle} numberOfLines={2}>
           {`Error! ${props.message ?? ''}`}
         </Text>
         <TouchableOpacity
           style={errorMessageButtonStyle}
           onPress={() => onButtonClick()}
         >
-        <Text style={errorMessageButtonTextStyle}>Back</Text>
+        <Text style={errorMessageButtonTextStyle} numberOfLines={1}>Back</Text>
         </TouchableOpacity>
       </View>
     </View>

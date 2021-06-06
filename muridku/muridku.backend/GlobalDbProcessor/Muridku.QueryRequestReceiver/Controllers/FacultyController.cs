@@ -24,12 +24,11 @@ namespace Muridku.QueryRequestReceiver.Controllers
       if( RequestId == result.RequestId )
       {
         base.OnQueuedQueryExecutedHandler( sender, result );
-        Logger.LogInformation( "    Request id {0}, error msg = {1}", result.RequestId, result.ErrorMessage );
 
         switch( result.RequestCode )
         {
           case QueryListKeyMap.GET_ALL_FACULTY:
-            Logger.LogInformation( "    Query Result {0} = {1}", result.RequestId, result.Result );
+            //Logger.LogInformation( "    Query Result {0} = {1}", result.RequestId, result.Result );
             break;
           default:
             break;

@@ -16,7 +16,7 @@ export const checkuseractiveondevice = (callback, errorHandler) => {
     const options = {
       hostname: URL,
       port: PORT,
-      path: `/user/checkuserloginstatus?deviceid=${unique_id}`,
+      path: `/user/checkuseractiveondevice?deviceid=${unique_id}`,
       method: GET,
       headers: {
         'Token': TOKEN,

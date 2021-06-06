@@ -11,7 +11,7 @@ import {
 export const BasicColor = '#F59873';
 export const DefaultInputFontSize = 12;
 export const DefaultInputHeight = 35;
-export const DefaultPasswordInputHeight = 30;
+export const DefaultPasswordInputHeight = 35;
 
 export const BasicStyles = StyleSheet.create({
   mainBodyStyle: {
@@ -50,20 +50,19 @@ export const BasicStyles = StyleSheet.create({
     paddingLeft: ProportionateScreenSizeValue(15),
     paddingRight: ProportionateScreenSizeValue(15),
     height: ProportionateScreenSizeValue(DefaultInputHeight),
-    position: 'absolute',
   },
   passwordInputStyle: {
-    paddingLeft: ProportionateScreenSizeValue(15),
-    paddingRight: ProportionateScreenSizeValue(15),
+    fontSize: ProportionateScreenSizeValue(DefaultInputFontSize),
     height: ProportionateScreenSizeValue(DefaultPasswordInputHeight),
     width: '80%',
-    position: 'absolute',
+    color: '#F4F8FC',
+    backgroundColor: '#555671',
   },
   errorSectionStyle: {
     position: 'absolute',
     width: '100%',
     height: '100%',
-    zIndex: 1000,
+    zIndex: 999999,
     backgroundColor: 'rgba(0,0,0,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -104,6 +103,7 @@ export const BasicStyles = StyleSheet.create({
     position: 'absolute',
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    // backgroundColor: 'transparent',
   },
   customActivityIndicatorSizeStyle: {
     height: '60%',

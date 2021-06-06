@@ -20,6 +20,7 @@ export const logout = (email, callback, errorHandler) => {
       method: PUT,
       headers: {
         'Token': TOKEN,
+        'Username': email,
       },
     };
 

@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-export const URL = '192.168.1.5';
+export const URL = '192.168.1.8';
 export const PORT = 5000;
 export const TOKEN = '05F04D0CC03B05A0A70650D601D0830270DE0B80820CF099';
 export const GET = 'GET';

@@ -23,6 +23,7 @@ export const EntryKTBStyles = StyleSheet.create({
     width: '90%',
     height: ProportionateScreenSizeValue(180),
     borderRadius: ProportionateScreenSizeValue(10),
+    marginBottom: ProportionateScreenSizeValue(200),
     backgroundColor: 'rgba(255, 255, 255, 1)',
     justifyContent: 'center',
     alignItems: 'center',

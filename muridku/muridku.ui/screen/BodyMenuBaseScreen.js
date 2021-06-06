@@ -69,7 +69,7 @@ const BodyMenuBaseScreen = (props) => {
                 <View style={[headerSearchMenuStyle]} />
               </TouchableOpacity>
               <View style={titleStyle}>
-                <Text style={titleTextStyle}>
+                <Text style={titleTextStyle} numberOfLines={1}>
                   {props.title}
                 </Text>
               </View>

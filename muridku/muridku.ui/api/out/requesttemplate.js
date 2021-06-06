@@ -15,15 +15,15 @@ export const requesttemplate = (options, callback, paraminput, ishttp, errorHand
   })
   .then((response) => response.json())
   .then((json) => {
-    console.log(json);
+    // console.log(json);
 
     if (callback !== undefined && callback !== null)
       callback(json);
   })
   .catch((error) => {
-    console.log(url);
-    console.log(options);
-    console.log(paraminput ?? 'no param input');
+    console.error(url);
+    console.error(options);
+    console.error(paraminput ?? 'no param input');
     console.error(error);
 
     if (errorHandler !== undefined && errorHandler !== null)

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Muridku.QueryRequestReceiver.Models;
 using Muridku.QueryRequestReceiver.Models.Dbs;
+using Muridku.QueryRequestReceiver.Models.Dbs.Combined;
 using Muridku.QueryRequestReceiver.Models.Params;
 using Newtonsoft.Json;
 using QueryManager;
@@ -28,12 +29,11 @@ namespace Muridku.QueryRequestReceiver.Controllers
       if( RequestId == result.RequestId )
       {
         base.OnQueuedQueryExecutedHandler( sender, result );
-        Logger.LogInformation( "    Request id {0}, error msg = {1}", result.RequestId, result.ErrorMessage );
-
+        
         switch( result.RequestCode )
         {
           case QueryListKeyMap.GET_ALL_USER:
-            Logger.LogInformation( "    Query Result {0} = {1}", result.RequestId, result.Result );
+            //Logger.LogInformation( "    Query Result {0} = {1}", result.RequestId, result.Result );
             break;
           default:
             break;
@@ -70,6 +70,19 @@ namespace Muridku.QueryRequestReceiver.Controllers
       return ExecuteRequest<User>(logApi, new List<string>() { param.fullname, param.email, encryptedPassword, GetUsernameFromHeader(HttpContext) },
         ConstRequestType.POST, QueryListKeyMap.REGISTER_MURIDKU_USER, QueryListKeyMap.REGISTER_MURIDKU_USER, isSingleRow: true,
         preCheckFuncs: preCheckFuncs);
+    }
+
+    [HttpGet(QueryListKeyMap.GET_INACTIVE_USERS)]
+    public Response<IList<CombinedUserMemberName>> GetInactiveUsers()
+    {
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), "");
+      QueryResult result = ExecuteRequest<User>(logApi, null, ConstRequestType.GET,
+        QueryListKeyMap.GET_INACTIVE_USERS, QueryListKeyMap.GET_INACTIVE_USERS);
+
+      if(!result.Succeed)
+        return GetResponseBlankMultiModels<CombinedUserMemberName>(result, result.Succeed);
+
+      return GetResponseMultiModels<CombinedUserMemberName>(result);
     }
 
     [HttpPut( QueryListKeyMap.ACTIVATE_USER )]
