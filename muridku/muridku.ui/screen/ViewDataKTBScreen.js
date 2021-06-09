@@ -475,7 +475,7 @@ const ViewDataKTBScreen = (props) => {
       </ScrollView>
     </KeyboardAvoidingView>
   );
-  console.log(props.KTB.members);
+
   const buttonUpdateEnable = checkedMode ? selectedMembers.length > 0 : memberActiveStates.filter(item => item.isActive === false).length > 0;
 
   const footer = (

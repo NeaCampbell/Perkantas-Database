@@ -2,9 +2,9 @@
 
 namespace Muridku.QueryRequestReceiver.Models.Dbs.Combined
 {
-  public class CombinedKtbMember
+  public class CombinedKtbKtbHistory
   {
     public Ktb ktb { get; set; }
-    public IList<CombinedMemberUserInstituteFaculty> members { get; set; }
+    public IList<CombinedKtbHistoryMember> histories { get; set; }
   }
 }

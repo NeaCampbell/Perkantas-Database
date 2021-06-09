@@ -29,6 +29,12 @@
     public const string GET_MEMBERS_BY_KTB_ID = "getmembersbyktbid";
     public const string GET_AKTBS_BY_KTB_ID = "getaktbsbyktbid";
     public const string GET_ALL_INACTIVE_KTB_MEMBERS = "getallinactivektbmembers";
+    public const string GET_SINGLE_KTB_HISTORY_BY_KTB_ID = "getsinglektbhistorybyktbid";
+    public const string GET_SINGLE_KTB_HISTORY_MEMBER_BY_KTB_ID_MEMBER_ID = "getsinglektbhistorymemberbyktbidmemberid";
+    public const string GET_KTB_HISTORY_BY_KTB_ID = "getktbhistorybyktbid";
+    public const string GET_KTB_HISTORY_MEMBER_BY_KTB_HISTORY_ID = "getktbhistorymemberbyktbhistoryid";
+    public const string SAVE_SINGLE_KTB_HISTORY = "savesinglektbhistory";
+    public const string SAVE_SINGLE_KTB_HISTORY_MEMBER = "savesinglektbhistorymember";
     public const string SAVE_SINGLE_MEMBER = "savesinglemember";
     public const string UPDATE_SINGLE_MEMBER = "updatesinglemember";
     public const string GET_ALL_INSTITUTION = "getallinstitution";

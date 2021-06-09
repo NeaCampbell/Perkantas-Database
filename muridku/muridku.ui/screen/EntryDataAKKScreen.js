@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import BodyMenuBaseScreen from './BodyMenuBaseScreen';
+import { CallbackAction } from './BodyBaseScreen';
 import { BasicStyles, BasicColor, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
 import { BackgroundColor } from '../asset/style-template/MenuBasicStyles';
 import { EntryDataAKKStyles } from '../asset/style-template/EntryDataAKKStyles';
@@ -27,6 +28,7 @@ import Error from './component/Error';
 import CustomInputButton from './component/CustomInputButton';
 import ModalList from './component/ModalList';
 import ModalDatePicker from './component/ModalDatePicker';
+import Confirmation, { AlertMode } from './component/Confirmation';
 
 const getinactivememberapi = require('../api/out/getallinactivektbmembers');
 const getmemberbyidapi = require('../api/out/getmemberbyid');
@@ -80,6 +82,7 @@ const EntryDataAKKScreen = (props) => {
   const [facListOpen, setFacListOpen] = useState(false);
   const [institutionList, setInstitutionList] = useState([]);
   const [facultyList, setFacultyList] = useState([]);
+  const [showConfirmScreen, setShowConfirmScreen] = useState(false);
 
   useEffect(() => {
     if (!firstEntry)
@@ -115,7 +118,7 @@ const EntryDataAKKScreen = (props) => {
       return;
 
     setLoading(true);
-    getinactivememberapi.getallinactivektbmembers(props.User.email, (result) => callbackNameOpen(result, value), errorHandler);
+    getinactivememberapi.getallinactivektbmembers(props.User.member_id, props.User.email, (result) => callbackNameOpen(result, value), errorHandler);
   };
 
   const callbackOnNameChange = (result) => {
@@ -126,7 +129,6 @@ const EntryDataAKKScreen = (props) => {
     }
 
     const mbr = result.result;
-    console.log(mbr);
     setName(mbr.member.name);
     setEmail(mbr.user.email);
     setAddress(mbr.member.address ? mbr.member.address : '');
@@ -323,6 +325,19 @@ const EntryDataAKKScreen = (props) => {
     getktbapi.getktbbyktbid(props.KTB.ktb.id, props.User.email, callbackRefreshKtb, errorHandler);
   };
 
+  const onBackClick = () => {
+    setShowConfirmScreen(true);
+  };
+
+  const onConfirmReturnPage = (value) => {
+    if (value) {
+      CallbackAction(props, 'EntryDataAKKScreen');
+      return;
+    }
+
+    setShowConfirmScreen(value);
+  };
+
   const onSubmitClick = () => {
     if (email === '') {
       setErrorText('email belum diisi.');
@@ -412,6 +427,10 @@ const EntryDataAKKScreen = (props) => {
     dropdownButtonContainerStyle,
     dropdownButtonStyle,
     dropdownListMainSectionStyle,
+    dropdownListSearchSectionStyle,
+    dropdownListSearchSectionContainerStyle,
+    dropdownListSearchInputStyle,
+    dropdownListSearchButtonStyle,
     dropdownListViewSectionStyle,
     dropdownListViewItemSectionStyle,
     dropdownListViewItemTextSectionStyle,
@@ -479,6 +498,10 @@ const EntryDataAKKScreen = (props) => {
         selectedId={nameOpen ? selectedInactiveMemberId : (instListOpen ? institutionId : facultyId)}
         selectedName={nameOpen ? name : (instListOpen ? institutionName : facultyName)}
         mainSectionStyle={dropdownListMainSectionStyle}
+        searchSectionStyle={dropdownListSearchSectionStyle}
+        searchSectionContainerStyle={dropdownListSearchSectionContainerStyle}
+        searchInputStyle={dropdownListSearchInputStyle}
+        searchButtonStyle={dropdownListSearchButtonStyle}
         listSectionStyle={dropdownListViewSectionStyle}
         listItemSectionStyle={dropdownListViewItemSectionStyle}
         listItemTextSectionStyle={dropdownListViewItemTextSectionStyle}
@@ -523,6 +546,17 @@ const EntryDataAKKScreen = (props) => {
         size={ProportionateScreenSizeValue(30)}
       />
     </View>
+  );
+
+  const confirmScreen = (
+    <Confirmation
+      confirmText="Apakah anda yakin akan kembali ke halaman sebelumnya?"
+      firstButtonText="Ya"
+      secondButtonText="Tidak"
+      mode={AlertMode}
+      onFirstButtonClick={() => onConfirmReturnPage(true)}
+      onSecondButtonClick={() => onConfirmReturnPage(false)}
+    />
   );
 
   const child = (
@@ -591,6 +625,7 @@ const EntryDataAKKScreen = (props) => {
                 onSubmitEditing={Keyboard.dismiss}
                 editable={isEnabled}
                 disabled={!isEnabled}
+                returnKeyType="next"
               />
             ) : (
               <CustomInputButton
@@ -610,20 +645,21 @@ const EntryDataAKKScreen = (props) => {
                 onChangeText={(value) => onManualNameChange(value)}
                 onDeleteButtonClick={() => onNameChange(null, '')}
                 value={name}
+                returnKeyType="next"
               />
             )
           }
         </View>
         <View style={formBodySectionStyle}>
           <TextInput style={[globalFontStyle, inputStyle, formStyle, {
-              backgroundColor: !(!isEnabled || (user && user.is_active === 1)) ? enabledBackgroundColor : disabledBackgroundColor,
+              backgroundColor: !(!isEnabled || (user && (user.is_active === 1 || user.is_active === 3))) ? enabledBackgroundColor : disabledBackgroundColor,
             }]}
             placeholder="Email"
             placeholderTextColor={PlaceholderTextColor}
             value={email}
-            editable={(isEnabled && (!user || user.is_active === 0))}
-            disabled={(!isEnabled || (user && user.is_active === 1))}
+            editable={(isEnabled && (!user || user.is_active === 0 || user.is_active === 2))}
             onChangeText={(value) => setEmail(value)}
+            returnKeyType="next"
           />
         </View>
         <View style={formBodySectionStyle}>
@@ -634,6 +670,7 @@ const EntryDataAKKScreen = (props) => {
             onChangeText={(value) => setAddress(value)}
             editable={isEnabled}
             disabled={!isEnabled}
+            returnKeyType="next"
           />
         </View>
         <View style={formBodySectionStyle}>
@@ -644,6 +681,7 @@ const EntryDataAKKScreen = (props) => {
             onChangeText={(value) => setMobilePhn(value)}
             editable={isEnabled}
             disabled={!isEnabled}
+            returnKeyType="next"
           />
         </View>
         <View style={formBodySectionStyle}>
@@ -654,6 +692,7 @@ const EntryDataAKKScreen = (props) => {
             onChangeText={(value) => setBirthPlace(value)}
             editable={isEnabled}
             disabled={!isEnabled}
+            returnKeyType="next"
           />
         </View>
         <View style={formBodySectionStyle}>
@@ -739,6 +778,7 @@ const EntryDataAKKScreen = (props) => {
     <BodyMenuBaseScreen
       overlayScreen={modalScreen}
       loadingScreen={loading ? loadingScreen : null}
+      confirmScreen={showConfirmScreen ? confirmScreen : null}
       title="Data AKK"
       child={child}
       footer={footer}
@@ -746,6 +786,7 @@ const EntryDataAKKScreen = (props) => {
       childName="EntryDataAKKScreen"
       navigation={navigation}
       statusBarColor={BackgroundColor}
+      onBackClick={onBackClick}
     />
   );
 };

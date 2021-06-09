@@ -8,12 +8,16 @@ import {
   ImageBackground,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import {
   ProportionateScreenSizeValue,
 } from '../helper/CommonHelper';
 import { SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
 import Error from './component/Error';
+import {
+  BasicStyles,
+} from '../asset/style-template/BasicStyles';
 
 // Import reducer dependencies
 import { connect } from 'react-redux';
@@ -23,6 +27,7 @@ const logoutapi = require('../api/out/logout');
 const MenuScreen = (props) => {
   const { navigation } = props;
   const [errorText, setErrorText] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const onDataKTBClick = () => {
     props.dispatch({ type: SET_CURRENT_PAGE, page: 'ViewAllKTBScreen' });
@@ -35,6 +40,7 @@ const MenuScreen = (props) => {
   };
 
   const callback = (result) => {
+    setLoading(false);
     if (!result.succeed) {
       setErrorText(result.errorMessage);
       return;
@@ -49,6 +55,7 @@ const MenuScreen = (props) => {
   };
 
   const onLogoutClick = () => {
+    setLoading(true);
     logoutapi.logout(props.User.email, callback, errorHandler);
   };
 
@@ -57,11 +64,25 @@ const MenuScreen = (props) => {
       props.onExitClick();
   };
 
+  const {
+    BasicColor,
+  } = BasicStyles;
+
   const errorScreen = (
     <Error
       buttonClick={() => setErrorText('')}
       message={errorText}
     />
+  );
+
+  const loadingScreen = (
+    <View style={styles.customActivityIndicatorStyle}>
+      <ActivityIndicator
+        animating={loading}
+        color={BasicColor}
+        size={ProportionateScreenSizeValue(30)}
+      />
+    </View>
   );
 
   return (
@@ -72,6 +93,9 @@ const MenuScreen = (props) => {
     >
       {
         (errorText !== '') ? errorScreen : null
+      }
+      {
+        (loading) ? loadingScreen : null
       }
       <View style={styles.titleSectionStyle}>
         <TouchableOpacity
@@ -233,6 +257,15 @@ const styles = StyleSheet.create({
     color: 'red',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  customActivityIndicatorStyle: {
+    alignItems: 'center',
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    zIndex: 99999,
   },
 });
 

@@ -58,6 +58,17 @@ export const ChangeColorFunction = (oldColors) => {
   return result;
 };
 
+export const DateToStringApi = (date) => {
+  if (!date)
+    return '';
+
+  const year = date.getFullYear().toString();
+  const month = (date.getMonth() + 1).toString();
+  const day = date.getDate().toString();
+
+  return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+};
+
 export const DateToString = (date) => {
   if (!date)
     return '';

@@ -114,6 +114,7 @@ const BodyMenuBaseScreen = (props) => {
       errorScreen={props.errorScreen}
       childName={props.childName}
       navigation={navigation}
+      onBackClick={props.onBackClick}
     />
   );
 };

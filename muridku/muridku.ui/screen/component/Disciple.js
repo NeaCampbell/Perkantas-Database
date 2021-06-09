@@ -98,7 +98,6 @@ const Disciple = (props) => {
         activeOpacity={0.5}
         onPress={() => onMemberClick(props.member.member.id)}
         onLongPress={() => onMemberLongPress()}
-        disabled={props.member.user.is_active === 1}
       >
         <View style={textSectionStyle}>
           <View style={nameSectionStyle}>

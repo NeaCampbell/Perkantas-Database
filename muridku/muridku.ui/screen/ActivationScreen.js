@@ -15,7 +15,7 @@ import {
 import { connect } from 'react-redux';
 import BodyMenuBaseScreen from './BodyMenuBaseScreen';
 import SearchToggle from './component/SearchToggle';
-import User from './component/User';
+import UserView from './component/User';
 import Confirmation, { AlertMode } from './component/Confirmation';
 import { BasicStyles, BasicColor, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
 import { BackgroundColor } from '../asset/style-template/MenuBasicStyles';
@@ -23,10 +23,12 @@ import { ActivationStyles } from '../asset/style-template/ActivationStyles';
 import {
   ProportionateScreenSizeValue,
   ChangeColorFunction,
+  CommonMessages,
 } from '../helper/CommonHelper';
 import Error from './component/Error';
 
 const getinactiveusersapi = require('../api/out/getinactiveusers');
+const activateuserapi = require('../api/out/activateuser');
 
 const ActivationScreen = (props) => {
   const { navigation } = props;
@@ -37,14 +39,13 @@ const ActivationScreen = (props) => {
   const [searchedUsers, setSearchedUsers] = useState([]);
   const [searchKey, setSearchKey] = useState('');
   const [searchPressed, setSearchPressed] = useState(false);
-  const [selectedAcceptedUsers, setSelectedAcceptedUsers] = useState([]);
-  const [selectedRejectedUsers, setSelectedRejectedUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
   const [showConfirmScreen, setShowConfirmScreen] = useState(false);
 
   const callback = (result) => {
     setLoading(false);
 
-    if (!result.succeed) {
+    if (!result.succeed && result.errorMessage !== CommonMessages.DATA_NOT_FOUND) {
       setErrorText(result.errorMessage);
       return;
     }
@@ -77,17 +78,68 @@ const ActivationScreen = (props) => {
     setSearchedUsers(paramGroup.filter(filterUsers));
   };
 
+  const onUserSelected = (id, isConfirm, selected) => {
+    if (!id)
+      return;
+
+    const currUser = users.filter(item => item.id === id)[0];
+    const tmp = selectedUsers.filter(x => x.id !== id);
+
+    if (!selected) {
+      setSelectedUsers(tmp);
+      return;
+    }
+
+    tmp.push({
+      id: id,
+      email: currUser.email,
+      is_active: isConfirm,
+    });
+
+    setSelectedUsers(tmp);
+    return;
+  };
+
+  const callbackActivation = (result) => {
+    setLoading(false);
+
+    if (!result.succeed) {
+      setErrorText(result.errorMessage);
+      return;
+    }
+
+    setIsFirstEntry(true);
+  };
+
+  const onConfirmActivationClick = () => {
+    setShowConfirmScreen(false);
+
+    if (!selectedUsers || selectedUsers.length === 0) {
+      setErrorText('belum ada user yang dipilih');
+      return;
+    }
+
+    setLoading(true);
+    activateuserapi.activateuser(selectedUsers, props.User.email, callbackActivation, errorHandler);
+  };
+
+  const onCancelActivationClick = () => {
+    setShowConfirmScreen(false);
+  };
+
   if (isFirstEntry) {
     setIsFirstEntry(false);
     getinactiveusersapi.getinactiveusers(props.User.email, callback, errorHandler);
   }
 
-  const groupCount = users.length;
-  const groupColors = [];
+  if (users && users.length > 0) {
+    const groupCount = users.length;
+    const groupColors = [];
 
-  for (let i = 0; i < groupCount; i++) {
-    let color = ChangeColorFunction( groupColors );
-    groupColors.push(color);
+    for (let i = 0; i < groupCount; i++) {
+      let color = ChangeColorFunction( groupColors );
+      groupColors.push(color);
+    }
   }
 
   const {
@@ -104,24 +156,30 @@ const ActivationScreen = (props) => {
     searchButtonTextStyle,
     footerViewStyle,
     buttonFooterStyle,
+    buttonFooterEnableStyle,
+    buttonFooterDisableStyle,
     submitButtonTextStyle,
     customActivityIndicatorStyle,
   } = ActivationStyles;
 
   const setUsersComp = (groups) => {
-    let comps = [];
-    let idx = 0;
-    groups.forEach(element => {
-      comps.push(
-        <User
-          key={idx}
-          user={element}
-        />
-      );
+    const comps = [];
+    if (groups && groups.length > 0) {
+      let idx = 0;
+      groups.forEach(element => {
+        comps.push(
+          <UserView
+            key={idx}
+            user={element}
+            status={element.is_active}
+            onApproveCheck={(id, checked) => onUserSelected(id, 1, checked)}
+            onRejectCheck={(id, checked) => onUserSelected(id, 3, checked)}
+          />
+        );
 
-      idx++;
-    });
-
+        idx++;
+      });
+    }
     return comps;
   };
 
@@ -178,12 +236,12 @@ const ActivationScreen = (props) => {
 
   const confirmScreen = (
     <Confirmation
-      confirmText="Apakah anda yakin akan menghapus data KTB ini?"
+      confirmText="Apakah anda yakin akan melakukan proses aktivasi?"
       firstButtonText="Ya"
       secondButtonText="Tidak"
       mode={AlertMode}
-      // onFirstButtonClick={() => onDeleteConfirmClick()}
-      // onSecondButtonClick={() => onDeleteCancelClick()}
+      onFirstButtonClick={() => onConfirmActivationClick()}
+      onSecondButtonClick={() => onCancelActivationClick()}
     />
   );
 
@@ -197,11 +255,15 @@ const ActivationScreen = (props) => {
     </KeyboardAvoidingView>
   );
 
+  const buttonSaveEnable = (selectedUsers && selectedUsers.length > 0);
+
   const footer = (
     <KeyboardAvoidingView style={footerViewStyle}>
       <TouchableOpacity
-        style={buttonFooterStyle}
+        style={[buttonFooterStyle, buttonSaveEnable ? buttonFooterEnableStyle : buttonFooterDisableStyle]}
         activeOpacity={0.5}
+        disabled={!buttonSaveEnable}
+        onPress={() => setShowConfirmScreen(true)}
       >
         <Text style={[globalFontStyle, submitButtonTextStyle]} numberOfLines={1}>Save</Text>
       </TouchableOpacity>

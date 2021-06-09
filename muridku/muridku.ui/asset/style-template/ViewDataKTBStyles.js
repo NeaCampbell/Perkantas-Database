@@ -146,5 +146,6 @@ export const ViewDataKTBStyles = StyleSheet.create({
     position: 'absolute',
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    zIndex: 99999,
   },
 });

@@ -25,7 +25,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     {
       CombinedKtbMember result = new CombinedKtbMember
       {
-        Ktb = ktb
+        ktb = ktb
       };
 
       QueryResult reqResultMember = ExecuteRequest<Member>(logApi, new List<string>() { ktb.id.ToString() }, ConstRequestType.GET,
@@ -33,11 +33,52 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
       if (reqResultMember.Succeed)
       {
-        result.Members = new List<CombinedMemberUserInstituteFaculty>();
+        result.members = new List<CombinedMemberUserInstituteFaculty>();
         IList<Member> members = GetModelListFromQueryResult<Member>(reqResultMember);
         
         foreach (Member member in members)
-          result.Members.Add(GetCompleteMemberData(member, logApi, requestCode));
+          result.members.Add(GetCompleteMemberData(member, logApi, requestCode));
+      }
+
+      return result;
+    }
+
+    public CombinedKtbKtbHistory GetKtbHistoryByKtbId(Ktb ktb, LogApi logApi, string requestCode)
+    {
+      CombinedKtbKtbHistory result = new CombinedKtbKtbHistory
+      {
+        ktb = ktb,
+        histories = new List<CombinedKtbHistoryMember>()
+      };
+
+      QueryResult reqResultHistory = ExecuteRequest<KtbHistory>(logApi, new List<string>() { ktb.id.ToString() }, ConstRequestType.GET,
+        requestCode, QueryListKeyMap.GET_KTB_HISTORY_BY_KTB_ID, customContext: _customContext);
+
+      if (reqResultHistory.Succeed)
+      {
+        IList<KtbHistory> histories = GetModelListFromQueryResult<KtbHistory>(reqResultHistory);
+
+        foreach (KtbHistory history in histories)
+        {
+          CombinedKtbHistoryMember combinedHist = new CombinedKtbHistoryMember
+          {
+            ktbhistory = history,
+            members = new List<Member>()
+          };
+
+          QueryResult reqResultMember = ExecuteRequest<Member>(logApi, new List<string>() { history.id.ToString() }, ConstRequestType.GET,
+            requestCode, QueryListKeyMap.GET_KTB_HISTORY_MEMBER_BY_KTB_HISTORY_ID, customContext: _customContext);
+
+          if (reqResultMember.Succeed)
+          {
+            IList<Member> members = GetModelListFromQueryResult<Member>(reqResultMember);
+
+            foreach (Member member in members)
+              combinedHist.members.Add(member);
+          }
+
+          result.histories.Add(combinedHist);
+        }
       }
 
       return result;
@@ -47,14 +88,14 @@ namespace Muridku.QueryRequestReceiver.Controllers
     {
       CombinedMemberUserInstituteFaculty result = new CombinedMemberUserInstituteFaculty
       {
-        Member = member
+        member = member
       };
 
       QueryResult reqResultUser = ExecuteRequest<User>(logApi, new List<string>() { member.id.ToString() }, ConstRequestType.GET,
         requestCode, QueryListKeyMap.GET_USER_BY_MEMBER_ID, isSingleRow: true, customContext: _customContext);
 
-    if (reqResultUser.Succeed)
-      result.User = GetModelFromQueryResult<User>(reqResultUser);
+      if (reqResultUser.Succeed)
+        result.user = GetModelFromQueryResult<User>(reqResultUser);
 
       if ( member.institution_id.HasValue )
       {
@@ -62,7 +103,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
           requestCode, QueryListKeyMap.GET_INSTITUTION_BY_ID, isSingleRow: true, customContext: _customContext );
 
         if( reqResultInstitution.Succeed )
-          result.Institution = GetModelFromQueryResult<Institution>( reqResultInstitution );
+          result.institution = GetModelFromQueryResult<Institution>( reqResultInstitution );
       }
 
       if( member.faculty_id.HasValue )
@@ -71,7 +112,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
           requestCode, QueryListKeyMap.GET_FACULTY_BY_ID, isSingleRow: true, customContext: _customContext );
 
         if( reqResultFaculty.Succeed )
-          result.Faculty = GetModelFromQueryResult<Faculty>( reqResultFaculty );
+          result.faculty = GetModelFromQueryResult<Faculty>( reqResultFaculty );
       }
 
       return result;

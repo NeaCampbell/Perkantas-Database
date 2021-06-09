@@ -2,9 +2,9 @@
 {
   public class CombinedMemberUserInstituteFaculty
   {
-    public Member Member { get; set; }
-    public User User { get; set; }
-    public Institution Institution { get; set; }
-    public Faculty Faculty { get; set; }
+    public Member member { get; set; }
+    public User user { get; set; }
+    public Institution institution { get; set; }
+    public Faculty faculty { get; set; }
   }
 }

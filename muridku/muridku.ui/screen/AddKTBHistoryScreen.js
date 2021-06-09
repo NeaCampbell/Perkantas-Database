@@ -22,22 +22,31 @@ import {
   ProportionateScreenSizeValue,
   DateToStringWithDay,
   ListToString,
+  CommonMessages,
+  DateToStringApi,
 } from '../helper/CommonHelper';
 import DiscipleShort from './component/DiscipleShort';
 import Error from './component/Error';
 import DatePicker from 'react-native-date-picker';
 import CustomInputButton from './component/CustomInputButton';
 import ModalList from './component/ModalList';
+import MeetingHistory from './component/MeetingHistory';
 
 const getallmaterialsapi = require('../api/out/getallmaterials');
+const gethistoryapi = require('../api/out/getktbhistorybyktbid');
+const savehistoryapi = require('../api/out/savesinglektbhistory');
 
 const AddKTBHistoryScreen = (props) => {
+  const uppingValue = 'UP';
+  const loweringValue = 'DOWN';
+  const otherMaterialCode = 'OTH';
   const { navigation } = props;
   const sectionDate = 'DATE';
   const sectionAKK = 'AKK';
   const sectionMaterial = 'MTRL';
-  const sectionViewHistory = 'VIEW';
+  const sectionViewHistory = 'HIST';
   const [loading, setLoading] = useState(true);
+  const [isFirstEntry, setIsFirstEntry] = useState(true);
   const [selectedSection, setSelectedSection] = useState(sectionDate);
   const [errorText, setErrorText] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -46,9 +55,12 @@ const AddKTBHistoryScreen = (props) => {
   const [materials, setMaterials] = useState([]);
   const [materialOpen, setMaterialOpen] = useState([]);
   const [selectedMaterialId, setSelectedMaterialId] = useState(null);
-  const [selectedMaterialName, setSelectedMaterialName] = useState(null);
+  const [selectedMaterialMaxChapter, setSelectedMaterialMaxChapter] = useState(0);
+  const [selectedMaterialCode, setSelectedMaterialCode] = useState('');
+  const [selectedMaterialName, setSelectedMaterialName] = useState('');
+  const [selectedMaterialCustomName, setSelectedMaterialCustomName] = useState('');
   const [selectedMaterialChapter, setSelectedMaterialChapter] = useState(null);
-  const { globalFontStyle } = BasicStyles;
+  const [ktbHistories, setKtbHistories] = useState([]);
 
   useEffect(() => {
     if (selectedAKK.length === 0) {
@@ -73,7 +85,7 @@ const AddKTBHistoryScreen = (props) => {
     setSelectedAKKText(tmp.sort((a, b) => a.value > b.value));
   }, [selectedAKK]);
 
-  if (loading && props.KTB.members) {
+  if (isFirstEntry && props.KTB.members) {
     const selectedAKKTmp = [];
 
     props.KTB.members.forEach(item => {
@@ -85,7 +97,11 @@ const AddKTBHistoryScreen = (props) => {
     });
 
     setSelectedAKK(selectedAKKTmp);
-    setLoading(false);
+
+    if (loading)
+      setLoading(false);
+
+    setIsFirstEntry(false);
   }
 
   const errorHandler = (error) => {
@@ -93,8 +109,25 @@ const AddKTBHistoryScreen = (props) => {
     setErrorText(error.message);
   };
 
+  const callbackGetHistory = (result) => {
+    setLoading(false);
+
+    if (!result.succeed && result.errorMessage !== CommonMessages.DATA_NOT_FOUND) {
+      setErrorText(result.errorMessage);
+      return;
+    }
+
+    if (result.result.histories)
+      setKtbHistories(result.result.histories);
+  };
+
   const onSectionClick = (section) => {
     setSelectedSection(section);
+
+    if (section === sectionViewHistory) {
+      setLoading(true);
+      gethistoryapi.getktbhistorybyktbid(props.KTB.ktb.id, props.User.email, callbackGetHistory, errorHandler);
+    }
   };
 
   const onAKKClick = (id, selected) => {
@@ -133,14 +166,97 @@ const AddKTBHistoryScreen = (props) => {
   };
 
   const onMaterialChange = (id, materialName) => {
+    const selectedChapters = materials.filter(x => x.id === id);
+
+    if (id && (!selectedChapters || selectedChapters.length === 0)) {
+      setErrorText('data bahan KTB tidak ditemukan.');
+      return;
+    }
+
     setSelectedMaterialId(id);
     setSelectedMaterialName(materialName);
+    setSelectedMaterialCustomName((id && selectedChapters[0].code === otherMaterialCode) ? '' : materialName);
+    setSelectedMaterialChapter(null);
+
+    if (id) {
+      setSelectedMaterialCode(selectedChapters[0].code);
+      setSelectedMaterialMaxChapter(selectedChapters[0].chapter_count);
+      onMaterialClose();
+      return;
+    }
+
+    setSelectedMaterialCode('');
+    setSelectedMaterialMaxChapter(0);
     onMaterialClose();
   };
 
   const onMaterialClose = () => {
     setMaterialOpen(false);
   };
+
+  const onMaterialNameChange = (value) => {
+    setSelectedMaterialCustomName(value);
+
+    if (!value)
+      setSelectedMaterialChapter(null);
+  };
+
+  const onMaterialChapterChange = (condition) => {
+    switch (condition) {
+      case uppingValue :
+        if (selectedMaterialChapter < selectedMaterialMaxChapter || selectedMaterialMaxChapter === 0)
+          setSelectedMaterialChapter(selectedMaterialChapter + 1);
+        return;
+      case loweringValue :
+        if (selectedMaterialChapter > 0)
+          setSelectedMaterialChapter(selectedMaterialChapter - 1);
+        return;
+      default:
+        return;
+    }
+  };
+
+  const callbackSave = (result) => {
+    setLoading(false);
+
+    if (!result.succeed) {
+      setErrorText(result.errorMessage);
+      return;
+    }
+
+    onSectionClick(sectionViewHistory);
+  };
+
+  const onSaveClick = () => {
+    if (!selectedDate) {
+      setErrorText('tanggal KTB belum dipilih.');
+      return;
+    }
+
+    if (!selectedAKK || selectedAKK.filter(x => x.selected).length === 0) {
+      setErrorText('peserta KTB belum dipilih.');
+      return;
+    }
+    if (!selectedMaterialId || !selectedMaterialCustomName || !selectedMaterialChapter) {
+      setErrorText('materi KTB belum dipilih.');
+      return;
+    }
+
+    const members = [];
+
+    selectedAKK.forEach(item => {
+      members.push({
+        member_id: item.id,
+        is_attending: item.selected ? 1 : 0,
+      });
+    });
+
+    setLoading(true);
+    savehistoryapi.savesinglektbhistory(props.KTB.ktb.id, DateToStringApi(selectedDate), selectedMaterialId,
+      selectedMaterialCustomName, selectedMaterialChapter, members, props.User.email, callbackSave, errorHandler);
+  };
+
+  const { globalFontStyle } = BasicStyles;
 
   const {
     bodyContainerStyle,
@@ -165,6 +281,10 @@ const AddKTBHistoryScreen = (props) => {
     menuButtonDataTextStyle,
     dropdownListMainSectionStyle,
     dropdownListViewSectionStyle,
+    dropdownListSearchSectionStyle,
+    dropdownListSearchSectionContainerStyle,
+    dropdownListSearchInputStyle,
+    dropdownListSearchButtonStyle,
     dropdownListViewItemSectionStyle,
     dropdownListViewItemTextSectionStyle,
     dropdownListViewItemTextStyle,
@@ -311,6 +431,10 @@ const AddKTBHistoryScreen = (props) => {
         selectedId={selectedMaterialId}
         selectedName={selectedMaterialName}
         mainSectionStyle={dropdownListMainSectionStyle}
+        searchSectionStyle={dropdownListSearchSectionStyle}
+        searchSectionContainerStyle={dropdownListSearchSectionContainerStyle}
+        searchInputStyle={dropdownListSearchInputStyle}
+        searchButtonStyle={dropdownListSearchButtonStyle}
         listSectionStyle={dropdownListViewSectionStyle}
         listItemSectionStyle={dropdownListViewItemSectionStyle}
         listItemTextSectionStyle={dropdownListViewItemTextSectionStyle}
@@ -349,13 +473,20 @@ const AddKTBHistoryScreen = (props) => {
           onDeleteButtonClick={() => onMaterialChange(null, '')}
           value={selectedMaterialName}
         />
-        <View style={materialOtherInputSectionStyle}>
-          <TextInput
-            style={[globalFontStyle, materialOtherInputStyle]}
-            placeholder="Nama Bahan KTB"
-            placeholderTextColor={PlaceholderTextColor}
-          />
-        </View>
+        {
+          (selectedMaterialId && selectedMaterialCode === otherMaterialCode) ?
+          (
+            <View style={materialOtherInputSectionStyle}>
+              <TextInput
+                style={[globalFontStyle, materialOtherInputStyle]}
+                placeholder="Nama Bahan KTB"
+                placeholderTextColor={PlaceholderTextColor}
+                value={selectedMaterialCustomName}
+                onChangeText={(value) => onMaterialNameChange(value)}
+              />
+            </View>
+          ) : null
+        }
         <View style={materialOtherInputSectionStyle}>
           <View
             style={{
@@ -377,12 +508,16 @@ const AddKTBHistoryScreen = (props) => {
                 alignItems: 'center',
                 backgroundColor: '#815BF0',
               }}
+              onPress={() => onMaterialChapterChange(uppingValue)}
+              disabled={!(selectedMaterialName || selectedMaterialCustomName)}
             >
               <Text style={{
                 fontSize: ProportionateScreenSizeValue(30),
                 lineHeight: ProportionateScreenSizeValue(30),
                 color: '#FFF',
-              }}>+</Text>
+              }}>
+                +
+              </Text>
             </TouchableOpacity>
           </View>
           <TextInput
@@ -390,6 +525,8 @@ const AddKTBHistoryScreen = (props) => {
             placeholder="Bab"
             placeholderTextColor={PlaceholderTextColor}
             keyboardType="numeric"
+            editable={false}
+            value={selectedMaterialChapter ? selectedMaterialChapter.toString() : ''}
           />
           <View
             style={{
@@ -413,12 +550,18 @@ const AddKTBHistoryScreen = (props) => {
                 borderWidth: ProportionateScreenSizeValue(1),
                 borderColor: '#815BF0',
               }}
+              onPress={() => onMaterialChapterChange(loweringValue)}
+              disabled={!(selectedMaterialName || selectedMaterialCustomName)}
             >
-              <Text style={{
-                fontSize: ProportionateScreenSizeValue(30),
-                lineHeight: ProportionateScreenSizeValue(30),
-                color: '#815BF0',
-              }}>−</Text>
+              <Text
+                style={{
+                  fontSize: ProportionateScreenSizeValue(30),
+                  lineHeight: ProportionateScreenSizeValue(30),
+                  color: '#815BF0',
+                }}
+              >
+                −
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -426,18 +569,35 @@ const AddKTBHistoryScreen = (props) => {
     </ScrollView>
   );
 
+  const histories = [];
+
+  if (selectedSection === sectionViewHistory && ktbHistories && ktbHistories.length > 0) {
+    let id = 0;
+
+    ktbHistories.forEach(item => {
+      histories.push(
+        <MeetingHistory
+          key={id}
+          history={item.ktbhistory}
+          members={item.members}
+        />
+      );
+
+      id++;
+    });
+  }
+
   const sectionViewHistoryView = (
     <ScrollView
       style={{
         width: '100%',
-        paddingVertical: ProportionateScreenSizeValue(5),
       }}
       contentContainerStyle={{
         justifyContent: 'center',
         alignItems: 'center',
       }}
     >
-      <TextInput/>
+      {histories}
     </ScrollView>
   );
 
@@ -535,7 +695,7 @@ const AddKTBHistoryScreen = (props) => {
                 style={[menuButtonTextStyle, menuButtonDataTextStyle]}
                 numberOfLines={1}
               >
-                {selectedMaterialName}
+                {`${selectedMaterialCustomName && selectedMaterialCustomName !== '' ? selectedMaterialCustomName : selectedMaterialName} ${selectedMaterialChapter && selectedMaterialChapter !== '' ? ('bab ' + selectedMaterialChapter) : ''}`}
               </Text>
             </View>
           ) : null
@@ -582,6 +742,7 @@ const AddKTBHistoryScreen = (props) => {
             alignItems: 'center',
           }}
           activeOpacity={0.5}
+          onPress={() => onSaveClick()}
         >
           <Text style={{
               color: '#FFFFFF',
@@ -591,7 +752,9 @@ const AddKTBHistoryScreen = (props) => {
               fontWeight: 'bold',
             }}
             numberOfLines={1}
-          >Save</Text>
+          >
+            Save
+          </Text>
         </TouchableOpacity>
       </View>
   );

@@ -5,6 +5,9 @@ import {
 import {
   ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
+import {
+  DefaultInputHeight,
+} from './BasicStyles';
 
 const ButtonColor = '#815BF0';
 
@@ -99,6 +102,37 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     width: '100%',
     padding: ProportionateScreenSizeValue(10),
   },
+  dropdownListSearchSectionStyle: {
+    width: '100%',
+    height: ProportionateScreenSizeValue(DefaultInputHeight),
+    marginTop: ProportionateScreenSizeValue(15),
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownListSearchSectionContainerStyle: {
+    width: '90%',
+    height: '100%',
+    borderWidth: ProportionateScreenSizeValue(1),
+    borderColor: '#D1D5E0',
+    borderRadius: ProportionateScreenSizeValue(DefaultInputHeight / 2),
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownListSearchInputStyle: {
+    width: '75%',
+    fontSize: ProportionateScreenSizeValue(12),
+  },
+  dropdownListSearchButtonStyle: {
+    borderLeftWidth: ProportionateScreenSizeValue(1),
+    borderColor: '#D1D5E0',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '70%',
+    width: '15%',
+  },
   dropdownListViewItemSectionStyle: {
     width: '100%',
     height: ProportionateScreenSizeValue(45),
@@ -165,5 +199,6 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     position: 'absolute',
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    zIndex: 99999,
   },
 });

@@ -12,10 +12,10 @@ import {
 } from '../../helper/CommonHelper';
 
 const User = (props) => {
-  const [saveChecked, setSaveChecked] = useState(props.saveChecked);
-  const [rejectChecked, setRejectChecked] = useState(props.rejectChecked);
+  const [approveChecked, setApproveChecked] = useState(props.status === 1);
+  const [rejectChecked, setRejectChecked] = useState(props.status === 3);
 
-  const onSaveCheck = (id, currChecked) => {
+  const onApproveCheck = (id, currChecked) => {
     if (currChecked && rejectChecked) {
       setRejectChecked(false);
 
@@ -23,18 +23,18 @@ const User = (props) => {
         props.onRejectCheck(id, false);
     }
 
-    setSaveChecked(currChecked);
+    setApproveChecked(currChecked);
 
-    if (props.onSaveCheck)
-      props.onSaveCheck(id, currChecked);
+    if (props.onApproveCheck)
+      props.onApproveCheck(id, currChecked);
   };
 
   const onRejectCheck = (id, currChecked) => {
-    if (currChecked && saveChecked) {
-      setSaveChecked(false);
+    if (currChecked && approveChecked) {
+      setApproveChecked(false);
 
-      if (props.onSaveCheck)
-        props.onSaveCheck(id, false);
+      if (props.onApproveCheck)
+        props.onApproveCheck(id, false);
     }
 
     setRejectChecked(currChecked);
@@ -109,9 +109,9 @@ const User = (props) => {
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: saveChecked ? '#08D49A' : '#CDCDCD',
+              backgroundColor: approveChecked ? '#08D49A' : '#CDCDCD',
             }}
-            onPress={() => onSaveCheck(props.user.id, !saveChecked)}
+            onPress={() => onApproveCheck(props.user.id, !approveChecked)}
             activeOpacity={0.5}
           >
             <Text style={{

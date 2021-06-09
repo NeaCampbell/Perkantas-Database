@@ -70,6 +70,14 @@ export const ActivationStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonFooterEnableStyle: {
+    backgroundColor: '#F59873',
+    color: '#FFFFFF',
+  },
+  buttonFooterDisableStyle: {
+    backgroundColor: 'rgba(245, 152, 115, 0.5)',
+    color: '#FFFFFF',
+  },
   submitButtonTextStyle: {
     color: '#FFFFFF',
     fontStyle: 'normal',
@@ -84,5 +92,6 @@ export const ActivationStyles = StyleSheet.create({
     position: 'absolute',
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    zIndex: 99999,
   },
 });

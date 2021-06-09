@@ -23,6 +23,7 @@ const CustomInputButton = (props) => {
         placeholderTextColor={props.placeholderTextColor}
         value={props.value}
         onChangeText={props.onChangeText}
+        returnKeyType={props.returnKeyType}
       />
       {
         (props.value && props.value !== '' && !props.disabled) ?

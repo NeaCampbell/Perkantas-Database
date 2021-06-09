@@ -34,7 +34,7 @@ export default class SearchToggle extends React.Component {
           <Text
             style={this.props.buttonTextStyle}
           >
-            Go
+            GO
           </Text>
         </TouchableOpacity>
       </View>

@@ -10,7 +10,7 @@ import {
 
 export const BasicColor = '#F59873';
 export const DefaultInputFontSize = 12;
-export const DefaultInputHeight = 35;
+export const DefaultInputHeight = 36;
 export const DefaultPasswordInputHeight = 35;
 
 export const BasicStyles = StyleSheet.create({
@@ -103,6 +103,7 @@ export const BasicStyles = StyleSheet.create({
     position: 'absolute',
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    zIndex: 99999,
     // backgroundColor: 'transparent',
   },
   customActivityIndicatorSizeStyle: {

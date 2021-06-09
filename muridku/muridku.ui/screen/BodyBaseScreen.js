@@ -11,23 +11,31 @@ import { BasicStyles } from '../asset/style-template/BasicStyles';
 import { SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
 import { connect } from 'react-redux';
 
+export const CallbackAction = (props, pageName) => {
+  const currentPages = props.Page.Pages.filter((item) => item.name === pageName);
+  if (currentPages.length === 0)
+    return true;
+
+  if (pageName !== props.Page.RootLockedPage && pageName !== props.Page.RootUnlockedPage) {
+    const currentPage = currentPages[0];
+    const nextPage = props.Page.Pages.filter((item) => item.id === currentPage.backid)[0];
+    props.dispatch({ type: SET_CURRENT_PAGE, page: nextPage.name });
+    props.navigation.replace(nextPage.name);
+    return true;
+  }
+};
+
 const BodyBaseScreen = (props) => {
   const { mainBodyStyle } = BasicStyles;
   const backgroundColor = props.statusBarColor ?? '#000';
-  const { navigation } = props;
 
   const backAction = () => {
-    const currentPages = props.Page.Pages.filter((item) => item.name === props.childName);
-    if (currentPages.length === 0)
-      return true;
-
-    if (props.childName !== props.Page.RootLockedPage && props.childName !== props.Page.RootUnlockedPage) {
-      const currentPage = currentPages[0];
-      const nextPage = props.Page.Pages.filter((item) => item.id === currentPage.backid)[0];
-      props.dispatch({ type: SET_CURRENT_PAGE, page: nextPage.name });
-      navigation.replace(nextPage.name);
+    if (props.onBackClick) {
+      props.onBackClick();
       return true;
     }
+
+    return CallbackAction(props, props.childName);
   };
 
   useEffect(() => {

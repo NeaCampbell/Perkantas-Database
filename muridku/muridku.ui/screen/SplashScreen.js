@@ -16,7 +16,7 @@ import { SplashStyles } from '../asset/style-template/SplashStyles';
 import {
   ProportionateScreenSizeValue,
 } from '../helper/CommonHelper';
-import { SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
+import { SET_USER, SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
 
 // Import reducer dependencies
 import { connect } from 'react-redux';
@@ -34,30 +34,32 @@ const SplashScreen = (props) => {
   const { navigation } = props;
 
   useEffect(() => {
-    const callback = (resultapi) => {
+    const errorHandler = (error) => {
+      setAnimating(false);
+      props.dispatch({ type: SET_CURRENT_PAGE, page: 'LoginScreen' });
+      props.navigation.replace('LoginScreen');
+    };
+
+    const callback = (result, hasLoginState) => {
       setAnimating(false);
 
-      if (!resultapi.result) {
+      if (!result.succeed) {
         props.dispatch({ type: SET_CURRENT_PAGE, page: 'LoginScreen' });
         props.navigation.replace('LoginScreen');
         return;
       }
 
+      if (!hasLoginState)
+        props.dispatch({ type: SET_USER, user: result.result });
+
       props.dispatch({ type: SET_CURRENT_PAGE, page: 'ViewAllKTBScreen' });
       props.navigation.replace('ViewAllKTBScreen');
     };
 
-    const errorHandler = (error) => {
-      setAnimating(false);
-      console.log(error.message);
-      props.dispatch({ type: SET_CURRENT_PAGE, page: 'LoginScreen' });
-      props.navigation.replace('LoginScreen');
-    };
-
-    if (props.User && props.User !== {} && props.User.email !== undefined && props.User.email !== null && props.User.email !== '')
-      checkuserapi.checkuserloginstatus(props.User.email, callback, errorHandler);
+    if (props.User && props.User !== {} && props.User.email)
+      checkuserapi.checkuserloginstatus(props.User.email, (result) => callback(result, true), errorHandler);
     else
-      checkuserondeviceapi.checkuseractiveondevice(callback, errorHandler);
+      checkuserondeviceapi.checkuseractiveondevice(callback, (result) => callback(result, false), errorHandler);
   }, []);
 
   const {

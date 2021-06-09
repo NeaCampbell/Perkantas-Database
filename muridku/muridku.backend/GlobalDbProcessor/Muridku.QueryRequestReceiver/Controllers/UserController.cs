@@ -15,13 +15,20 @@ using System.Linq;
 namespace Muridku.QueryRequestReceiver.Controllers
 {
   [ApiController]
-  [Route( "[controller]" )]
+  [Route("[controller]")]
   public class UserController : QueryControllerBase
   {
+    private readonly IDictionary<int, string> _userActiveValues;
+
     public UserController( ILogger<UserController> logger
         , IQueryOperatorManager<DbServiceType> queryOperatorManager ) :
         base( logger, queryOperatorManager )
     {
+      _userActiveValues = new Dictionary<int, string>();
+      _userActiveValues.Add(0, "INACTIVE");
+      _userActiveValues.Add(1, "ACTIVE");
+      _userActiveValues.Add(2, "INACTIVE-MEMBER");
+      _userActiveValues.Add(3, "REJECT");
     }
 
     protected override void OnQueuedQueryExecutedHandler( object sender, QueryResult result )
@@ -67,7 +74,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         () => ValidateEmail( param.email, invalidMsg )
       };
 
-      return ExecuteRequest<User>(logApi, new List<string>() { param.fullname, param.email, encryptedPassword, GetUsernameFromHeader(HttpContext) },
+      return ExecuteRequest<User>(logApi, new List<string>() { param.fullname, param.email, param.address, encryptedPassword, GetUsernameFromHeader(HttpContext) },
         ConstRequestType.POST, QueryListKeyMap.REGISTER_MURIDKU_USER, QueryListKeyMap.REGISTER_MURIDKU_USER, isSingleRow: true,
         preCheckFuncs: preCheckFuncs);
     }
@@ -85,19 +92,30 @@ namespace Muridku.QueryRequestReceiver.Controllers
       return GetResponseMultiModels<CombinedUserMemberName>(result);
     }
 
-    [HttpPut( QueryListKeyMap.ACTIVATE_USER )]
-    public QueryResult ActivateUser( string email )
+    [HttpPut(QueryListKeyMap.ACTIVATE_USER)]
+    public QueryResult ActivateUser([FromBody] ActivateUser[] param)
     {
-      LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "email={0}", email ) );
+      string paramStr = JsonConvert.SerializeObject(param);
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), paramStr);
 
       IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
       {
-        () => ValidateParamInputString( new Tuple<string, string, int>( "email", email, email.Length ) )
+        () => ValidateIsActive(param, "invalid is active parameter")
       };
 
-      return ExecuteRequest<User>(logApi, new List<string>() { email }, ConstRequestType.PUT,
-        QueryListKeyMap.ACTIVATE_USER, QueryListKeyMap.ACTIVATE_USER,
-        isSingleRow: true, preCheckFuncs: preCheckFuncs);
+      QueryResult returnResult = new QueryResult(logApi.request_id, QueryListKeyMap.ACTIVATE_USER, true, string.Empty);
+
+      foreach (ActivateUser user in param)
+      {
+        QueryResult result = ExecuteRequest<User>(logApi, new List<string>() { user.email, user.is_active.ToString() }, ConstRequestType.PUT,
+          QueryListKeyMap.ACTIVATE_USER, QueryListKeyMap.ACTIVATE_USER,
+          isSingleRow: true, preCheckFuncs: preCheckFuncs);
+
+        if (!result.Succeed)
+          return result;
+      }
+
+      return returnResult;
     }
 
     [HttpPut(QueryListKeyMap.LOGIN)]
@@ -239,6 +257,23 @@ namespace Muridku.QueryRequestReceiver.Controllers
       User user = users[0];
       user.password = null;
       return GetResponseSingleModelCustom(reqResult, user);
+    }
+
+    private CheckParam ValidateIsActive(ActivateUser[] param, string errorMessage)
+    {
+      foreach(ActivateUser user in param)
+        if (!_userActiveValues.ContainsKey(user.is_active))
+          return new CheckParam()
+          {
+            CheckResult = false,
+            Message = errorMessage
+          };
+
+      return new CheckParam()
+      {
+        CheckResult = true,
+        Message = string.Empty
+      };
     }
 
     private CheckParam ValidateEmail( string email, string errorMessage )
