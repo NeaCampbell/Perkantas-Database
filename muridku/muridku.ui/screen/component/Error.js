@@ -26,7 +26,7 @@ const Error = (props) => {
     <View style={errorSectionStyle}>
       <View style={errorMessageContainerStyle}>
         <Text style={errorMessageTextStyle} numberOfLines={2}>
-          {`Error! ${props.message ?? ''}`}
+          {`${props.message ?? ''}`}
         </Text>
         <TouchableOpacity
           style={errorMessageButtonStyle}

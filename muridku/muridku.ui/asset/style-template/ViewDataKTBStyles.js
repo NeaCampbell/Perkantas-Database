@@ -52,7 +52,6 @@ export const ViewDataKTBStyles = StyleSheet.create({
     height: '100%',
     width: '100%',
     flexDirection: 'column',
-    flex: 1,
   },
   headerRightButtonSectionStyle: {
     justifyContent: 'center',
@@ -67,10 +66,7 @@ export const ViewDataKTBStyles = StyleSheet.create({
     height: '13%',
     backgroundColor: '#EFEFEF',
     flexDirection: 'column',
-    paddingTop: ProportionateScreenSizeValue(10),
-    paddingLeft: ProportionateScreenSizeValue(10),
-    paddingRight: ProportionateScreenSizeValue(10),
-    paddingBottom: ProportionateScreenSizeValue(10),
+    padding: ProportionateScreenSizeValue(10),
   },
   historyInnerSectionStyle: {
     width: '100%',

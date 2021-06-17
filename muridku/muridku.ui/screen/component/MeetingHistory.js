@@ -6,7 +6,7 @@ import { BasicStyles } from '../../asset/style-template/BasicStyles';
 import { MeetingHistoryStyles } from '../../asset/style-template/MeetingHistoryStyles';
 import {
   DateToStringWithDay,
-} from '../helper/CommonHelper';
+} from '../../helper/CommonHelper';
 
 const MeetingHistory = (props) => {
   const getFirstLetterName = (name) => {

@@ -10,7 +10,7 @@ import {
 
 export const BasicColor = '#F59873';
 export const DefaultInputFontSize = 12;
-export const DefaultInputHeight = 36;
+export const DefaultInputHeight = 35;
 export const DefaultPasswordInputHeight = 35;
 
 export const BasicStyles = StyleSheet.create({

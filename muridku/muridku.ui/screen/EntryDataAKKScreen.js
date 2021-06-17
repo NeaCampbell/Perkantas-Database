@@ -20,6 +20,7 @@ import { EntryDataAKKStyles } from '../asset/style-template/EntryDataAKKStyles';
 import {
   ProportionateScreenSizeValue,
   DateToString,
+  ValidateEmail,
 } from '../helper/CommonHelper';
 import {
   SET_SELECTED_KTB,
@@ -28,10 +29,11 @@ import Error from './component/Error';
 import CustomInputButton from './component/CustomInputButton';
 import ModalList from './component/ModalList';
 import ModalDatePicker from './component/ModalDatePicker';
-import Confirmation, { AlertMode } from './component/Confirmation';
+import Confirmation, { AlertMode, ConfirmMode } from './component/Confirmation';
 
 const getinactivememberapi = require('../api/out/getallinactivektbmembers');
 const getmemberbyidapi = require('../api/out/getmemberbyid');
+const getallcityapi = require('../api/out/getallcity');
 const getinstitutionapi = require('../api/out/getinstitutionbytype');
 const getfacultyapi = require('../api/out/getfacultybyinstitutionid');
 const updatememberapi = require('../api/out/updatesinglemember');
@@ -46,21 +48,31 @@ const EntryDataAKKScreen = (props) => {
   const AKK_TYPE_ALL = 'ALL';
   const enabledBackgroundColor = '#FFF';
   const disabledBackgroundColor = '#EFEFEF';
+  const confirmNone = 'NONE';
+  const confirmCity = 'CITY';
+  const confirmBack = 'BACK';
   const isUpdate = props.Member ? true : false;
   let member;
   let user;
   let institution;
   let faculty;
+  let city;
 
   if (props.Member) {
     member = props.Member.member;
     user = props.Member.user;
     institution = props.Member.institution;
     faculty = props.Member.faculty;
+    city = props.Member.city;
   }
   const { navigation } = props;
+  const [pktbData, setPktbData] = useState(null);
   const [firstEntry, setFirstEntry] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [cityList, setCityList] = useState([]);
+  const [cityId, setCityId] = useState(city ? city.id : null);
+  const [cityName, setCityName] = useState(city ? city.name : '');
+  const [cityOpen, setCityOpen] = useState(false);
   const [selectedAKKType, setSelectedAKKType] = useState(member && member.inst_type ? member.inst_type : AKK_TYPE_NONE);
   const [isEnabled, setIsEnabled] = useState(member && member.inst_type ? true : false);
   const [name, setName] = useState(member ? member.name : '');
@@ -82,6 +94,8 @@ const EntryDataAKKScreen = (props) => {
   const [facListOpen, setFacListOpen] = useState(false);
   const [institutionList, setInstitutionList] = useState([]);
   const [facultyList, setFacultyList] = useState([]);
+  const [confirmType, setConfirmType] = useState(confirmNone);
+  const [confirmMessage, setConfirmMessage] = useState('');
   const [showConfirmScreen, setShowConfirmScreen] = useState(false);
 
   useEffect(() => {
@@ -89,16 +103,116 @@ const EntryDataAKKScreen = (props) => {
       return;
 
     if (firstEntry && selectedAKKType === AKK_TYPE_NONE) {
-      setFirstEntry(false);
+      setLoading(true);
+      getmemberbyidapi.getmemberbyid(
+        props.User.member_id,
+        props.User.email,
+        (result) => callbackGetPktb(
+          result,
+          () => getallcityapi.getallcity(
+            props.User.email,
+            (resultCity) => callbackCity(resultCity, null, false),
+            errorHandler
+          ),
+          true
+        ),
+        errorHandler
+      );
       return;
     }
 
-    getinstitutionapi.getinstitutionbytype(selectedAKKType === AKK_TYPE_ALUMNI ? AKK_TYPE_ALL : selectedAKKType, props.User.email, callbackInstitution, errorHandler);
+    setLoading(true);
+    getmemberbyidapi.getmemberbyid(
+      props.User.member_id,
+      props.User.email,
+      (result) => callbackGetPktb(
+        result,
+        () => getallcityapi.getallcity(
+          props.User.email,
+          (resultCity) => callbackCity(
+            resultCity,
+            () => {
+              getinstitutionapi.getinstitutionbytype(
+                selectedAKKType === AKK_TYPE_ALUMNI ? AKK_TYPE_ALL : selectedAKKType,
+                props.User.email,
+                callbackInstitution,
+                errorHandler
+              );
+            },
+            true
+          ),
+          errorHandler
+        ),
+        true
+      ),
+      errorHandler
+    );
   }, [firstEntry, selectedAKKType]);
+
+  useEffect(() => {
+    if (!cityId)
+      setCityName('');
+  }, [cityId]);
 
   const errorHandler = (error) => {
     setLoading(false);
     setErrorText(error.message);
+  };
+
+  const callbackGetPktb = (result, callback, shouldLoading) => {
+    if (!result.succeed) {
+      setLoading(false);
+      setErrorText(result.errorMessage);
+      return;
+    }
+
+    setPktbData(result.result);
+
+    if (callback === undefined || callback === null) {
+      setLoading(false);
+      return;
+    }
+
+    if (!shouldLoading)
+      setLoading(false);
+
+    callback();
+  };
+
+  const callbackCity = (result, callback, shouldLoading) => {
+    if (!result.succeed) {
+      setLoading(false);
+      setErrorText(result.errorMessage);
+      return;
+    }
+
+    setCityList(result.result);
+
+    if (callback === undefined || callback === null) {
+      setLoading(false);
+      return;
+    }
+
+    if (!shouldLoading)
+      setLoading(false);
+
+    callback();
+  };
+
+  const onCityOpen = (value) => {
+    setCityOpen(value);
+  };
+
+  const onCityChange = (id, cityname) => {
+    setCityId(id);
+    setCityName(cityname);
+
+    if (cityOpen)
+      setCityOpen(false);
+  };
+
+  const onCityClose = () => {
+    setCityOpen(false);
   };
 
   const callbackNameOpen = (result, openValue) => {
@@ -129,6 +243,8 @@ const EntryDataAKKScreen = (props) => {
     }
 
     const mbr = result.result;
+    setCityId(mbr.city.id);
+    setCityName(mbr.city.name);
     setName(mbr.member.name);
     setEmail(mbr.user.email);
     setAddress(mbr.member.address ? mbr.member.address : '');
@@ -151,6 +267,7 @@ const EntryDataAKKScreen = (props) => {
       getmemberbyidapi.getmemberbyid(id, props.User.email, callbackOnNameChange, errorHandler);
     else {
       if (!id) {
+        setCityId(null);
         setName('');
         setEmail('');
         setAddress('');
@@ -189,6 +306,9 @@ const EntryDataAKKScreen = (props) => {
 
   const callbackFaculty = (result) => {
     if (!result.succeed) {
+      if (instListOpen)
+        onInstClose();
+
       setLoading(false);
       setFacultyList([]);
       return;
@@ -226,6 +346,9 @@ const EntryDataAKKScreen = (props) => {
         setFacultyList([]);
       }
 
+      if (instListOpen)
+        setInstListOpen(false);
+
       setLoading(false);
     }
   };
@@ -237,6 +360,9 @@ const EntryDataAKKScreen = (props) => {
   };
 
   const callbackInstitution = (result) => {
+    if (firstEntry)
+      setFirstEntry(false);
+
     if (!result.succeed) {
       setLoading(false);
       setInstitutionList([]);
@@ -326,6 +452,8 @@ const EntryDataAKKScreen = (props) => {
   };
 
   const onBackClick = () => {
+    setConfirmType(confirmBack);
+    setConfirmMessage('Apakah anda yakin akan kembali ke halaman sebelumnya?');
     setShowConfirmScreen(true);
   };
 
@@ -338,20 +466,16 @@ const EntryDataAKKScreen = (props) => {
     setShowConfirmScreen(value);
   };
 
-  const onSubmitClick = () => {
-    if (email === '') {
-      setErrorText('email belum diisi.');
-      return;
-    }
-    if (name === '') {
-      setErrorText('nama belum diisi.');
-      return;
-    }
-    if (address === '') {
-      setErrorText('alamat belum diisi.');
+  const onConfirmDifferentCity = (value) => {
+    if (value) {
+      saveData();
       return;
     }
 
+    setShowConfirmScreen(value);
+  };
+
+  const saveData = () => {
     setLoading(true);
     let birthDtStr = null;
 
@@ -366,6 +490,7 @@ const EntryDataAKKScreen = (props) => {
         email,
         member.id,
         name,
+        cityId,
         address,
         birthDtStr,
         birthPlace,
@@ -386,6 +511,7 @@ const EntryDataAKKScreen = (props) => {
       selectedInactiveMemberId,
       email,
       name,
+      cityId,
       address,
       birthDtStr,
       birthPlace,
@@ -399,6 +525,34 @@ const EntryDataAKKScreen = (props) => {
     );
   };
 
+  const onSubmitClick = () => {
+    if (name === '') {
+      setErrorText('nama belum diisi.');
+      return;
+    }
+    const emailValidation = ValidateEmail(email);
+    if (!emailValidation.result) {
+      setErrorText(emailValidation.message);
+      return;
+    }
+    if (!cityId) {
+      setErrorText('kota belum diisi.');
+      return;
+    }
+    if (address === '') {
+      setErrorText('alamat belum diisi.');
+      return;
+    }
+    if (cityId !== pktbData.city.id) {
+      setConfirmType(confirmCity);
+      setConfirmMessage(`Kota PKTB (${pktbData.city.name}) berbeda dengan Kota AKTB (${cityName}). Lanjutkan?`);
+      setShowConfirmScreen(true);
+      return;
+    }
+
+    saveData();
+  };
+
   const {
     globalFontStyle,
     inputStyle,
@@ -407,12 +561,10 @@ const EntryDataAKKScreen = (props) => {
   const {
     bodyContainerStyle,
     welcomingSectionStyle,
-    welcomingTextStyle,
-    accTypeSectionStyle,
-    accTypeTextStyle,
     instSectionStyle,
     instButtonStyle,
     buttonStyle,
+    buttonSelectedStyle,
     buttonUnselectedStyle,
     nameButtonTextStyle,
     nameButtonUselectedTextStyle,
@@ -518,6 +670,42 @@ const EntryDataAKKScreen = (props) => {
       />
     );
 
+  const modalCityData = [];
+
+  if (cityOpen)
+    cityList.forEach(item => {
+      modalCityData.push({
+        id: item.id,
+        name: item.name,
+      });
+    });
+
+  if (cityOpen && modalCityData.length > 0)
+    modalScreen = (
+      <ModalList
+        selectedId={cityId}
+        selectedName={cityName}
+        mainSectionStyle={dropdownListMainSectionStyle}
+        searchSectionStyle={dropdownListSearchSectionStyle}
+        searchSectionContainerStyle={dropdownListSearchSectionContainerStyle}
+        searchInputStyle={dropdownListSearchInputStyle}
+        searchButtonStyle={dropdownListSearchButtonStyle}
+        listSectionStyle={dropdownListViewSectionStyle}
+        listItemSectionStyle={dropdownListViewItemSectionStyle}
+        listItemTextSectionStyle={dropdownListViewItemTextSectionStyle}
+        listItemTextStyle={dropdownListViewItemTextStyle}
+        buttonSectionStyle={dropdownListButtonSectionStyle}
+        buttonStyle={dropdownListButtonStyle}
+        selectButtonStyle={[dropdownListButtonContentStyle, dropdownListButtonSelectStyle]}
+        cancelButtonStyle={[dropdownListButtonContentStyle, dropdownListButtonCancelStyle]}
+        selectTextStyle={[globalFontStyle, dropdownListButtonTextStyle, dropdownListButtonSelectTextStyle]}
+        cancelTextStyle={[globalFontStyle, dropdownListButtonTextStyle, dropdownListButtonCancelTextStyle]}
+        list={modalCityData}
+        onCancelClick={onCityClose}
+        onSelectClick={onCityChange}
+      />
+    );
+
   if (birthDtPickerOpen)
     modalScreen = (
       <ModalDatePicker
@@ -550,33 +738,25 @@ const EntryDataAKKScreen = (props) => {
 
   const confirmScreen = (
     <Confirmation
-      confirmText="Apakah anda yakin akan kembali ke halaman sebelumnya?"
+      confirmText={confirmMessage}
       firstButtonText="Ya"
       secondButtonText="Tidak"
-      mode={AlertMode}
-      onFirstButtonClick={() => onConfirmReturnPage(true)}
-      onSecondButtonClick={() => onConfirmReturnPage(false)}
+      mode={(confirmType === confirmBack) ? AlertMode : ConfirmMode}
+      onFirstButtonClick={(confirmType === confirmBack) ? (() => onConfirmReturnPage(true)) : (() => onConfirmDifferentCity(true))}
+      onSecondButtonClick={(confirmType === confirmBack) ? (() => onConfirmReturnPage(false)) : (() => onConfirmDifferentCity(false))}
     />
   );
 
   const child = (
-    <KeyboardAvoidingView
+    <View
       style={bodyContainerStyle}
       behavior="position"
     >
       <View style={welcomingSectionStyle}>
-        <Text style={[globalFontStyle, welcomingTextStyle]} numberOfLines={1}>
-          {isUpdate ? 'Update' : 'Create'}
-        </Text>
-        <View style={accTypeSectionStyle}>
-          <Text style={[globalFontStyle, accTypeTextStyle]} numberOfLines={1}>
-            Pilih Tipe Institusi AKK
-          </Text>
-        </View>
         <View style={instSectionStyle}>
           <View style={instButtonStyle}>
             <TouchableOpacity
-              style={selectedAKKType === AKK_TYPE_SCHOOL ? buttonStyle : buttonUnselectedStyle}
+              style={[buttonStyle, selectedAKKType === AKK_TYPE_SCHOOL ? buttonSelectedStyle : buttonUnselectedStyle]}
               activeOpacity={0.5}
               onPress={() => onSelectAKKType(AKK_TYPE_SCHOOL)}
             >
@@ -587,7 +767,7 @@ const EntryDataAKKScreen = (props) => {
           </View>
           <View style={instButtonStyle}>
             <TouchableOpacity
-              style={selectedAKKType === AKK_TYPE_COLLEGE ? buttonStyle : buttonUnselectedStyle}
+              style={[buttonStyle, selectedAKKType === AKK_TYPE_COLLEGE ? buttonSelectedStyle : buttonUnselectedStyle]}
               activeOpacity={0.5}
               onPress={() => onSelectAKKType(AKK_TYPE_COLLEGE)}
             >
@@ -598,7 +778,7 @@ const EntryDataAKKScreen = (props) => {
           </View>
           <View style={instButtonStyle}>
             <TouchableOpacity
-              style={selectedAKKType === AKK_TYPE_ALUMNI ? buttonStyle : buttonUnselectedStyle}
+              style={[buttonStyle, selectedAKKType === AKK_TYPE_ALUMNI ? buttonSelectedStyle : buttonUnselectedStyle]}
               activeOpacity={0.5}
               onPress={() => onSelectAKKType(AKK_TYPE_ALUMNI)}
             >
@@ -660,6 +840,25 @@ const EntryDataAKKScreen = (props) => {
             editable={(isEnabled && (!user || user.is_active === 0 || user.is_active === 2))}
             onChangeText={(value) => setEmail(value)}
             returnKeyType="next"
+          />
+        </View>
+        <View style={formBodySectionStyle}>
+          <CustomInputButton
+            inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+            inputStyle={[globalFontStyle, dropdownInputStyle]}
+            resetContainerStyle={dropdownResetButtonContainerStyle}
+            resetButtonStyle={dropdownResetButtonStyle}
+            resetButtonTextStyle={dropdownResetButtonTextStyle}
+            buttonContainerStyle={dropdownButtonContainerStyle}
+            buttonStyle={dropdownButtonStyle}
+            buttonText="CARI"
+            disabled={(!isEnabled)}
+            placeholder="Kota"
+            placeholderTextColor={PlaceholderTextColor}
+            showList={cityOpen}
+            onInputButtonClick={(value) => onCityOpen(value)}
+            onDeleteButtonClick={() => onCityChange(null, '')}
+            value={cityName}
           />
         </View>
         <View style={formBodySectionStyle}>
@@ -732,27 +931,33 @@ const EntryDataAKKScreen = (props) => {
             value={institutionName}
           />
         </View>
-        <View style={formBodySectionStyle}>
-          <CustomInputButton
-            inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-            inputStyle={[globalFontStyle, dropdownInputStyle]}
-            resetContainerStyle={dropdownResetButtonContainerStyle}
-            resetButtonStyle={dropdownResetButtonStyle}
-            resetButtonTextStyle={dropdownResetButtonTextStyle}
-            buttonContainerStyle={dropdownButtonContainerStyle}
-            buttonStyle={dropdownButtonStyle}
-            buttonText="CARI"
-            disabled={(!isEnabled)}
-            placeholder="Fakultas"
-            placeholderTextColor={PlaceholderTextColor}
-            showList={facListOpen}
-            onInputButtonClick={(value) => onFacOpen(value)}
-            onDeleteButtonClick={() => onFacultyChange(null, '')}
-            value={facultyName}
-          />
-        </View>
+        {
+          (selectedAKKType === AKK_TYPE_SCHOOL || selectedAKKType === AKK_TYPE_NONE) ?
+          null :
+          (
+            <View style={formBodySectionStyle}>
+              <CustomInputButton
+                inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+                inputStyle={[globalFontStyle, dropdownInputStyle]}
+                resetContainerStyle={dropdownResetButtonContainerStyle}
+                resetButtonStyle={dropdownResetButtonStyle}
+                resetButtonTextStyle={dropdownResetButtonTextStyle}
+                buttonContainerStyle={dropdownButtonContainerStyle}
+                buttonStyle={dropdownButtonStyle}
+                buttonText="CARI"
+                disabled={(!isEnabled)}
+                placeholder="Fakultas"
+                placeholderTextColor={PlaceholderTextColor}
+                showList={facListOpen}
+                onInputButtonClick={(value) => onFacOpen(value)}
+                onDeleteButtonClick={() => onFacultyChange(null, '')}
+                value={facultyName}
+              />
+            </View>
+          )
+        }
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 
   const errorScreen = (
@@ -778,8 +983,8 @@ const EntryDataAKKScreen = (props) => {
     <BodyMenuBaseScreen
       overlayScreen={modalScreen}
       loadingScreen={loading ? loadingScreen : null}
-      confirmScreen={showConfirmScreen ? confirmScreen : null}
-      title="Data AKK"
+      confirmScreen={showConfirmScreen && confirmType !== confirmNone ? confirmScreen : null}
+      title={(isUpdate ? 'Ubah' : 'Tambah') + ' Data AKK'}
       child={child}
       footer={footer}
       errorScreen={errorText !== '' ? errorScreen : null}

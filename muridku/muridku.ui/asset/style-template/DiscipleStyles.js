@@ -8,6 +8,7 @@ import {
 
 const DetailTextColor = '#000';
 export const IdColor = '#77C0ED';
+export const IdColorDisabled = '#ABABAB';
 const BorderColor = '#CDCDCD';
 
 export const DiscipleStyles = StyleSheet.create({
@@ -15,17 +16,14 @@ export const DiscipleStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    height: ProportionateScreenSizeValue(175),
+    height: ProportionateScreenSizeValue(160),
   },
   discipleBoxSectionStyle: {
     flexDirection: 'column',
-    width: '90%',
-    flex: 1,
-    padding: ProportionateScreenSizeValue(10),
-    marginTop: ProportionateScreenSizeValue(10),
-    marginLeft: ProportionateScreenSizeValue(15),
+    width: '100%',
+    height: '100%',
+    paddingHorizontal: ProportionateScreenSizeValue(10),
     borderLeftWidth: ProportionateScreenSizeValue(10),
-    borderLeftColor: IdColor,
     borderBottomWidth: ProportionateScreenSizeValue(1),
     borderBottomColor: BorderColor,
     justifyContent: 'center',
@@ -33,17 +31,26 @@ export const DiscipleStyles = StyleSheet.create({
     color: '#000000',
     backgroundColor: '#FFFFFF',
   },
+  discipleBoxSectionEnabledStyle: {
+    borderLeftColor: IdColor,
+  },
+  discipleBoxSectionDisabledStyle: {
+    borderLeftColor: IdColorDisabled,
+  },
   discipleBoxSectionCheckStyle: {
     marginRight: 0,
+    width: '80%',
   },
   discipleBoxSectionUncheckStyle: {
-    marginRight: ProportionateScreenSizeValue(15),
+    marginRight: 0,
   },
   checkBoxSectionStyle: {
     width: '20%',
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    borderBottomWidth: ProportionateScreenSizeValue(1),
+    borderBottomColor: BorderColor,
   },
   textSectionStyle: {
     alignItems: 'flex-start',

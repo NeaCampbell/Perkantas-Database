@@ -15,6 +15,7 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Version = Muridku.QueryRequestReceiver.Models.Dbs.Version;
 
 namespace Muridku.QueryRequestReceiver.Controllers
 {
@@ -69,6 +70,10 @@ namespace Muridku.QueryRequestReceiver.Controllers
       lock( _lockObject )
         _queryResult = null;
 
+      if (preCheckFuncs == null)
+        preCheckFuncs = new List<Func<CheckParam>>();
+
+      preCheckFuncs.Add(() => ValidateVersionFromHeader(customContext ?? HttpContext));
       QueryValidationParam validationParam = ValidateQueryExecution( customContext ?? HttpContext, logApi, requestCode, strProcessType, isNeedValidUser, preCheckFuncs );
 
       if( !validationParam.QueryValid )
@@ -353,6 +358,77 @@ namespace Muridku.QueryRequestReceiver.Controllers
           Message = errorMessage
         };
 
+      return new CheckParam()
+      {
+        CheckResult = true,
+        Message = string.Empty
+      };
+    }
+
+    protected CheckParam ValidateVersionFromHeader(HttpContext context)
+    {
+      if (!context.Request.Headers.ContainsKey("Version"))
+        return new CheckParam()
+        {
+          CheckResult = false,
+          Message = "Please update your application."
+        };
+
+      string versionKey = context.Request.Headers["Version"];
+      QueryRequestParam reqParam = new QueryRequestParam(ProcessType.Select, QueryListKeyMap.GET_VERSION_INFO, 
+        new List<string>() { "apk-frontend" }, RequestId, isSingleRow: true);
+      QueryOperatorManager.OnQueryExecuted += OnQueryExecutedHandler;
+      IRequestResult reqResult = QueryOperatorManager.ExecuteQuery(reqParam);
+
+      if (!reqResult.Result)
+      {
+        QueryOperatorManager.OnQueryExecuted -= OnQueryExecutedHandler;
+        _queryResult = null;
+        return new CheckParam()
+        {
+          CheckResult = false,
+          Message = "Failed to connect to server."
+        };
+      }
+
+      CancellationTokenSource tokenSource = new CancellationTokenSource();
+      tokenSource.CancelAfter(_maxRequestTimeout);
+
+      Task<QueryResult> task = Task.Run(() =>
+      {
+        while (_queryResult == null)
+          Thread.Sleep(_requestWaitingTime);
+
+        return _queryResult;
+      });
+
+      task.Wait(tokenSource.Token);
+      QueryResult result = task.Result;
+      QueryOperatorManager.OnQueryExecuted -= OnQueryExecutedHandler;
+
+      if (!string.IsNullOrEmpty(result.ErrorMessage))
+      {
+        _queryResult = null;
+        return new CheckParam()
+        {
+          CheckResult = false,
+          Message = result.ErrorMessage
+        };
+      }
+
+      Version version = GetModelFromQueryResult<Version>(result);
+
+      if (version.version_no != versionKey)
+      {
+        _queryResult = null;
+        return new CheckParam()
+        {
+          CheckResult = false,
+          Message = "Please update your application."
+        };
+      }
+
+      _queryResult = null;
       return new CheckParam()
       {
         CheckResult = true,

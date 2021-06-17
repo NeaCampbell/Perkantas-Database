@@ -24,22 +24,22 @@ namespace Muridku.QueryRequestReceiver.Controllers
     }
 
     [HttpGet( QueryListKeyMap.GET_MEMBER_BY_ID )]
-    public Response<CombinedMemberUserInstituteFaculty> GetMemberById( int memberid )
+    public Response<CombinedMemberCityUserInstituteFaculty> GetMemberById( int memberid )
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Format( "memberid={0}", memberid.ToString() ) );
       QueryResult reqResult = ExecuteRequest<Member>( logApi, new List<string>() { memberid.ToString() }, ConstRequestType.GET,
         QueryListKeyMap.GET_MEMBER_BY_ID, QueryListKeyMap.GET_MEMBER_BY_ID, true );
 
       if( !reqResult.Succeed )
-        return GetResponseBlankSingleModel<CombinedMemberUserInstituteFaculty>( reqResult, reqResult.Succeed );
+        return GetResponseBlankSingleModel<CombinedMemberCityUserInstituteFaculty>( reqResult, reqResult.Succeed );
 
       GlobalHelperController helper = new GlobalHelperController( Logger, QueryOperatorManager, HttpContext );
-      CombinedMemberUserInstituteFaculty result = helper.GetCompleteMemberData( GetModelFromQueryResult<Member>( reqResult ), logApi, QueryListKeyMap.GET_MEMBER_BY_ID );
+      CombinedMemberCityUserInstituteFaculty result = helper.GetCompleteMemberData( GetModelFromQueryResult<Member>( reqResult ), logApi, QueryListKeyMap.GET_MEMBER_BY_ID );
       return GetResponseSingleModelCustom( reqResult, result );
     }
 
     [HttpGet( QueryListKeyMap.GET_MEMBERS_BY_LIST_ID )]
-    public Response<IList<CombinedMemberUserInstituteFaculty>> GetMembersByListId( [FromQuery] int[] listid )
+    public Response<IList<CombinedMemberCityUserInstituteFaculty>> GetMembersByListId( [FromQuery] int[] listid )
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), string.Empty );
       string stringId = string.Empty;
@@ -66,9 +66,9 @@ namespace Muridku.QueryRequestReceiver.Controllers
         QueryListKeyMap.GET_MEMBERS_BY_LIST_ID, QueryListKeyMap.GET_MEMBERS_BY_LIST_ID, preCheckFuncs: preCheckFuncs );
 
       if( !reqResult.Succeed )
-        return GetResponseBlankMultiModels<CombinedMemberUserInstituteFaculty>( reqResult, reqResult.Succeed );
+        return GetResponseBlankMultiModels<CombinedMemberCityUserInstituteFaculty>( reqResult, reqResult.Succeed );
 
-      IList<CombinedMemberUserInstituteFaculty> result = new List<CombinedMemberUserInstituteFaculty>();
+      IList<CombinedMemberCityUserInstituteFaculty> result = new List<CombinedMemberCityUserInstituteFaculty>();
       IList<Member> members = GetModelListFromQueryResult<Member>( reqResult );
       GlobalHelperController helper = new GlobalHelperController( Logger, QueryOperatorManager, HttpContext );
 
@@ -79,7 +79,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     }
 
     [HttpGet( QueryListKeyMap.GET_MEMBERS_BY_KTB_ID )]
-    public Response<IList<CombinedMemberUserInstituteFaculty>> GetMembersByKtbId( int ktbid )
+    public Response<IList<CombinedMemberCityUserInstituteFaculty>> GetMembersByKtbId( int ktbid )
     {
       LogApi logApi = CreateLogApiObj( GetCurrentMethod(), ktbid.ToString() );
       IList<string> paramQuery = new List<string>() { ktbid.ToString() };
@@ -87,9 +87,9 @@ namespace Muridku.QueryRequestReceiver.Controllers
         QueryListKeyMap.GET_MEMBERS_BY_KTB_ID );
 
       if( !reqResult.Succeed )
-        return GetResponseBlankMultiModels<CombinedMemberUserInstituteFaculty>( reqResult, reqResult.Succeed );
+        return GetResponseBlankMultiModels<CombinedMemberCityUserInstituteFaculty>( reqResult, reqResult.Succeed );
 
-      IList<CombinedMemberUserInstituteFaculty> result = new List<CombinedMemberUserInstituteFaculty>();
+      IList<CombinedMemberCityUserInstituteFaculty> result = new List<CombinedMemberCityUserInstituteFaculty>();
       IList<Member> members = GetModelListFromQueryResult<Member>( reqResult );
       GlobalHelperController helper = new GlobalHelperController( Logger, QueryOperatorManager, HttpContext );
 
@@ -106,7 +106,8 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
       IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>()
       {
-        () => ValidateParamInputLong( new Tuple<string, long?>( "ktb_id", data.ktb_id ) ),
+        () => ValidateParamInputLong( new Tuple<string, long?>( "ktb_id", data.ktb_id ),
+                                      new Tuple<string, long?>( "city_id", data.city_id ) ),
         () => ValidateParamInputString( new Tuple<string, string, int>( "email", data.email, 100 ),
                                         new Tuple<string, string, int>( "name", data.name, 100 ),
                                         new Tuple<string, string, int>( "address", data.address, 200 ) ),
@@ -125,6 +126,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         data.email,
         encryptedPassword,
         data.name,
+        data.city_id.ToString(),
         data.address,
         data.birth_dt.HasValue ? data.birth_dt.Value.ToString( CommonFormat.YYYY_MM_DD ) : string.Empty,
         data.birth_place,
@@ -146,7 +148,8 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
       IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>()
       {
-        () => ValidateParamInputLong( new Tuple<string, long?>( "id", data.id ) ),
+        () => ValidateParamInputLong( new Tuple<string, long?>( "id", data.id ),
+                                      new Tuple<string, long?>( "city_id", data.city_id ) ),
         () => ValidateParamInputString( new Tuple<string, string, int>( "email", data.email, 100 ),
                                         new Tuple<string, string, int>( "name", data.name, 100 ),
                                         new Tuple<string, string, int>( "address", data.address, 200 ) ),
@@ -159,6 +162,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         data.email,
         data.id.ToString(),
         data.name,
+        data.city_id.ToString(),
         data.address,
         data.birth_dt.HasValue ? data.birth_dt.Value.ToString( CommonFormat.YYYY_MM_DD ) : string.Empty,
         data.birth_place,

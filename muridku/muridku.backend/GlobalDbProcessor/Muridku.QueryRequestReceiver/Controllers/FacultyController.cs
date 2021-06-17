@@ -5,7 +5,6 @@ using Muridku.QueryRequestReceiver.Models.Dbs;
 using Muridku.QueryRequestReceiver.Models.Params;
 using QueryManager;
 using QueryOperator.QueryExecutor;
-using System;
 using System.Collections.Generic;
 
 namespace Muridku.QueryRequestReceiver.Controllers

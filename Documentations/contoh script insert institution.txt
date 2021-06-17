@@ -1,0 +1,18 @@
+CREATE TABLE `institution` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `code` varchar(20) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `type` varchar(5) NOT NULL,
+  `address` varchar(200) DEFAULT NULL,
+  `usr_crt` varchar(100) NOT NULL,
+  `dtm_crt` datetime NOT NULL,
+  `usr_upd` varchar(100) NOT NULL,
+  `dtm_upd` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+type diisi: 'SCH' utk sekolah, 'CLG' utk kampus, 'ALM' utk institusi lain
+usr_crt dan usr_upd diisi 'SYSTEM', dtm_crt dan dtm_upd diisi NOW()
+contoh script insert:
+INSERT INTO muridku.`institution` (`code`, `name`, `type`, `address`, `usr_crt`, `dtm_crt`, `usr_upd`, `dtm_upd`)
+VALUES ('UB', 'Universitas Brawijaya', 'CLG', 'Jl Veteran 1 Malang', 'SYSTEM', NOW(), 'SYSTEM', NOW());

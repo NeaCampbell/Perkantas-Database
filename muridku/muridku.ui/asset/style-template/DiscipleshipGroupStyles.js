@@ -14,16 +14,13 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    height: ProportionateScreenSizeValue(110),
+    height: ProportionateScreenSizeValue(100),
   },
   ktbBoxSectionStyle: {
     flexDirection: 'column',
-    width: '90%',
-    flex: 1,
-    marginLeft: ProportionateScreenSizeValue(15),
-    marginRight: ProportionateScreenSizeValue(15),
-    marginTop: ProportionateScreenSizeValue(10),
-    padding: ProportionateScreenSizeValue(10),
+    width: '100%',
+    height: '100%',
+    paddingHorizontal: ProportionateScreenSizeValue(10),
     borderLeftWidth: ProportionateScreenSizeValue(10),
     borderLeftColor: IdColor,
     borderBottomWidth: ProportionateScreenSizeValue(1),
@@ -34,19 +31,25 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   ktbBoxSectionUncheckStyle: {
-    marginRight: ProportionateScreenSizeValue(15),
+    marginRight: 0,
   },
   ktbBoxSectionCheckStyle: {
     marginRight: 0,
+    width: '80%',
   },
   checkBoxSectionStyle: {
     width: '20%',
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    borderBottomWidth: ProportionateScreenSizeValue(1),
+    borderBottomColor: BorderColor,
   },
   scrollViewSectionStyle: {
     width: '100%',
+    paddingTop: ProportionateScreenSizeValue(4),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   descSectionStyle: {
     width: '100%',
@@ -82,10 +85,21 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  iconUserEnableStyle: {
+    borderColor: '#AAA',
+  },
+  iconUserDisableStyle: {
+    borderColor: '#CCC',
+  },
   iconUserTextStyle: {
-    color: '#000000',
     fontSize: ProportionateScreenSizeValue(12),
     fontWeight: 'bold',
+  },
+  iconUserTextEnableStyle: {
+    color: '#000',
+  },
+  iconUserTextDisableStyle: {
+    color: '#CCC',
   },
   otherDescSectionStyle: {
     height: ProportionateScreenSizeValue(15),

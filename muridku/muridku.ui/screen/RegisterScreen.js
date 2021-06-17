@@ -1,30 +1,36 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
+/* eslint-disable curly */
 import React, {useState, createRef} from 'react';
 import {
   ActivityIndicator,
   TextInput,
   View,
   Text,
-  Image,
   Keyboard,
   TouchableOpacity,
-  KeyboardAvoidingView,
 } from 'react-native';
 import { SET_USER, SET_CURRENT_PAGE } from '../reducer/action/ActionConst';
 import { connect } from 'react-redux';
 import BodyBaseScreen from './BodyBaseScreen';
 import PasswordToggle from './component/PasswordToggle';
-import { BasicStyles, BasicColor, LoadingViewSize, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
+import { BasicStyles, BasicColor, PlaceholderTextColor } from '../asset/style-template/BasicStyles';
 import { RegisterStyles, BackgroundColor } from '../asset/style-template/RegisterStyles';
-import { ProportionateScreenSizeValue } from '../helper/CommonHelper';
+import { ProportionateScreenSizeValue, ValidateEmail } from '../helper/CommonHelper';
 import Error from './component/Error';
+import CustomInputButton from './component/CustomInputButton';
+import ModalList from './component/ModalList';
 
+const getallcityapi = require('../api/out/getallcity');
 const registerapi = require('../api/out/registeruser');
 
 const RegisterScreen = (props) => {
   const { navigation } = props;
   const [userFullname, setUserFullname] = useState('');
+  const [cityOpen, setCityOpen] = useState(false);
+  const [cityList, setCityList] = useState([]);
+  const [cityId, setCityId] = useState(null);
+  const [cityName, setCityName] = useState('');
   const [userAddress, setUserAddress] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
@@ -47,6 +53,41 @@ const RegisterScreen = (props) => {
     setErrorText('');
   };
 
+  const errorHandler = (error) => {
+    setLoading(false);
+    setErrorText(error.message);
+  };
+
+  const callbackCityOpen = (result, shouldModalOpen) => {
+    setLoading(false);
+
+    if (!result.succeed) {
+      setErrorText(result.errorMessage);
+      return;
+    }
+
+    setCityList(result.result);
+    setCityOpen(shouldModalOpen);
+  };
+
+  const onCityOpen = (value) => {
+    if (!value)
+      return;
+
+    setLoading(true);
+    getallcityapi.getallcity('SYSTEM', (result) => callbackCityOpen(result, value), errorHandler);
+  };
+
+  const onCityChange = (id, value) => {
+    setCityId(id);
+    setCityName(value);
+    onCityClose();
+  };
+
+  const onCityClose = () => {
+    setCityOpen(false);
+  };
+
   const onAgrmntAcceptanceClick = (value) => {
     setAgrmntAccepted(value);
   };
@@ -60,8 +101,21 @@ const RegisterScreen = (props) => {
       return;
     }
 
+    if (!cityId) {
+      setErrorText('Kota belum diisi.');
+      return;
+    }
+
     if (!userEmail) {
       setErrorText('Email belum diisi.');
+      emailInputRef.current.focus();
+      return;
+    }
+
+    const emailValidation = ValidateEmail(userEmail);
+
+    if (!emailValidation.result) {
+      setErrorText(emailValidation.message);
       emailInputRef.current.focus();
       return;
     }
@@ -99,26 +153,47 @@ const RegisterScreen = (props) => {
       navigation.replace('LoginScreen');
     };
 
-    registerapi.registeruser(userFullname, userAddress, userEmail, userPassword, callback);
+    registerapi.registeruser(userFullname, cityId, userAddress, userEmail, userPassword, callback);
   };
 
   const {
     globalFontStyle,
-    inputStyle,
   } = BasicStyles;
 
   const {
     bodyContainerStyle,
-    logoContainerStyle,
-    logoStyle,
-    formContainerStyle,
-    formContainerContentStyle,
     titleContainerStyle,
     titleStyle,
+    formContainerStyle,
+    formContainerContentStyle,
     formInputContainerStyle,
     formInputSectionStyle,
     bodySectionStyle,
     customInputStyle,
+    dropdownInputContainerStyle,
+    dropdownInputStyle,
+    dropdownResetButtonContainerStyle,
+    dropdownResetButtonStyle,
+    dropdownResetButtonTextStyle,
+    dropdownButtonContainerStyle,
+    dropdownButtonStyle,
+    dropdownListMainSectionStyle,
+    dropdownListSearchSectionStyle,
+    dropdownListSearchSectionContainerStyle,
+    dropdownListSearchInputStyle,
+    dropdownListSearchButtonStyle,
+    dropdownListViewSectionStyle,
+    dropdownListViewItemSectionStyle,
+    dropdownListViewItemTextSectionStyle,
+    dropdownListViewItemTextStyle,
+    dropdownListButtonSectionStyle,
+    dropdownListButtonStyle,
+    dropdownListButtonContentStyle,
+    dropdownListButtonSelectStyle,
+    dropdownListButtonCancelStyle,
+    dropdownListButtonTextStyle,
+    dropdownListButtonSelectTextStyle,
+    dropdownListButtonCancelTextStyle,
     customPasswordContainerStyle,
     customPasswordInputStyle,
     passwordButtonStyle,
@@ -135,7 +210,15 @@ const RegisterScreen = (props) => {
     customActivityIndicatorStyle,
   } = RegisterStyles;
 
-  // const showScrollBar = Platform.OS === 'web';
+  const loadingScreen = (
+    <View style={customActivityIndicatorStyle}>
+      <ActivityIndicator
+        animating={loading}
+        color={BasicColor}
+        size={ProportionateScreenSizeValue(30)}
+      />
+    </View>
+  );
 
   const errorScreen = (
     <Error
@@ -144,30 +227,61 @@ const RegisterScreen = (props) => {
     />
   );
 
+  let modalScreen = null;
+
+  const modalCityData = [];
+
+  if (cityOpen)
+    cityList.forEach(item => {
+      modalCityData.push({
+        id: item.id,
+        name: item.name,
+      });
+    });
+
+  if (cityOpen && modalCityData.length > 0)
+    modalScreen = (
+      <ModalList
+        selectedId={cityId}
+        selectedName={cityName}
+        mainSectionStyle={dropdownListMainSectionStyle}
+        searchSectionStyle={dropdownListSearchSectionStyle}
+        searchSectionContainerStyle={dropdownListSearchSectionContainerStyle}
+        searchInputStyle={dropdownListSearchInputStyle}
+        searchButtonStyle={dropdownListSearchButtonStyle}
+        listSectionStyle={dropdownListViewSectionStyle}
+        listItemSectionStyle={dropdownListViewItemSectionStyle}
+        listItemTextSectionStyle={dropdownListViewItemTextSectionStyle}
+        listItemTextStyle={dropdownListViewItemTextStyle}
+        buttonSectionStyle={dropdownListButtonSectionStyle}
+        buttonStyle={dropdownListButtonStyle}
+        selectButtonStyle={[dropdownListButtonContentStyle, dropdownListButtonSelectStyle]}
+        cancelButtonStyle={[dropdownListButtonContentStyle, dropdownListButtonCancelStyle]}
+        selectTextStyle={[globalFontStyle, dropdownListButtonTextStyle, dropdownListButtonSelectTextStyle]}
+        cancelTextStyle={[globalFontStyle, dropdownListButtonTextStyle, dropdownListButtonCancelTextStyle]}
+        list={modalCityData}
+        onCancelClick={onCityClose}
+        onSelectClick={onCityChange}
+      />
+    );
+
   const baseScreenItems = (
     <View style={bodyContainerStyle}>
-      <View style={logoContainerStyle}>
-        <Image
-          source={require('../asset/img/logo.png')}
-          style={logoStyle}
-        />
+      <View style={titleContainerStyle}>
+        <Text style={titleStyle} numberOfLines={1}>
+          Daftar MURIDKU
+        </Text>
       </View>
-      <KeyboardAvoidingView
-        style={formContainerStyle}
-        contentContainerStyle={formContainerContentStyle}
+      <View
+        style={[formContainerStyle, formContainerContentStyle]}
         behavior="position"
       >
-        <View style={titleContainerStyle}>
-          <Text style={titleStyle} numberOfLines={1}>
-            Daftar MURIDKU
-          </Text>
-        </View>
         <View
-          style={formInputContainerStyle}
+          style={[formInputContainerStyle]}
         >
           <View style={formInputSectionStyle}>
             <TextInput
-              style={[globalFontStyle, customInputStyle, inputStyle]}
+              style={[globalFontStyle, customInputStyle]}
               onChangeText={(UserFullname) => setUserFullname(UserFullname)}
               placeholder="Nama lengkap"
               placeholderTextColor={PlaceholderTextColor}
@@ -181,8 +295,26 @@ const RegisterScreen = (props) => {
             />
           </View>
           <View style={formInputSectionStyle}>
+            <CustomInputButton
+              inputContainerStyle={dropdownInputContainerStyle}
+              inputStyle={[globalFontStyle, dropdownInputStyle]}
+              resetContainerStyle={dropdownResetButtonContainerStyle}
+              resetButtonStyle={dropdownResetButtonStyle}
+              resetButtonTextStyle={dropdownResetButtonTextStyle}
+              buttonContainerStyle={dropdownButtonContainerStyle}
+              buttonStyle={dropdownButtonStyle}
+              buttonText="CARI"
+              placeholder="Kota"
+              placeholderTextColor={PlaceholderTextColor}
+              onInputButtonClick={(value) => onCityOpen(value)}
+              onDeleteButtonClick={() => onCityChange(null, '')}
+              value={cityName}
+              returnKeyType="next"
+            />
+          </View>
+          <View style={formInputSectionStyle}>
             <TextInput
-              style={[globalFontStyle, customInputStyle, inputStyle]}
+              style={[globalFontStyle, customInputStyle]}
               onChangeText={(addr) => setUserAddress(addr)}
               placeholder="Alamat"
               placeholderTextColor={PlaceholderTextColor}
@@ -196,7 +328,7 @@ const RegisterScreen = (props) => {
           </View>
           <View style={formInputSectionStyle}>
             <TextInput
-              style={[globalFontStyle, customInputStyle, inputStyle]}
+              style={[globalFontStyle, customInputStyle]}
               onChangeText={(UserEmail) => setUserEmail(UserEmail)}
               placeholder="Email"
               placeholderTextColor={PlaceholderTextColor}
@@ -205,14 +337,14 @@ const RegisterScreen = (props) => {
               returnKeyType="next"
               underlineColorAndroid="#f000"
               blurOnSubmit={false}
-              ref={fullnameInputRef}
+              ref={emailInputRef}
               value={userEmail}
             />
           </View>
           <View style={formInputSectionStyle}>
             <PasswordToggle
-              containerStyle={[globalFontStyle, customInputStyle, customPasswordContainerStyle]}
-              textInputStyle={[globalFontStyle, inputStyle, customPasswordInputStyle]}
+              containerStyle={customInputStyle}
+              textInputStyle={[globalFontStyle, customPasswordInputStyle]}
               buttonStyle={[globalFontStyle, passwordButtonStyle]}
               buttonTextStyle={passwordButtonTextStyle}
               enableButtonColor="#000"
@@ -234,7 +366,7 @@ const RegisterScreen = (props) => {
           <View style={formInputSectionStyle}>
             <PasswordToggle
               containerStyle={[globalFontStyle, customInputStyle, customPasswordContainerStyle]}
-              textInputStyle={[globalFontStyle, inputStyle, customPasswordInputStyle]}
+              textInputStyle={[globalFontStyle, customPasswordInputStyle]}
               buttonStyle={[globalFontStyle, passwordButtonStyle]}
               buttonTextStyle={passwordButtonTextStyle}
               enableButtonColor="#000"
@@ -295,21 +427,21 @@ const RegisterScreen = (props) => {
               </TouchableOpacity>
             </View>
           </View>
+          <View style={formInputSectionStyle}>
+            <TouchableOpacity
+              style={agrmntAccepted ? buttonSubmitStyle : buttonSubmitDisableStyle}
+              activeOpacity={0.5}
+              onPress={handleSubmitPress}
+              disabled={!agrmntAccepted}
+              >
+              <Text style={[globalFontStyle, buttonTextStyle]}>
+                Daftar
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </KeyboardAvoidingView>
+      </View>
       <View style={buttonContainerStyle}>
-        <View style={bodySectionStyle}>
-          <TouchableOpacity
-            style={agrmntAccepted ? buttonSubmitStyle : buttonSubmitDisableStyle}
-            activeOpacity={0.5}
-            onPress={handleSubmitPress}
-            disabled={!agrmntAccepted}
-            >
-            <Text style={[globalFontStyle, buttonTextStyle]}>
-              Daftar
-            </Text>
-          </TouchableOpacity>
-        </View>
         <View style={loginContainerStyle}>
           <Text
             style={[globalFontStyle, loginTextStyle]}>
@@ -339,21 +471,14 @@ const RegisterScreen = (props) => {
             </Text>
           </TouchableOpacity>
         </View>
-        {(loading) ?
-          (<View style={customActivityIndicatorStyle}>
-            <ActivityIndicator
-              animating={loading}
-              color={BasicColor}
-              size={LoadingViewSize}
-            />
-          </View>) : null
-        }
       </View>
     </View>
   );
 
   return (
     <BodyBaseScreen
+      overlayScreen={modalScreen}
+      loadingScreen={loading ? loadingScreen : null}
       items={baseScreenItems}
       statusBarColor={BackgroundColor}
       childName="RegisterScreen"

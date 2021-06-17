@@ -2,6 +2,7 @@
 {
   public static class QueryListKeyMap
   {
+    public const string GET_VERSION_INFO = "getversioninfo";
     public const string SAVE_API_LOG = "saveapilog";
     public const string GET_ALL_USER = "getalluser";
     public const string REGISTER_MURIDKU_USER = "registermuridkuuser";
@@ -19,6 +20,7 @@
     public const string VALIDATE_NEW_EMAIL = "validatenewemail";
     public const string GET_KTBS_BY_PKTB_ID = "getktbsbypktbid";
     public const string GET_KTB_BY_KTB_ID = "getktbbyktbid";
+    public const string GET_SINGLE_KTB_MEMBER_BY_KTB_ID_MEMBER_ID = "getsinglektbmemberbyktbidmemberid";
     public const string SAVE_SINGLE_KTB = "savesinglektb";
     public const string UPDATE_SINGLE_KTB = "updatesinglektb";
     public const string UPDATE_AKTB_STATUS_BY_LIST_ID = "updateaktbstatusbylistid";
@@ -32,11 +34,14 @@
     public const string GET_SINGLE_KTB_HISTORY_BY_KTB_ID = "getsinglektbhistorybyktbid";
     public const string GET_SINGLE_KTB_HISTORY_MEMBER_BY_KTB_ID_MEMBER_ID = "getsinglektbhistorymemberbyktbidmemberid";
     public const string GET_KTB_HISTORY_BY_KTB_ID = "getktbhistorybyktbid";
+    public const string GET_LAST_KTB_MATERIAL_BY_KTB_ID = "getlastktbmaterialbyktbid";
     public const string GET_KTB_HISTORY_MEMBER_BY_KTB_HISTORY_ID = "getktbhistorymemberbyktbhistoryid";
     public const string SAVE_SINGLE_KTB_HISTORY = "savesinglektbhistory";
     public const string SAVE_SINGLE_KTB_HISTORY_MEMBER = "savesinglektbhistorymember";
     public const string SAVE_SINGLE_MEMBER = "savesinglemember";
     public const string UPDATE_SINGLE_MEMBER = "updatesinglemember";
+    public const string GET_ALL_CITY = "getallcity";
+    public const string GET_CITY_BY_ID = "getcitybyid";
     public const string GET_ALL_INSTITUTION = "getallinstitution";
     public const string GET_INSTITUTION_BY_TYPE = "getinstitutionbytype";
     public const string GET_INSTITUTION_BY_ID = "getinstitutionbyid";

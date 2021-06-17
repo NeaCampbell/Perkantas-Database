@@ -1,10 +1,13 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable curly */
 import React, {useState, useEffect} from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { BasicStyles } from '../../asset/style-template/BasicStyles';
 import { DiscipleshipGroupStyles } from '../../asset/style-template/DiscipleshipGroupStyles';
 import Checkbox from './Checkbox';
+import {
+  DateToStringWithDay,
+} from '../helper/CommonHelper';
 
 const DiscipleshipGroup = (props) => {
   const [isChecked, setIsChecked] = useState(false);
@@ -74,7 +77,11 @@ const DiscipleshipGroup = (props) => {
     groupNameStyle,
     memberSectionStyle,
     iconUserStyle,
+    iconUserEnableStyle,
+    iconUserDisableStyle,
     iconUserTextStyle,
+    iconUserTextEnableStyle,
+    iconUserTextDisableStyle,
     otherDescTitleStyle,
     otherDescValueStyle,
     otherDescTextStyle,
@@ -82,18 +89,19 @@ const DiscipleshipGroup = (props) => {
   } = DiscipleshipGroupStyles;
 
   if (props.members)
-  props.members.forEach(element => {
-    members.push(
-      <TouchableOpacity
-        style={iconUserStyle}
-        activeOpacity={0.3}
-        key={element.member.id}
-        onPress={() => onMemberClick(element.member.id, props.onMemberClick)}
-      >
-        <Text style={iconUserTextStyle} numberOfLines={1}>{getFirstLetterName(element.member.name)}</Text>
-      </TouchableOpacity>
-    );
-  });
+    props.members.forEach(element => {
+      const selectedKtbMember = props.ktbmembers.filter(x => x.member_id === element.member.id)[0];
+      members.push(
+        <TouchableOpacity
+          style={[iconUserStyle, selectedKtbMember.is_active === 1 ? iconUserEnableStyle : iconUserDisableStyle]}
+          activeOpacity={selectedKtbMember.is_active === 1 ? 0.3 : 1}
+          key={element.member.id}
+          onPress={selectedKtbMember.is_active === 1 ? () => onMemberClick(element.member.id, props.onMemberClick) : null}
+        >
+          <Text style={[iconUserTextStyle, selectedKtbMember.is_active === 1 ? iconUserTextEnableStyle : iconUserTextDisableStyle]} numberOfLines={1}>{getFirstLetterName(element.member.name)}</Text>
+        </TouchableOpacity>
+      );
+    });
 
   return (
     <View style={bodyContainerStyle}>
@@ -114,7 +122,7 @@ const DiscipleshipGroup = (props) => {
             {members}
           </View>
         </View>
-        <ScrollView style={scrollViewSectionStyle}>
+        <View style={scrollViewSectionStyle}>
           <View style={[descSectionStyle, otherDescSectionStyle]}>
             <View style={otherDescTitleStyle}>
               <Text style={otherDescTextStyle} numberOfLines={1} selectable>
@@ -123,7 +131,7 @@ const DiscipleshipGroup = (props) => {
             </View>
             <View style={otherDescValueStyle}>
               <Text style={otherDescTextStyle} numberOfLines={1} selectable>
-                {props.group.last_meet_dt ?? '-'}
+                {props.group.last_meet_dt ? DateToStringWithDay(new Date(props.group.last_meet_dt)) : '-'}
               </Text>
             </View>
           </View>
@@ -135,7 +143,7 @@ const DiscipleshipGroup = (props) => {
             </View>
             <View style={otherDescValueStyle}>
               <Text style={otherDescTextStyle} numberOfLines={1} selectable>
-                {props.group.last_meet_name ?? '-'}
+                {props.group.last_material_name ?? '-'}
               </Text>
             </View>
           </View>
@@ -147,11 +155,11 @@ const DiscipleshipGroup = (props) => {
             </View>
             <View style={otherDescValueStyle}>
               <Text style={otherDescTextStyle} numberOfLines={1} selectable>
-                {props.group.last_meet_chapter ?? '-'}
+                {props.group.last_material_chapter ?? '-'}
               </Text>
             </View>
           </View>
-        </ScrollView>
+        </View>
       </TouchableOpacity>
       {
         (props.isCheckedMode) ?

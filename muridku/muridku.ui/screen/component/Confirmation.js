@@ -42,7 +42,7 @@ const Confirmation = (props) => {
     <View style={bodyContainerStyle}>
       <View style={messageBoxSectionStyle}>
         <View style={messageBoxTextSectionStyle}>
-          <Text style={messageBoxTextStyle} numberOfLines={2}>
+          <Text style={messageBoxTextStyle} numberOfLines={3}>
             {props.confirmText}
           </Text>
         </View>

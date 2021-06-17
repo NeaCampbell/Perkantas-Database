@@ -58,7 +58,8 @@ ${NPMAUDIT}
 4. register ADB to Environment Variables Path (%ANDROID_HOME%\platform-tools)
 5. use gradle plugin version 4.1.3 and gradle version 6.7
 6. manually create android\app\src\main\assets if there is no assets folder
-7. run this script:
+7. go to android folder, and run 'gradle wrapper'
+8. back to muridku.ui folder, and run this script:
 
 ```node
 react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res

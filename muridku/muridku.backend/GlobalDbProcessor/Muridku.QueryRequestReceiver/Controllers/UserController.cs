@@ -71,10 +71,11 @@ namespace Muridku.QueryRequestReceiver.Controllers
                                         new Tuple<string, string, int>( "email", param.email, 100 ),
                                         new Tuple<string, string, int>( "password", param.password, param.password.Length ),
                                         new Tuple<string, string, int>( "password", encryptedPassword, 100 ) ),
+        () => ValidateParamInputLong( new Tuple<string, long?>( "city id", param.city_id ) ),
         () => ValidateEmail( param.email, invalidMsg )
       };
 
-      return ExecuteRequest<User>(logApi, new List<string>() { param.fullname, param.email, param.address, encryptedPassword, GetUsernameFromHeader(HttpContext) },
+      return ExecuteRequest<User>(logApi, new List<string>() { param.fullname, param.city_id.ToString(), param.email, param.address, encryptedPassword, GetUsernameFromHeader(HttpContext) },
         ConstRequestType.POST, QueryListKeyMap.REGISTER_MURIDKU_USER, QueryListKeyMap.REGISTER_MURIDKU_USER, isSingleRow: true,
         preCheckFuncs: preCheckFuncs);
     }

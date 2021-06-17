@@ -211,12 +211,14 @@ const ViewALLKTBScreen = (props) => {
     setLoading(true);
     const selectedKtbsTmp = searchedKtbs.filter((data) => {
       let result = false;
-      data.members.forEach(element => {
-        if (element.member.id === id) {
-          result = true;
-          return;
-        }
-      });
+
+      if (data.members)
+        data.members.forEach(element => {
+          if (element.member.id === id) {
+            result = true;
+            return;
+          }
+        });
       return result;
     });
 
@@ -349,6 +351,7 @@ const ViewALLKTBScreen = (props) => {
         <DiscipleshipGroup
           group={element.ktb}
           members={element.members}
+          ktbmembers={element.ktbmembers}
           colorHolder={groupColors[idx]}
           key={idx}
           navigation={navigation}

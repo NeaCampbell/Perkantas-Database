@@ -21,7 +21,7 @@ export const ConfirmationStyles = StyleSheet.create({
   },
   messageBoxSectionStyle: {
     width: '90%',
-    height: ProportionateScreenSizeValue(120),
+    height: ProportionateScreenSizeValue(140),
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
@@ -35,7 +35,10 @@ export const ConfirmationStyles = StyleSheet.create({
   messageBoxTextSectionStyle: {
     width: '100%',
     paddingHorizontal: '8%',
-    height: ProportionateScreenSizeValue(50),
+    height: ProportionateScreenSizeValue(70),
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   messageBoxTextStyle: {
     fontSize: ProportionateScreenSizeValue(14),

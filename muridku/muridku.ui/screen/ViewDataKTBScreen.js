@@ -21,6 +21,7 @@ import Disciple from './component/Disciple';
 import Error from './component/Error';
 import {
   ProportionateScreenSizeValue,
+  DateToStringWithDay,
 } from '../helper/CommonHelper';
 import Confirmation, { AlertMode } from './component/Confirmation';
 
@@ -36,7 +37,6 @@ const ViewDataKTBScreen = (props) => {
   const [loading, setLoading] = useState(true);
   const [isFirstEntry, setIsFirstEntry] = useState(true);
   const [errorText, setErrorText] = useState('');
-  const [ktbName, setKtbName] = useState(props.KTB.ktb.name);
   const [checkedMode, setCheckedMode] = useState(false);
   const [selectAllText, setSelectAllText] = useState(selectAll);
   const [showEditGroupScreen, setShowEditGroupScreen] = useState(false);
@@ -47,7 +47,8 @@ const ViewDataKTBScreen = (props) => {
   const [showConfirmScreen, setShowConfirmScreen] = useState(false);
 
   useEffect(() => {
-    setLoading(false);
+    if (errorText && errorText !== '')
+      setLoading(false);
   }, [errorText]);
 
   useEffect(() => {
@@ -80,12 +81,18 @@ const ViewDataKTBScreen = (props) => {
     props.dispatch({type: SET_SELECTED_KTB, ktb: result.result});
 
     const activeStates = [];
+    let ktbmembers = [];
+
+    if (result.result.ktbmembers)
+      ktbmembers = result.result.ktbmembers;
 
     if (result.result.members)
       result.result.members.forEach(item => {
+        const ktbmember = ktbmembers.filter(x => x.member_id === item.member.id)[0];
         activeStates.push({
           id: item.member.id,
-          isActive: true,
+          firstActiveState: ktbmember.is_active === 1 ? true : false,
+          isActive: ktbmember.is_active === 1 ? true : false,
         });
       });
 
@@ -125,15 +132,14 @@ const ViewDataKTBScreen = (props) => {
   };
 
   const callbackEditGroup = (result) => {
-    setLoading(false);
-
     if (!result.succeed) {
+      setLoading(false);
       setErrorText(result.errorMessage);
       return;
     }
 
     setShowEditGroupScreen(false);
-    setKtbName(result.result.name);
+    setIsFirstEntry(true);
   };
 
   const onEditGroupSaveClick = (value) => {
@@ -210,9 +216,8 @@ const ViewDataKTBScreen = (props) => {
   };
 
   const callbackUpdateMemberStatus = (result) => {
-    setLoading(false);
-
     if (!result.succeed) {
+      setLoading(false);
       setErrorText(result.errorMessage);
       return;
     }
@@ -234,6 +239,7 @@ const ViewDataKTBScreen = (props) => {
     if (inactiveMembers.length === 0)
       return;
 
+    setLoading(true);
     updateaktbstatusapi.updateaktbstatusbylistid(props.KTB.ktb.id, inactiveMembers, props.User.email, callbackUpdateMemberStatus, errorHandler);
   };
 
@@ -294,7 +300,9 @@ const ViewDataKTBScreen = (props) => {
 
   if (props.KTB && props.KTB.members && props.KTB.members.length > 0 && memberActiveStates.length > 0)
     props.KTB.members.forEach((item) => {
-      const status = memberActiveStates.filter(x => x.id === item.member.id)[0].isActive;
+      const selectedData = memberActiveStates.filter(x => x.id === item.member.id)[0];
+      const firstStatus = selectedData.firstActiveState;
+      const status = selectedData.isActive;
 
       disciple.push(
         (
@@ -304,6 +312,7 @@ const ViewDataKTBScreen = (props) => {
             forceMemberCheck={forceMemberCheck}
             forceMemberUncheck={forceMemberUncheck}
             member={item}
+            firstActiveState={firstStatus}
             isActive={status}
             onMemberActiveClick={(id) => onMemberStatusChange(id, true)}
             onMemberInactiveClick={(id) => onMemberStatusChange(id, false)}
@@ -394,8 +403,9 @@ const ViewDataKTBScreen = (props) => {
         >
           <Text
             style={historyTextStyle}
+            numberOfLines={1}
           >
-            : {props.KTB.ktb.last_meet_dt ?? '-'}
+            : {props.KTB.ktb.last_meet_dt ? DateToStringWithDay(new Date(props.KTB.ktb.last_meet_dt)) : '-'}
           </Text>
         </View>
       </View>
@@ -416,6 +426,7 @@ const ViewDataKTBScreen = (props) => {
         >
           <Text
             style={historyTextStyle}
+            numberOfLines={1}
           >
             : {props.KTB.ktb.last_material_name ?? '-'}
           </Text>
@@ -438,6 +449,7 @@ const ViewDataKTBScreen = (props) => {
         >
           <Text
             style={historyTextStyle}
+            numberOfLines={1}
           >
             : {props.KTB.ktb.last_material_chapter ?? '-'}
           </Text>
@@ -476,7 +488,7 @@ const ViewDataKTBScreen = (props) => {
     </KeyboardAvoidingView>
   );
 
-  const buttonUpdateEnable = checkedMode ? selectedMembers.length > 0 : memberActiveStates.filter(item => item.isActive === false).length > 0;
+  const buttonUpdateEnable = checkedMode ? selectedMembers.length > 0 : memberActiveStates.filter(item => item.isActive !== item.firstActiveState).length > 0;
 
   const footer = (
     <View style={footerSectionStyle}>
@@ -516,7 +528,7 @@ const ViewDataKTBScreen = (props) => {
 
   return (
     <BodyMenuBaseScreen
-      title={`Kelompok ${ktbName}`}
+      title={`Kelompok ${props.KTB.ktb.name}`}
       overlayScreen={showEditGroupScreen ? editKTBScreen : null}
       loadingScreen={loading ? loadingScreen : null}
       confirmScreen={showConfirmScreen ? confirmScreen : null}

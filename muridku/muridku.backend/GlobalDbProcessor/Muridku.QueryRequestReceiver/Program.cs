@@ -31,13 +31,15 @@ namespace Muridku.QueryRequestReceiver
       string username = dbConfigSource.GetValue( "Username", string.Empty );
       string password = dbConfigSource.GetValue( "Password", string.Empty );
       string dbName = dbConfigSource.GetValue( "DbName", string.Empty );
+      string idleTimeout = dbConfigSource.GetValue("ConnectionIdleTimeout", string.Empty);
 
-      return string.Format( "Host={0};Port={1};User ID={2};Password={3};Database={4};Pooling=true;",
+      return string.Format("Host={0};Port={1};User ID={2};Password={3};Database={4};ConnectionIdleTimeout={5};Pooling=true;",
         serverAddress,
         portNumber,
         username,
         password,
-        dbName
+        dbName,
+        idleTimeout
       );
     }
 

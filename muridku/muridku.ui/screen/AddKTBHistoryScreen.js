@@ -1,5 +1,4 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable curly */
 import React, { useEffect, useState } from 'react';
 import {
@@ -17,6 +16,7 @@ import { AddKTBHistoryStyles } from '../asset/style-template/AddKTBHistoryStyles
 import { AddKTBHistoryDateStyles } from '../asset/style-template/AddKTBHistoryDateStyles';
 import { AddKTBHistoryAKKStyles } from '../asset/style-template/AddKTBHistoryAKKStyles';
 import { AddKTBHistoryMaterialStyles } from '../asset/style-template/AddKTBHistoryMaterialStyles';
+import { AddKTBHistoryViewHistoryStyles } from '../asset/style-template/AddKTBHistoryViewHistoryStyles';
 import { BackgroundColor } from '../asset/style-template/MenuBasicStyles';
 import {
   ProportionateScreenSizeValue,
@@ -33,6 +33,7 @@ import ModalList from './component/ModalList';
 import MeetingHistory from './component/MeetingHistory';
 
 const getallmaterialsapi = require('../api/out/getallmaterials');
+const getlastmaterialapi = require('../api/out/getlastktbmaterialbyktbid');
 const gethistoryapi = require('../api/out/getktbhistorybyktbid');
 const savehistoryapi = require('../api/out/savesinglektbhistory');
 
@@ -145,6 +146,29 @@ const AddKTBHistoryScreen = (props) => {
     setSelectedAKK(selectedAKKTmp);
   };
 
+  const callbackGetLastMaterial = (result) => {
+    if (!result.succeed) {
+      setLoading(false);
+      setErrorText(result.errorMessage);
+      return;
+    }
+
+    const lastMaterial = result.result;
+    setSelectedMaterialId(lastMaterial.id);
+    setSelectedMaterialCode(lastMaterial.code);
+    setSelectedMaterialName(lastMaterial.name);
+    setSelectedMaterialCustomName(lastMaterial.custom_name);
+    setSelectedMaterialMaxChapter(lastMaterial.chapter_count);
+    setSelectedMaterialChapter(lastMaterial.chapter);
+    setLoading(false);
+  };
+
+  const onGetLastMaterial = (ktbId) => {
+    setLoading(true);
+
+    getlastmaterialapi.getlastktbmaterialbyktbid(ktbId, props.User.email, callbackGetLastMaterial, errorHandler);
+  };
+
   const callbackOnMaterialOpen = (result) => {
     setLoading(false);
 
@@ -217,13 +241,20 @@ const AddKTBHistoryScreen = (props) => {
   };
 
   const callbackSave = (result) => {
-    setLoading(false);
-
     if (!result.succeed) {
+      setLoading(false);
       setErrorText(result.errorMessage);
       return;
     }
 
+    setSelectedAKK([]);
+    setSelectedMaterialId(null);
+    setSelectedMaterialCode('');
+    setSelectedMaterialName('');
+    setSelectedMaterialCustomName('');
+    setSelectedMaterialMaxChapter(0);
+    setSelectedMaterialChapter(null);
+    setLoading(false);
     onSectionClick(sectionViewHistory);
   };
 
@@ -296,6 +327,9 @@ const AddKTBHistoryScreen = (props) => {
     dropdownListButtonTextStyle,
     dropdownListButtonSelectTextStyle,
     dropdownListButtonCancelTextStyle,
+    footerSectionStyle,
+    footerButtonSaveStyle,
+    footerButtonSaveTextStyle,
   } = AddKTBHistoryStyles;
 
   const {
@@ -319,6 +353,8 @@ const AddKTBHistoryScreen = (props) => {
     bodyMaterialContainerStyle,
     bodyMaterialContainerContentStyle,
     materialSectionStyle,
+    materialGetLastMaterialSectionStyle,
+    materialGetLastMaterialTextStyle,
     materialBookInputContainerStyle,
     materialBookInputStyle,
     materialBookResetButtonContainerStyle,
@@ -328,8 +364,18 @@ const AddKTBHistoryScreen = (props) => {
     materialBookButtonStyle,
     materialOtherInputSectionStyle,
     materialOtherInputStyle,
+    materialChapterButtonSectionStyle,
+    materialChapterButtonAddStyle,
+    materialChapterButtonAddTextStyle,
+    materialChapterButtonReduceStyle,
+    materialChapterButtonReduceTextStyle,
     materialChapterInputStyle,
   } = AddKTBHistoryMaterialStyles;
+
+  const {
+    bodyViewHistoryContainerStyle,
+    bodyViewHistoryContentContainerStyle,
+  } = AddKTBHistoryViewHistoryStyles;
 
   const errorScreen = (
     <Error
@@ -390,19 +436,21 @@ const AddKTBHistoryScreen = (props) => {
   if (props.KTB.members)
     props.KTB.members.forEach(item => {
       const akk = selectedAKK.filter(detail => detail.id === item.member.id);
+      const ktbmembers = props.KTB.ktbmembers.filter(x => x.member_id === item.member.id);
       let checked = false;
 
       if (akk.length > 0)
         checked = akk[0].selected;
 
-      akkViews.push(
-        <DiscipleShort
-          key={item.member.id}
-          member={item.member}
-          onCheck={(id, selected) => onAKKClick(id, selected)}
-          checked={checked}
-        />
-      );
+      if (ktbmembers.length > 0 && ktbmembers[0].is_active === 1)
+        akkViews.push(
+          <DiscipleShort
+            key={item.member.id}
+            member={item.member}
+            onCheck={(id, selected) => onAKKClick(id, selected)}
+            checked={checked}
+          />
+        );
     });
 
   const sectionAKKView = (
@@ -458,6 +506,13 @@ const AddKTBHistoryScreen = (props) => {
       scrollEnabled={false}
     >
       <View style={materialSectionStyle}>
+        <View style={materialGetLastMaterialSectionStyle}>
+          <TouchableOpacity
+            onPress={() => onGetLastMaterial(props.KTB.ktb.id)}
+          >
+            <Text style={materialGetLastMaterialTextStyle}>Ambil bahan dari pertemuan terakhir</Text>
+          </TouchableOpacity>
+        </View>
         <CustomInputButton
           inputContainerStyle={materialBookInputContainerStyle}
           inputStyle={[globalFontStyle, materialBookInputStyle]}
@@ -488,34 +543,14 @@ const AddKTBHistoryScreen = (props) => {
           ) : null
         }
         <View style={materialOtherInputSectionStyle}>
-          <View
-            style={{
-              width: '18%',
-              height: '100%',
-              marginRight: ProportionateScreenSizeValue(5),
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+          <View style={materialChapterButtonSectionStyle}>
             <TouchableOpacity
-              style={{
-                width: ProportionateScreenSizeValue(26),
-                height: ProportionateScreenSizeValue(26),
-                borderRadius: ProportionateScreenSizeValue(13),
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: '#815BF0',
-              }}
+              style={materialChapterButtonAddStyle}
               onPress={() => onMaterialChapterChange(uppingValue)}
               disabled={!(selectedMaterialName || selectedMaterialCustomName)}
+              activeOpacity={0.5}
             >
-              <Text style={{
-                fontSize: ProportionateScreenSizeValue(30),
-                lineHeight: ProportionateScreenSizeValue(30),
-                color: '#FFF',
-              }}>
+              <Text style={materialChapterButtonAddTextStyle}>
                 +
               </Text>
             </TouchableOpacity>
@@ -528,38 +563,14 @@ const AddKTBHistoryScreen = (props) => {
             editable={false}
             value={selectedMaterialChapter ? selectedMaterialChapter.toString() : ''}
           />
-          <View
-            style={{
-              width: '18%',
-              height: '100%',
-              marginLeft: ProportionateScreenSizeValue(5),
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+          <View style={materialChapterButtonSectionStyle}>
             <TouchableOpacity
-              style={{
-                width: ProportionateScreenSizeValue(26),
-                height: ProportionateScreenSizeValue(26),
-                borderRadius: ProportionateScreenSizeValue(13),
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: '#FFF',
-                borderWidth: ProportionateScreenSizeValue(1),
-                borderColor: '#815BF0',
-              }}
+              style={materialChapterButtonReduceStyle}
               onPress={() => onMaterialChapterChange(loweringValue)}
               disabled={!(selectedMaterialName || selectedMaterialCustomName)}
+              activeOpacity={0.5}
             >
-              <Text
-                style={{
-                  fontSize: ProportionateScreenSizeValue(30),
-                  lineHeight: ProportionateScreenSizeValue(30),
-                  color: '#815BF0',
-                }}
-              >
+              <Text style={materialChapterButtonReduceTextStyle}>
                 −
               </Text>
             </TouchableOpacity>
@@ -589,13 +600,8 @@ const AddKTBHistoryScreen = (props) => {
 
   const sectionViewHistoryView = (
     <ScrollView
-      style={{
-        width: '100%',
-      }}
-      contentContainerStyle={{
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
+      style={bodyViewHistoryContainerStyle}
+      contentContainerStyle={bodyViewHistoryContentContainerStyle}
     >
       {histories}
     </ScrollView>
@@ -725,32 +731,13 @@ const AddKTBHistoryScreen = (props) => {
   );
 
   const footer = (
-      <View style={{
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#FFF',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
+      <View style={footerSectionStyle}>
         <TouchableOpacity
-          style={{
-            width: ProportionateScreenSizeValue(250),
-            height: ProportionateScreenSizeValue(42),
-            backgroundColor: '#F59873',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          style={footerButtonSaveStyle}
           activeOpacity={0.5}
           onPress={() => onSaveClick()}
         >
-          <Text style={{
-              color: '#FFFFFF',
-              fontStyle: 'normal',
-              fontSize: ProportionateScreenSizeValue(16),
-              lineHeight: ProportionateScreenSizeValue(15),
-              fontWeight: 'bold',
-            }}
+          <Text style={footerButtonSaveTextStyle}
             numberOfLines={1}
           >
             Save

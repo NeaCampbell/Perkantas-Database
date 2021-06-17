@@ -91,17 +91,18 @@ const ModalList = (props) => {
         <ScrollView
           style={props.listSectionStyle}
           contentContainerStyle={styles.listSectionContentStyle}
+          scrollEnabled={true}
         >
           {list}
         </ScrollView>
         <View style={props.buttonSectionStyle}>
           <TouchableOpacity
-            style={[props.buttonStyle, !selectedId || selectedId === 0 ? styles.buttonDisableStyle : null]}
+            style={props.buttonStyle}
             onPress={() => onSelectClick(selectedId, selectedName)}
             disabled={!selectedId || selectedId === 0}
             activeOpacity={opacity}
           >
-            <View style={props.selectButtonStyle}>
+            <View style={[props.selectButtonStyle, !selectedId || selectedId === 0 ? styles.buttonDisableStyle : null]}>
               <Text style={props.selectTextStyle} numberOfLines={1}>SELECT</Text>
             </View>
           </TouchableOpacity>

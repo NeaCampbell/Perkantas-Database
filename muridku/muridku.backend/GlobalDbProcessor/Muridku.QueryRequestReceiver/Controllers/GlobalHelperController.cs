@@ -33,11 +33,19 @@ namespace Muridku.QueryRequestReceiver.Controllers
 
       if (reqResultMember.Succeed)
       {
-        result.members = new List<CombinedMemberUserInstituteFaculty>();
+        result.members = new List<CombinedMemberCityUserInstituteFaculty>();
+        result.ktbmembers = new List<KtbMember>();
         IList<Member> members = GetModelListFromQueryResult<Member>(reqResultMember);
-        
+
         foreach (Member member in members)
+        {
           result.members.Add(GetCompleteMemberData(member, logApi, requestCode));
+          QueryResult reqResultKtbMember = ExecuteRequest<KtbMember>(logApi, new List<string>() { ktb.id.ToString(), member.id.ToString() }, ConstRequestType.GET,
+            requestCode, QueryListKeyMap.GET_SINGLE_KTB_MEMBER_BY_KTB_ID_MEMBER_ID, isSingleRow: true, customContext: _customContext);
+
+          if (reqResultKtbMember.Succeed)
+            result.ktbmembers.Add(GetModelFromQueryResult<KtbMember>(reqResultKtbMember));
+        }
       }
 
       return result;
@@ -84,12 +92,18 @@ namespace Muridku.QueryRequestReceiver.Controllers
       return result;
     }
 
-    public CombinedMemberUserInstituteFaculty GetCompleteMemberData( Member member, LogApi logApi, string requestCode )
+    public CombinedMemberCityUserInstituteFaculty GetCompleteMemberData( Member member, LogApi logApi, string requestCode )
     {
-      CombinedMemberUserInstituteFaculty result = new CombinedMemberUserInstituteFaculty
+      CombinedMemberCityUserInstituteFaculty result = new CombinedMemberCityUserInstituteFaculty
       {
         member = member
       };
+
+      QueryResult reqResultCity = ExecuteRequest<City>(logApi, new List<string>() { member.city_id.ToString() }, ConstRequestType.GET,
+        requestCode, QueryListKeyMap.GET_CITY_BY_ID, isSingleRow: true, customContext: _customContext);
+
+      if (reqResultCity.Succeed)
+        result.city = GetModelFromQueryResult<City>(reqResultCity);
 
       QueryResult reqResultUser = ExecuteRequest<User>(logApi, new List<string>() { member.id.ToString() }, ConstRequestType.GET,
         requestCode, QueryListKeyMap.GET_USER_BY_MEMBER_ID, isSingleRow: true, customContext: _customContext);

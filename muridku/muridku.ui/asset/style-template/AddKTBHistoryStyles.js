@@ -100,12 +100,12 @@ export const AddKTBHistoryStyles = StyleSheet.create({
   },
   dropdownListViewSectionStyle: {
     width: '100%',
-    padding: ProportionateScreenSizeValue(10),
   },
   dropdownListSearchSectionStyle: {
     width: '100%',
     height: ProportionateScreenSizeValue(DefaultInputHeight),
-    marginTop: ProportionateScreenSizeValue(15),
+    marginTop: ProportionateScreenSizeValue(10),
+    marginBottom: ProportionateScreenSizeValue(10),
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -115,14 +115,15 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     height: '100%',
     borderWidth: ProportionateScreenSizeValue(1),
     borderColor: '#D1D5E0',
-    borderRadius: ProportionateScreenSizeValue(DefaultInputHeight / 2),
+    borderRadius: ProportionateScreenSizeValue(10),
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
   dropdownListSearchInputStyle: {
-    width: '75%',
+    width: '80%',
     fontSize: ProportionateScreenSizeValue(12),
+    paddingHorizontal: ProportionateScreenSizeValue(10),
   },
   dropdownListSearchButtonStyle: {
     borderLeftWidth: ProportionateScreenSizeValue(1),
@@ -131,7 +132,7 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: '70%',
-    width: '15%',
+    width: '20%',
   },
   dropdownListViewItemSectionStyle: {
     width: '100%',
@@ -191,6 +192,27 @@ export const AddKTBHistoryStyles = StyleSheet.create({
   dropdownListButtonCancelTextStyle: {
     fontSize: ProportionateScreenSizeValue(12),
     color: ButtonColor,
+  },
+  footerSectionStyle: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerButtonSaveStyle: {
+    width: ProportionateScreenSizeValue(250),
+    height: ProportionateScreenSizeValue(42),
+    backgroundColor: '#F59873',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerButtonSaveTextStyle: {
+    color: '#FFFFFF',
+    fontStyle: 'normal',
+    fontSize: ProportionateScreenSizeValue(16),
+    lineHeight: ProportionateScreenSizeValue(15),
+    fontWeight: 'bold',
   },
   customActivityIndicatorStyle: {
     alignItems: 'center',

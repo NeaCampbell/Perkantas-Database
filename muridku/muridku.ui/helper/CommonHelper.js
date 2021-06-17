@@ -58,6 +58,28 @@ export const ChangeColorFunction = (oldColors) => {
   return result;
 };
 
+export const ValidateEmail = (email) => {
+  if (!email) {
+    return {
+      result: false,
+      message: 'email harus diisi.',
+    };
+  }
+
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (!re.test(String(email).toLowerCase())) {
+    return {
+      result: false,
+      message: 'email tidak valid.',
+    };
+  }
+
+  return {
+    result: true,
+    message: '',
+  };
+};
+
 export const DateToStringApi = (date) => {
   if (!date)
     return '';

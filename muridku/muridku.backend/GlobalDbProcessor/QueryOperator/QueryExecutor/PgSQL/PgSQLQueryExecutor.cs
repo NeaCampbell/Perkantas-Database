@@ -5,7 +5,6 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Threading;
 
 namespace QueryOperator.QueryExecutor.PgSQL
 {
@@ -216,30 +215,26 @@ namespace QueryOperator.QueryExecutor.PgSQL
       {
         case DbTransactionState.Open:
           _dbConnection.Open();
-          ConnectionState = _dbConnection.State;
           break;
         case DbTransactionState.Start:
           _transaction = _dbConnection.BeginTransaction();
-          ConnectionState = _dbConnection.State;
           break;
         case DbTransactionState.Commit:
           _transaction.Commit();
-          ConnectionState = _dbConnection.State;
           break;
         case DbTransactionState.Rollback:
           _transaction.Rollback();
-          ConnectionState = _dbConnection.State;
           break;
         case DbTransactionState.Close:
-          _dbConnection.Close();
-          ConnectionState = _dbConnection.State;
+          if (_dbConnection.State != ConnectionState.Closed)
+            _dbConnection.Close();
           break;
         default:
           break;
       }
     }
 
-    public ConnectionState ConnectionState { get; private set; }
+    public ConnectionState ConnectionState { get { return _dbConnection.State; } }
 
     public IQueryExecutor<NpgsqlConnection> Clone()
     {

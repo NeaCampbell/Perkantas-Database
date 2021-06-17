@@ -72,6 +72,8 @@ const Disciple = (props) => {
   const {
     bodyContainerStyle,
     discipleBoxSectionStyle,
+    discipleBoxSectionEnabledStyle,
+    discipleBoxSectionDisabledStyle,
     discipleBoxSectionCheckStyle,
     discipleBoxSectionUncheckStyle,
     checkBoxSectionStyle,
@@ -94,10 +96,11 @@ const Disciple = (props) => {
   return (
     <View style={bodyContainerStyle}>
       <TouchableOpacity
-        style={[discipleBoxSectionStyle, props.isCheckedMode ? discipleBoxSectionCheckStyle : discipleBoxSectionUncheckStyle]}
+        style={[discipleBoxSectionStyle, props.firstActiveState ? discipleBoxSectionEnabledStyle : discipleBoxSectionDisabledStyle, props.isCheckedMode ? discipleBoxSectionCheckStyle : discipleBoxSectionUncheckStyle]}
         activeOpacity={0.5}
         onPress={() => onMemberClick(props.member.member.id)}
         onLongPress={() => onMemberLongPress()}
+        disabled={!props.firstActiveState}
       >
         <View style={textSectionStyle}>
           <View style={nameSectionStyle}>
@@ -115,15 +118,17 @@ const Disciple = (props) => {
                       style={[nameButtonStyle, isActive ? nameActiveEnableButtonStyle : nameActiveDisableButtonStyle]}
                       activeOpacity={0.4}
                       onPress={() => onMemberActiveClick(props.member.member.id)}
+                      disabled={!props.firstActiveState}
                     >
                       <Text style={nameButtonTextStyle}>✔</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={nameButtonInnerSectionStyle}>
                     <TouchableOpacity
-                      style={[nameButtonStyle, !isActive ? nameInactiveEnableButtonStyle : nameInactiveDisableButtonStyle]}
+                      style={[nameButtonStyle, !isActive && props.firstActiveState ? nameInactiveEnableButtonStyle : nameInactiveDisableButtonStyle]}
                       activeOpacity={0.4}
                       onPress={() => onMemberInactiveClick(props.member.member.id)}
+                      disabled={!props.firstActiveState}
                     >
                       <Text style={nameButtonTextStyle}>✖</Text>
                     </TouchableOpacity>

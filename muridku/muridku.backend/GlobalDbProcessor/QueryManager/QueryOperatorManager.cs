@@ -120,6 +120,8 @@ namespace QueryManager
 
       while( queryExecutor.ConnectionState != ConnectionState.Open && retryCounter < 10 )
       {
+        if(queryExecutor.ConnectionState == ConnectionState.Closed)
+          queryExecutor.ChangeDbTransState(DbTransactionState.Open);
         Thread.Sleep( 100 );
         retryCounter++;
       }

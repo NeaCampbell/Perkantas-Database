@@ -1,5 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable curly */
+const appJson = require('../app.json');
+
 export const requesttemplate = (options, callback, paraminput, ishttp, errorHandler) => {
   let url = `${options.hostname}:${options.port}${options.path}`;
 
@@ -7,6 +9,8 @@ export const requesttemplate = (options, callback, paraminput, ishttp, errorHand
     url = `https://${url}`;
   else
     url = `http://${url}`;
+
+  options.headers.Version = appJson.version;
 
   fetch(url, {
     method: options.method,
