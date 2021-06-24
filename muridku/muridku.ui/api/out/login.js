@@ -20,6 +20,7 @@ export const login = (email, password, isstayloggedin, callback, errorHandler) =
       method: PUT,
       headers: {
         'Token': TOKEN,
+        'Content-Type': 'application/json',
       },
     };
 

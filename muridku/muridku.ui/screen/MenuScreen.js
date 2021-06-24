@@ -34,6 +34,11 @@ const MenuScreen = (props) => {
     navigation.replace('ViewAllKTBScreen');
   };
 
+  const onProfileClick = () => {
+    props.dispatch({ type: SET_CURRENT_PAGE, page: 'EntryDataAKKScreen' });
+    navigation.replace('EntryDataAKKScreen');
+  };
+
   const onActivationClick = () => {
     props.dispatch({ type: SET_CURRENT_PAGE, page: 'ActivationScreen' });
     navigation.replace('ActivationScreen');

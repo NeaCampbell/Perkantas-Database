@@ -52,6 +52,7 @@ const EntryDataAKKScreen = (props) => {
   const confirmCity = 'CITY';
   const confirmBack = 'BACK';
   const isUpdate = props.Member ? true : false;
+  const isUpdateSelf = props.Member && props.Member.member.id === props.User.member_id ? true : false;
   let member;
   let user;
   let institution;
@@ -979,12 +980,14 @@ const EntryDataAKKScreen = (props) => {
     </KeyboardAvoidingView>
   );
 
+  const title = `${isUpdate ? 'Ubah' : 'Tambah'} Data ${isUpdateSelf ? 'Diri' : 'AKK'}`;
+
   return (
     <BodyMenuBaseScreen
       overlayScreen={modalScreen}
       loadingScreen={loading ? loadingScreen : null}
       confirmScreen={showConfirmScreen && confirmType !== confirmNone ? confirmScreen : null}
-      title={(isUpdate ? 'Ubah' : 'Tambah') + ' Data AKK'}
+      title={title}
       child={child}
       footer={footer}
       errorScreen={errorText !== '' ? errorScreen : null}
