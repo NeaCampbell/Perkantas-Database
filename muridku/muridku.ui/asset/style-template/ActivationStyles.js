@@ -82,7 +82,7 @@ export const ActivationStyles = StyleSheet.create({
     color: '#FFFFFF',
     fontStyle: 'normal',
     fontSize: ProportionateScreenSizeValue(16),
-    lineHeight: ProportionateScreenSizeValue(15),
+    lineHeight: ProportionateScreenSizeValue(16),
     fontWeight: 'bold',
   },
   customActivityIndicatorStyle: {

@@ -238,9 +238,9 @@ namespace Muridku.QueryRequestReceiver.Controllers
     }
 
     [HttpGet(QueryListKeyMap.GET_INACTIVE_USER_BY_MEMBER_ID)]
-    public Response<User> GetInactiveUserByMemberId(int memberid)
+    public Response<User> GetInactiveUserByMemberId(long memberid)
     {
-      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("memberid={0}", memberid));
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("memberid={0}", memberid.ToString()));
       QueryResult reqResult = ExecuteRequest<User>(logApi, new List<string>() { memberid.ToString() }, ConstRequestType.GET, QueryListKeyMap.GET_INACTIVE_USER_BY_MEMBER_ID,
         QueryListKeyMap.GET_USERS_BY_MEMBER_ID);
 
@@ -256,6 +256,61 @@ namespace Muridku.QueryRequestReceiver.Controllers
         return GetResponseBlankSingleModel<User>(reqResult, false, "member already have active user", false);
 
       User user = users[0];
+      user.password = null;
+      return GetResponseSingleModelCustom(reqResult, user);
+    }
+
+    [HttpGet(QueryListKeyMap.VALIDATE_PASSWORD)]
+    public Response<User> ValidatePassword(long userid, string password)
+    {
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("userid={0}&password={1}", userid.ToString(), password));
+      string invalidMsg = "old password doesn't match";
+
+      IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
+      {
+        () => ValidateParamInputLong( new Tuple<string, long?>( "userid", userid ) ),
+        () => ValidateParamInputString( new Tuple<string, string, int>( "password", password, string.IsNullOrEmpty( password ) ? 0 : password.Length ))
+      };
+
+      IList<Func<User, CheckParam>> postCheckFuncs = new List<Func<User, CheckParam>>
+      {
+        ( User user ) => ValidatePassword( user, password, invalidMsg )
+      };
+
+      QueryResult reqResult = ExecuteRequest(logApi, new List<string>() { userid.ToString() }, ConstRequestType.GET,
+        QueryListKeyMap.VALIDATE_PASSWORD, QueryListKeyMap.GET_USER_BY_ID, isSingleRow: true, preCheckFuncs: preCheckFuncs,
+        postCheckFuncs: postCheckFuncs);
+
+      if (!reqResult.Succeed)
+        return GetResponseBlankSingleModel<User>(reqResult, reqResult.Succeed);
+
+      User user = GetModelFromQueryResult<User>(reqResult);
+      user.password = null;
+      return GetResponseSingleModelCustom(reqResult, user);
+    }
+
+    [HttpPut(QueryListKeyMap.UPDATE_PASSWORD)]
+    public Response<User> UpdatePassword(long userid, string password)
+    {
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("userid={0}&password={1}", userid.ToString(), password));
+      string encryptedPassword = CipherCentre.EncryptMD5(password ?? string.Empty,
+                                                          QueryOperatorManager.EncryptMD5HashFormat,
+                                                          QueryOperatorManager.EncryptMD5HashCultureInfo);
+
+      IList<Func<CheckParam>> preCheckFuncs = new List<Func<CheckParam>>
+      {
+        () => ValidateParamInputLong( new Tuple<string, long?>( "userid", userid ) ),
+        () => ValidateParamInputString( new Tuple<string, string, int>( "password", password, password.Length ),
+                                        new Tuple<string, string, int>( "password", encryptedPassword, 100 ) )
+      };
+
+      QueryResult reqResult = ExecuteRequest<User>(logApi, new List<string>() { userid.ToString(), encryptedPassword }, ConstRequestType.GET,
+        QueryListKeyMap.UPDATE_PASSWORD, QueryListKeyMap.UPDATE_PASSWORD, isSingleRow: true, preCheckFuncs: preCheckFuncs);
+
+      if (!reqResult.Succeed)
+        return GetResponseBlankSingleModel<User>(reqResult, reqResult.Succeed);
+
+      User user = GetModelFromQueryResult<User>(reqResult);
       user.password = null;
       return GetResponseSingleModelCustom(reqResult, user);
     }

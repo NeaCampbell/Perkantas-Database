@@ -10,6 +10,9 @@
     public const string ACTIVATE_USER = "activateuser";
     public const string LOGIN = "login";
     public const string LOGOUT = "logout";
+    public const string VALIDATE_PASSWORD = "validatepassword";
+    public const string UPDATE_PASSWORD = "updatepassword";
+    public const string GET_USER_BY_ID = "getuserbyid";
     public const string GET_USER_BY_EMAIL = "getuserbyemail";
     public const string GET_USER_BY_MEMBER_ID = "getuserbymemberid";
     public const string GET_USERS_BY_MEMBER_ID = "getusersbymemberid";

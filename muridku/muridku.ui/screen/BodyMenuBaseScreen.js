@@ -5,8 +5,14 @@ import {
   View,
   Text,
   Platform,
+  PixelRatio,
 } from 'react-native';
-import { MenuBasicStyles } from '../asset/style-template/MenuBasicStyles';
+import {
+  HeaderSectionHeight,
+  HeaderOtherSectionHeight,
+  FooterSectionHeight,
+  MenuBasicStyles,
+} from '../asset/style-template/MenuBasicStyles';
 import MenuScreen from './MenuScreen';
 
 // Import needed views
@@ -37,8 +43,19 @@ const BodyMenuBaseScreen = (props) => {
     footerSectionStyle,
   } = MenuBasicStyles;
 
-  const childHeightPercentage = props.additionalHeader ? (props.footer ? 72 : 85) :
-                                                         (props.footer ? 82 : 101);
+  const pixelRatio = PixelRatio.get() * 160;
+  const totalHeightPercentage = pixelRatio < 500 ? 96.5 : 100;
+
+  const childHeightPercentage = props.additionalHeader ? (
+      props.footer ?
+      (totalHeightPercentage - HeaderSectionHeight - HeaderOtherSectionHeight - FooterSectionHeight) :
+      (totalHeightPercentage - HeaderSectionHeight - HeaderOtherSectionHeight)
+    ) :
+    (
+      props.footer ?
+      (totalHeightPercentage - HeaderSectionHeight - FooterSectionHeight) :
+      (totalHeightPercentage - HeaderSectionHeight)
+    );
 
   const overlayScreenView = (
     <MenuScreen

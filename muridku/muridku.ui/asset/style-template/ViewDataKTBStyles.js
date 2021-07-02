@@ -108,7 +108,7 @@ export const ViewDataKTBStyles = StyleSheet.create({
     justifyContent:'center',
   },
   buttonFooterStyle: {
-    height: ProportionateScreenSizeValue(36),
+    height: '60%',
     width: ProportionateScreenSizeValue(60),
     alignItems: 'center',
     justifyContent: 'center',

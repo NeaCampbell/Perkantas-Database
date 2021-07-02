@@ -116,6 +116,8 @@ const User = (props) => {
           >
             <Text style={{
               color: '#FFF',
+              fontSize: ProportionateScreenSizeValue(12),
+              lineHeight: ProportionateScreenSizeValue(14),
             }}>✔</Text>
           </TouchableOpacity>
         </View>
@@ -142,6 +144,8 @@ const User = (props) => {
           >
             <Text style={{
               color: '#FFF',
+              fontSize: ProportionateScreenSizeValue(12),
+              lineHeight: ProportionateScreenSizeValue(14),
             }}>✖</Text>
           </TouchableOpacity>
         </View>

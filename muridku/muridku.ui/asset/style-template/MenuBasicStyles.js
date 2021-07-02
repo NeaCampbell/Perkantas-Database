@@ -3,11 +3,13 @@ import {
   StyleSheet,
 } from 'react-native';
 import {
-  WindowSize,
   ProportionateScreenSizeValue,
 } from '../../helper/CommonHelper';
 
 export const BackgroundColor = '#2A2C4E';
+export const HeaderSectionHeight = 7;
+export const HeaderOtherSectionHeight = 10;
+export const FooterSectionHeight = 11;
 
 export const MenuBasicStyles = StyleSheet.create({
   bodyContainerStyle: {
@@ -18,7 +20,7 @@ export const MenuBasicStyles = StyleSheet.create({
   },
   headerSectionStyle: {
     flexDirection: 'row',
-    height: WindowSize.height * 7 / 100,
+    height: `${HeaderSectionHeight}%`,
     width: '100%',
     justifyContent: 'flex-start',
     backgroundColor: BackgroundColor,
@@ -26,7 +28,7 @@ export const MenuBasicStyles = StyleSheet.create({
   },
   otherHeaderSectionStyle: {
     flexDirection: 'row',
-    height: WindowSize.height * 10 / 100,
+    height: `${HeaderOtherSectionHeight}%`,
     width: '100%',
     justifyContent: 'center',
     backgroundColor: BackgroundColor,
@@ -62,7 +64,7 @@ export const MenuBasicStyles = StyleSheet.create({
   },
   footerSectionStyle: {
     width: '100%',
-    height: WindowSize.height * 11 / 100,
+    height: `${FooterSectionHeight}%`,
     justifyContent: 'center',
     zIndex: 2,
   },

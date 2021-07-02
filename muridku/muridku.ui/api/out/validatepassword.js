@@ -1,13 +1,13 @@
 /* eslint-disable prettier/prettier */
-import { URL, PORT, POST, TOKEN, IS_HTTP } from '../apiconst';
+import { URL, PORT, GET, TOKEN, IS_HTTP } from '../apiconst';
 import { requesttemplate } from './requesttemplate';
 
-export const validatenewemail = (email, callback, errorHandler) => {
+export const validatepassword = (userid, password, callback, errorHandler) => {
   const options = {
     hostname: URL,
     port: PORT,
-    path: `/user/validatenewemail?email=${email}`,
-    method: POST,
+    path: `/user/validatepassword?userid=${userid}&password=${password}`,
+    method: GET,
     headers: {
       'Token': TOKEN,
       'Content-Type': 'application/json',

@@ -71,8 +71,9 @@ const SplashScreen = (props) => {
     imgContainerStyle,
     imgStyle,
     logoContainerStyle,
-    logo2ContainerStyle,
     logoStyle,
+    logo2ContainerStyle,
+    logo2Style,
     versionContainerStyle,
     versionTextStyle,
   } = SplashStyles;
@@ -95,7 +96,7 @@ const SplashScreen = (props) => {
         <View style={logo2ContainerStyle}>
           <Image
             source={require('../asset/img/logo-perkantas.png')}
-            style={logoStyle}
+            style={logo2Style}
           />
         </View>
         <View style={versionContainerStyle}>

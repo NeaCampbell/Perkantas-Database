@@ -24,6 +24,9 @@ import ViewAllKTBScreen from './screen/ViewAllKTBScreen';
 import AddKTBHistoryScreen from './screen/AddKTBHistoryScreen';
 import ViewDataKTBScreen from './screen/ViewDataKTBScreen';
 import EntryDataAKKScreen from './screen/EntryDataAKKScreen';
+import UpdateDataUserScreen from './screen/UpdateDataUserScreen';
+import EntryDataUserScreen from './screen/EntryDataUserScreen';
+import UpdatePasswordScreen from './screen/UpdatePasswordScreen';
 // import DrawerNavigationRoutes from './screen/DrawerNavigationRoutes';
 
 const Stack = createStackNavigator();
@@ -94,6 +97,27 @@ const App = () => {
             <Stack.Screen
               name="AddKTBHistoryScreen"
               component={AddKTBHistoryScreen}
+              // Hiding header for User Screen
+              options={{headerShown: false}}
+            />
+            {/* Entry Data User Screen */}
+            <Stack.Screen
+              name="UpdateDataUserScreen"
+              component={UpdateDataUserScreen}
+              // Hiding header for User Screen
+              options={{headerShown: false}}
+            />
+            {/* Entry Data User Screen */}
+            <Stack.Screen
+              name="EntryDataUserScreen"
+              component={EntryDataUserScreen}
+              // Hiding header for User Screen
+              options={{headerShown: false}}
+            />
+            {/* Update Password Screen */}
+            <Stack.Screen
+              name="UpdatePasswordScreen"
+              component={UpdatePasswordScreen}
               // Hiding header for User Screen
               options={{headerShown: false}}
             />

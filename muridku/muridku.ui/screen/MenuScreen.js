@@ -18,6 +18,8 @@ import Error from './component/Error';
 import {
   BasicStyles,
 } from '../asset/style-template/BasicStyles';
+// Import needed views
+import BodyBaseScreen from './BodyBaseScreen';
 
 // Import reducer dependencies
 import { connect } from 'react-redux';
@@ -35,8 +37,8 @@ const MenuScreen = (props) => {
   };
 
   const onProfileClick = () => {
-    props.dispatch({ type: SET_CURRENT_PAGE, page: 'EntryDataAKKScreen' });
-    navigation.replace('EntryDataAKKScreen');
+    props.dispatch({ type: SET_CURRENT_PAGE, page: 'UpdateDataUserScreen' });
+    navigation.replace('UpdateDataUserScreen');
   };
 
   const onActivationClick = () => {
@@ -90,18 +92,12 @@ const MenuScreen = (props) => {
     </View>
   );
 
-  return (
+  const child = (
     <ImageBackground
       source={require('../asset/img/bg-vector.png')}
       style={styles.burgerBackgroundStyle}
       resizeMode="stretch"
     >
-      {
-        (errorText !== '') ? errorScreen : null
-      }
-      {
-        (loading) ? loadingScreen : null
-      }
       <View style={styles.titleSectionStyle}>
         <TouchableOpacity
           style={styles.titleExitSectionStyle}
@@ -123,6 +119,7 @@ const MenuScreen = (props) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.burgerMenuStyle}
+        onPress={() => onProfileClick()}
       >
         <Image
           source={require('../asset/img/b-profile.png')}
@@ -154,14 +151,15 @@ const MenuScreen = (props) => {
     </ImageBackground>
   );
 
-  // return (
-  //   <BodyBaseScreen
-  //     items={child}
-  //     childName="MenuScreen"
-  //     navigation={navigation}
-  //     errorScreen={errorText !== '' ? errorScreen : null}
-  //   />
-  // );
+  return (
+    <BodyBaseScreen
+      items={child}
+      childName="MenuScreen"
+      navigation={navigation}
+      errorScreen={errorText !== '' ? errorScreen : null}
+      loadingScreen={loading ? loadingScreen : null}
+    />
+  );
 };
 
 const styles = StyleSheet.create({
@@ -172,7 +170,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   burgerBackgroundStyle: {
-    zIndex: 9999,
+    zIndex: 4,
     flexDirection: 'column',
     width:'100%',
     height: '100%',
@@ -195,6 +193,7 @@ const styles = StyleSheet.create({
   titleTextStyle: {
     color: '#0011ff',
     fontSize: ProportionateScreenSizeValue(30),
+    lineHeight: ProportionateScreenSizeValue(30),
     fontWeight: '500',
   },
   titleExitSectionStyle: {
@@ -206,6 +205,7 @@ const styles = StyleSheet.create({
   },
   titleExitTextStyle: {
     fontSize: ProportionateScreenSizeValue(14),
+    lineHeight: ProportionateScreenSizeValue(14),
     fontStyle: 'italic',
     textDecorationLine: 'underline',
     color: '#000',
@@ -229,6 +229,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     fontWeight: 'bold',
     fontSize: ProportionateScreenSizeValue(14),
+    lineHeight: ProportionateScreenSizeValue(14),
     bottom: 0,
     marginBottom: ProportionateScreenSizeValue(10),
     color: '#3B4859',
@@ -245,6 +246,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     fontWeight: 'bold',
     fontSize: ProportionateScreenSizeValue(14),
+    lineHeight: ProportionateScreenSizeValue(14),
     bottom: 0,
     color: '#3B4859',
   },

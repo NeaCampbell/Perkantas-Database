@@ -8,7 +8,10 @@ const pages = [
   {id: 4, name: 'ViewDataKTBScreen', backid: 3},
   {id: 5, name: 'EntryDataAKKScreen', backid: 4},
   {id: 6, name: 'AddKTBHistoryScreen', backid: 4},
-  {id: 7, name: 'ActivationScreen', backid: 3},
+  {id: 7, name: 'UpdateDataUserScreen', backid: 3},
+  {id: 8, name: 'EntryDataUserScreen', backid: 7},
+  {id: 9, name: 'UpdatePasswordScreen', backid: 7},
+  {id: 10, name: 'ActivationScreen', backid: 3},
 ];
 
 const page = {

@@ -106,7 +106,7 @@ export const ViewAllKTBStyles = StyleSheet.create({
     justifyContent:'center',
   },
   buttonStyle: {
-    height: ProportionateScreenSizeValue(36),
+    height: '60%',
     width: ProportionateScreenSizeValue(60),
     alignItems: 'center',
     justifyContent: 'center',

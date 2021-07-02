@@ -1,12 +1,10 @@
 ﻿using Common;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Muridku.QueryRequestReceiver.Models.Dbs;
 using Muridku.QueryRequestReceiver.Models.Dbs.Combined;
 using QueryManager;
 using QueryOperator.QueryExecutor;
-using System;
 using System.Collections.Generic;
 
 namespace Muridku.QueryRequestReceiver.Controllers
@@ -109,7 +107,10 @@ namespace Muridku.QueryRequestReceiver.Controllers
         requestCode, QueryListKeyMap.GET_USER_BY_MEMBER_ID, isSingleRow: true, customContext: _customContext);
 
       if (reqResultUser.Succeed)
+      {
         result.user = GetModelFromQueryResult<User>(reqResultUser);
+        result.user.password = null;
+      }
 
       if ( member.institution_id.HasValue )
       {
