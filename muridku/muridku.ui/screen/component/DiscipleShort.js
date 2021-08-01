@@ -41,7 +41,7 @@ const DiscipleShort = (props) => {
         shadowRadius: ProportionateScreenSizeValue(5),
         shadowColor: '#000',
         elevation: ProportionateScreenSizeValue(5),
-        backgroundColor: checked ? '#FFF' : '#FFF',
+        backgroundColor: checked ? '#FAFAFA' : '#FAFAFA',
       }}
       onPress={() => onCheck(props.member ? props.member.id : 0, !checked)}
     >
@@ -79,7 +79,7 @@ const DiscipleShort = (props) => {
             style={{
               fontSize: ProportionateScreenSizeValue(12),
               fontWeight: 'bold',
-              color: '#FFF',
+              color: '#FAFAFA',
             }}
             numberOfLines={1}
           >

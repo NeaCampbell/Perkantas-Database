@@ -28,7 +28,7 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     color: '#000000',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAFAFA',
   },
   ktbBoxSectionUncheckStyle: {
     marginRight: 0,
@@ -81,7 +81,7 @@ export const DiscipleshipGroupStyles = StyleSheet.create({
     borderRadius: ProportionateScreenSizeValue(15),
     borderColor: '#AAA',
     borderWidth: ProportionateScreenSizeValue(1),
-    backgroundColor:'#FFF',
+    backgroundColor:'#FAFAFA',
     alignItems: 'center',
     justifyContent: 'center',
   },

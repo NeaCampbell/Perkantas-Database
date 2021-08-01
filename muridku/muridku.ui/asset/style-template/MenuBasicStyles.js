@@ -41,7 +41,7 @@ export const MenuBasicStyles = StyleSheet.create({
   },
   headerSearchMenuStyle: {
     borderTopWidth: ProportionateScreenSizeValue(1),
-    borderTopColor: '#FFF',
+    borderTopColor: '#FAFAFA',
     width: '40%',
   },
   headerSearchMenuDistStyle: {
@@ -55,7 +55,7 @@ export const MenuBasicStyles = StyleSheet.create({
   titleTextStyle: {
     textAlign: 'center',
     fontSize: ProportionateScreenSizeValue(16),
-    color: '#FFF',
+    color: '#FAFAFA',
   },
   childSectionStyle: {
     width: '100%',

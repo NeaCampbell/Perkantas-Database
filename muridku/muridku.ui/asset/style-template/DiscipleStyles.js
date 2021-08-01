@@ -29,7 +29,7 @@ export const DiscipleStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     color: '#000000',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAFAFA',
   },
   discipleBoxSectionEnabledStyle: {
     borderLeftColor: IdColor,
@@ -110,7 +110,7 @@ export const DiscipleStyles = StyleSheet.create({
     backgroundColor: '#CDCDCD',
   },
   nameInactiveEnableButtonStyle: {
-    backgroundColor: 'red',
+    backgroundColor: 'rgba(255, 0, 0, 1)',
   },
   nameInactiveDisableButtonStyle: {
     backgroundColor: '#CDCDCD',
@@ -125,7 +125,7 @@ export const DiscipleStyles = StyleSheet.create({
   },
   nameButtonTextStyle: {
     fontSize: ProportionateScreenSizeValue(10),
-    color: '#FFF',
+    color: '#FAFAFA',
     lineHeight: ProportionateScreenSizeValue(11),
   },
   descTextStyle: {

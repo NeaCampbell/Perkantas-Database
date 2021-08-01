@@ -54,8 +54,8 @@ export const UserStyles = StyleSheet.create({
   buttonStyle: {
     backgroundColor: '#E37550',
     borderWidth: 1,
-    color: '#FFFFFF',
-    borderColor: '#FFFFFF',
+    color: '#FAFAFA',
+    borderColor: '#FAFAFA',
     height: 35,
     width: '100%',
     alignItems: 'center',
@@ -70,7 +70,7 @@ export const UserStyles = StyleSheet.create({
     elevation: ProportionateScreenSizeValue(5),
   },
   buttonTextStyle: {
-    color: '#FFFFFF',
+    color: '#FAFAFA',
     paddingVertical: 8,
     fontStyle: 'normal',
     fontWeight: 'bold',
@@ -104,7 +104,7 @@ export const UserStyles = StyleSheet.create({
     lineHeight: 17,
   },
   errorTextStyle: {
-    color: 'red',
+    color: 'rgba(255, 0, 0, 1)',
     textAlign: 'center',
     fontSize: 14,
     fontStyle: 'italic',
@@ -117,7 +117,7 @@ export const UserStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   saveOptionTitleStyle: {
-    color: '#FFF',
+    color: '#FAFAFA',
     paddingVertical: 2,
     fontStyle: 'normal',
     fontSize: 14,

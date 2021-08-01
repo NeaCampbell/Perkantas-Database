@@ -85,7 +85,7 @@ export const BasicStyles = StyleSheet.create({
     color: 'rgba(0, 0, 0, 1)',
   },
   errorMessageButtonStyle: {
-    backgroundColor: 'red',
+    backgroundColor: 'rgba(255, 0, 0, 1)',
     width: '30%',
     height: '30%',
     marginTop: ProportionateScreenSizeValue(10),
@@ -93,7 +93,7 @@ export const BasicStyles = StyleSheet.create({
     alignItems: 'center',
   },
   errorMessageButtonTextStyle: {
-    color: '#FFF',
+    color: '#FAFAFA',
     fontSize: ProportionateScreenSizeValue(12),
   },
   customActivityIndicatorStyle: {
@@ -104,7 +104,7 @@ export const BasicStyles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
     zIndex: 99999,
-    // backgroundColor: 'transparent',
+    // backgroundColor: '#FAFAFA',
   },
   customActivityIndicatorSizeStyle: {
     height: '60%',

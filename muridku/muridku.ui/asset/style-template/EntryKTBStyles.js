@@ -7,7 +7,7 @@ import {
 } from '../../helper/CommonHelper';
 
 const NextColor = '#815BF0';
-const NextInverseColor = '#FFF';
+const NextInverseColor = '#FAFAFA';
 
 export const EntryKTBStyles = StyleSheet.create({
   bodyContainerStyle: {

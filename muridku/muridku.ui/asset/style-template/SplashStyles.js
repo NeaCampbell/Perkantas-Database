@@ -14,7 +14,7 @@ export const SplashStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: BackgroundColor,
-    borderColor: '#FFF',
+    borderColor: '#FAFAFA',
   },
   imgContainerStyle: {
     width: '100%',

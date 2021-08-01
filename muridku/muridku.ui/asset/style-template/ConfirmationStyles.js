@@ -71,18 +71,18 @@ export const ConfirmationStyles = StyleSheet.create({
     backgroundColor: AlertColor,
   },
   messageBoxButtonTextStyle: {
-    color: '#FFF',
+    color: '#FAFAFA',
     fontSize: ProportionateScreenSizeValue(12),
   },
   messageBoxButtonConfirmInverseStyle: {
     borderWidth: ProportionateScreenSizeValue(1),
     borderColor: ConfirmColor,
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
   },
   messageBoxButtonAlertInverseStyle: {
     borderWidth: ProportionateScreenSizeValue(1),
     borderColor: AlertColor,
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
   },
   messageBoxButtonTextConfirmInverseStyle: {
     color: ConfirmColor,

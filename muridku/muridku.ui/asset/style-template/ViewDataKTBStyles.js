@@ -63,7 +63,7 @@ export const ViewDataKTBStyles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   historySectionStyle: {
-    height: '13%',
+    height: ProportionateScreenSizeValue(56),
     backgroundColor: '#EFEFEF',
     flexDirection: 'column',
     padding: ProportionateScreenSizeValue(10),
@@ -117,11 +117,11 @@ export const ViewDataKTBStyles = StyleSheet.create({
   },
   buttonFooterEnableStyle: {
     borderColor: ButtonColor,
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
   },
   buttonFooterDisableStyle: {
     borderColor: 'rgba(129, 91, 240, 0.5)',
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
   },
   buttonFooterTextStyle: {
     fontSize: ProportionateScreenSizeValue(12),

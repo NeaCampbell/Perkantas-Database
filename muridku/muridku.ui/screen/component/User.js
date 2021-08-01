@@ -115,7 +115,7 @@ const User = (props) => {
             activeOpacity={0.5}
           >
             <Text style={{
-              color: '#FFF',
+              color: '#FAFAFA',
               fontSize: ProportionateScreenSizeValue(12),
               lineHeight: ProportionateScreenSizeValue(14),
             }}>✔</Text>
@@ -137,13 +137,13 @@ const User = (props) => {
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: rejectChecked ? 'red' : '#CDCDCD',
+              backgroundColor: rejectChecked ? 'rgba(255, 0, 0, 1)' : '#CDCDCD',
             }}
             onPress={() => onRejectCheck(props.user.id, !rejectChecked)}
             activeOpacity={0.5}
           >
             <Text style={{
-              color: '#FFF',
+              color: '#FAFAFA',
               fontSize: ProportionateScreenSizeValue(12),
               lineHeight: ProportionateScreenSizeValue(14),
             }}>✖</Text>

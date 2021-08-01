@@ -17,7 +17,7 @@ export const UpdatePasswordStyles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
   },
   inputSectionStyle: {
     width: '100%',
@@ -29,7 +29,7 @@ export const UpdatePasswordStyles = StyleSheet.create({
   },
   inputStyle: {
     color: '#000000',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAFAFA',
     width: '100%',
     fontSize: ProportionateScreenSizeValue(12),
     borderWidth: ProportionateScreenSizeValue(1),
@@ -44,7 +44,7 @@ export const UpdatePasswordStyles = StyleSheet.create({
     height: '100%',
     width: '80%',
     color: '#000000',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAFAFA',
     paddingHorizontal: 0,
   },
   passwordButtonStyle: {
@@ -68,14 +68,14 @@ export const UpdatePasswordStyles = StyleSheet.create({
   },
   buttonStyle: {
     backgroundColor: '#F59873',
-    color: '#FFFFFF',
+    color: '#FAFAFA',
     height: ProportionateScreenSizeValue(42),
     width: ProportionateScreenSizeValue(250),
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonTextStyle: {
-    color: '#FFFFFF',
+    color: '#FAFAFA',
     fontStyle: 'normal',
     fontSize: ProportionateScreenSizeValue(16),
     lineHeight: ProportionateScreenSizeValue(16),

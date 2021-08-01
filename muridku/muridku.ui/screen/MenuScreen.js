@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     width: ProportionateScreenSizeValue(100),
     height: ProportionateScreenSizeValue(100),
     borderRadius: ProportionateScreenSizeValue(50),
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
   },
   menuSectionStyle: {
     width: ProportionateScreenSizeValue(40),
@@ -256,12 +256,12 @@ const styles = StyleSheet.create({
     width: ProportionateScreenSizeValue(50),
     height: ProportionateScreenSizeValue(50),
     borderRadius: ProportionateScreenSizeValue(50),
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
   },
   burgerLogoutTextStyle: {
     fontSize: ProportionateScreenSizeValue(20),
     lineHeight: ProportionateScreenSizeValue(22),
-    color: 'red',
+    color: 'rgba(255, 0, 0, 1)',
     alignItems: 'center',
     justifyContent: 'center',
   },

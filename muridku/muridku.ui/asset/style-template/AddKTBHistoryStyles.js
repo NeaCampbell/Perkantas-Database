@@ -76,7 +76,7 @@ export const AddKTBHistoryStyles = StyleSheet.create({
   },
   menuButtonTextStyle: {
     fontStyle: 'italic',
-    color: '#FFF',
+    color: '#FAFAFA',
   },
   menuButtonTitleEnableTextStyle: {
     fontSize: ProportionateScreenSizeValue(16),
@@ -90,7 +90,7 @@ export const AddKTBHistoryStyles = StyleSheet.create({
   dropdownListMainSectionStyle: {
     width: '90%',
     height: ProportionateScreenSizeValue(300),
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
     justifyContent: 'center',
     alignItems: 'center',
     shadowOpacity: 0.5,
@@ -179,7 +179,7 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     backgroundColor: ButtonColor,
   },
   dropdownListButtonCancelStyle: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
     borderWidth: ProportionateScreenSizeValue(1),
     borderColor: ButtonColor,
   },
@@ -187,7 +187,7 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     fontSize: ProportionateScreenSizeValue(12),
   },
   dropdownListButtonSelectTextStyle: {
-    color: '#FFF',
+    color: '#FAFAFA',
   },
   dropdownListButtonCancelTextStyle: {
     fontSize: ProportionateScreenSizeValue(12),
@@ -196,7 +196,7 @@ export const AddKTBHistoryStyles = StyleSheet.create({
   footerSectionStyle: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -208,7 +208,7 @@ export const AddKTBHistoryStyles = StyleSheet.create({
     alignItems: 'center',
   },
   footerButtonSaveTextStyle: {
-    color: '#FFFFFF',
+    color: '#FAFAFA',
     fontStyle: 'normal',
     fontSize: ProportionateScreenSizeValue(16),
     lineHeight: ProportionateScreenSizeValue(16),

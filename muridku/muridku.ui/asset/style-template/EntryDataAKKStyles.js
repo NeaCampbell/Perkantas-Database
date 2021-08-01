@@ -56,10 +56,10 @@ export const EntryDataAKKStyles = StyleSheet.create({
   },
   buttonUnselectedStyle: {
     borderWidth: ProportionateScreenSizeValue(1),
-    borderColor: '#FFF',
+    borderColor: '#FAFAFA',
   },
   nameButtonTextStyle: {
-    color: '#FFF',
+    color: '#FAFAFA',
     fontStyle: 'normal',
     fontWeight: 'bold',
     fontSize: ProportionateScreenSizeValue(10),
@@ -70,7 +70,7 @@ export const EntryDataAKKStyles = StyleSheet.create({
     fontSize: ProportionateScreenSizeValue(10),
   },
   formSectionStyle:{
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAFAFA',
     width: '100%',
     flexDirection: 'column',
     justifyContent: 'flex-start',
@@ -87,7 +87,7 @@ export const EntryDataAKKStyles = StyleSheet.create({
   },
   formStyle: {
     color: '#000',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAFAFA',
     width: '90%',
     fontSize: ProportionateScreenSizeValue(12),
     borderWidth: ProportionateScreenSizeValue(1.5),
@@ -126,16 +126,16 @@ export const EntryDataAKKStyles = StyleSheet.create({
     height: ProportionateScreenSizeValue(16),
     borderRadius: ProportionateScreenSizeValue(8),
     borderWidth: ProportionateScreenSizeValue(1),
-    borderColor: 'red',
+    borderColor: 'rgba(255, 0, 0, 1)',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
   },
   dropdownResetButtonTextStyle: {
     fontSize: ProportionateScreenSizeValue(10),
     lineHeight: ProportionateScreenSizeValue(12),
-    color: 'red',
+    color: 'rgba(255, 0, 0, 1)',
     fontWeight: 'bold',
   },
   dropdownButtonContainerStyle: {
@@ -153,7 +153,7 @@ export const EntryDataAKKStyles = StyleSheet.create({
   dropdownListMainSectionStyle: {
     width: '90%',
     height: ProportionateScreenSizeValue(300),
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
     justifyContent: 'center',
     alignItems: 'center',
     shadowOpacity: 0.5,
@@ -242,7 +242,7 @@ export const EntryDataAKKStyles = StyleSheet.create({
     backgroundColor: ButtonColor,
   },
   dropdownListButtonCancelStyle: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
     borderWidth: ProportionateScreenSizeValue(1),
     borderColor: ButtonColor,
   },
@@ -250,7 +250,7 @@ export const EntryDataAKKStyles = StyleSheet.create({
     fontSize: ProportionateScreenSizeValue(12),
   },
   dropdownListButtonSelectTextStyle: {
-    color: '#FFF',
+    color: '#FAFAFA',
   },
   dropdownListButtonCancelTextStyle: {
     fontSize: ProportionateScreenSizeValue(12),
@@ -275,19 +275,19 @@ export const EntryDataAKKStyles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent:'center',
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
     // marginTop: ProportionateScreenSizeValue(15),
   },
   buttonFooterStyle: {
     backgroundColor: '#F59873',
-    color: '#FFFFFF',
+    color: '#FAFAFA',
     height: ProportionateScreenSizeValue(42),
     width: ProportionateScreenSizeValue(250),
     alignItems: 'center',
     justifyContent: 'center',
   },
   submitButtonTextStyle: {
-    color: '#FFFFFF',
+    color: '#FAFAFA',
     fontStyle: 'normal',
     fontSize: ProportionateScreenSizeValue(16),
     lineHeight: ProportionateScreenSizeValue(16),

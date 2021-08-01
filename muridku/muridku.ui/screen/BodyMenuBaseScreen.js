@@ -1,11 +1,11 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   TouchableOpacity,
   View,
   Text,
-  Platform,
   PixelRatio,
+  Keyboard,
 } from 'react-native';
 import {
   HeaderSectionHeight,
@@ -14,13 +14,55 @@ import {
   MenuBasicStyles,
 } from '../asset/style-template/MenuBasicStyles';
 import MenuScreen from './MenuScreen';
+import {
+  WindowSize,
+} from '../helper/CommonHelper';
 
 // Import needed views
 import BodyBaseScreen from './BodyBaseScreen';
 
 const BodyMenuBaseScreen = (props) => {
+  const pixelRatio = PixelRatio.get() * 160;
+  const totalHeightPercentage = pixelRatio < 300 ? 96.5 : 100;
+  const normalChildHeightPercentage = (
+    props.additionalHeader ? (
+      props.footer ?
+      (totalHeightPercentage - HeaderSectionHeight - HeaderOtherSectionHeight - FooterSectionHeight) :
+      (totalHeightPercentage - HeaderSectionHeight - HeaderOtherSectionHeight)
+    ) :
+    (
+      props.footer ?
+      (totalHeightPercentage - HeaderSectionHeight - FooterSectionHeight) :
+      (totalHeightPercentage - HeaderSectionHeight)
+    )
+  );
   const { navigation, statusBarColor } = props;
   const [showMenuScreen, setShowMenuScreen] = useState(false);
+  const [childHeightPercentage, setChildHeightPercentage] = useState(normalChildHeightPercentage);
+  const keyboardShowListener = useRef(null);
+  const keyboardHideListener = useRef(null);
+
+  useEffect(() => {
+    const onKeyboardShow = (e) => {
+      const keyboardPercentage = (e.endCoordinates.height * 100 / WindowSize.height) + 6.5;
+      // const keyboardPercentage = 40;
+      // console.log(`window height = ${WindowSize.height}, keyboard percentage = ${keyboardPercentage}, childHeightPercentage = ${childHeightPercentage - keyboardPercentage}`);
+      setChildHeightPercentage(childHeightPercentage - keyboardPercentage);
+    };
+
+    const onKeyboardHide = () => {
+      // console.log(`window height = ${WindowSize.height}, normalChildHeightPercentage = ${normalChildHeightPercentage}`);
+      setChildHeightPercentage(normalChildHeightPercentage);
+    };
+
+    keyboardShowListener.current = Keyboard.addListener('keyboardDidShow', onKeyboardShow);
+    keyboardHideListener.current = Keyboard.addListener('keyboardDidHide', onKeyboardHide);
+
+    return () => {
+      keyboardShowListener.current.remove();
+      keyboardHideListener.current.remove();
+    };
+  }, [childHeightPercentage, normalChildHeightPercentage]);
 
   const onBurgerClick = () => {
     setShowMenuScreen(true);
@@ -42,20 +84,6 @@ const BodyMenuBaseScreen = (props) => {
     childSectionStyle,
     footerSectionStyle,
   } = MenuBasicStyles;
-
-  const pixelRatio = PixelRatio.get() * 160;
-  const totalHeightPercentage = pixelRatio < 500 ? 96.5 : 100;
-
-  const childHeightPercentage = props.additionalHeader ? (
-      props.footer ?
-      (totalHeightPercentage - HeaderSectionHeight - HeaderOtherSectionHeight - FooterSectionHeight) :
-      (totalHeightPercentage - HeaderSectionHeight - HeaderOtherSectionHeight)
-    ) :
-    (
-      props.footer ?
-      (totalHeightPercentage - HeaderSectionHeight - FooterSectionHeight) :
-      (totalHeightPercentage - HeaderSectionHeight)
-    );
 
   const overlayScreenView = (
     <MenuScreen
@@ -105,15 +133,13 @@ const BodyMenuBaseScreen = (props) => {
           </View>
         ) : null
       }
-      <View style={[childSectionStyle, {height: `${childHeightPercentage}%`}]}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <View style={[childSectionStyle, {height: `${childHeightPercentage}%`}]}>
         {props.child}
       </View>
       {
         (props.footer) ?
         (
-          <View style={footerSectionStyle}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <View style={footerSectionStyle}>
             {props.footer}
           </View>
         ) : null

@@ -26,7 +26,7 @@ export const MeetingHistoryStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     color: '#000000',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAFAFA',
   },
   scrollViewSectionStyle: {
     width: '100%',

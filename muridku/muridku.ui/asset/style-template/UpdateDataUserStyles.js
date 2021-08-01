@@ -13,7 +13,7 @@ export const UpdateDataUserStyles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
   },
   mainButtonSectionStyle: {
     height: '30%',
@@ -33,7 +33,7 @@ export const UpdateDataUserStyles = StyleSheet.create({
   mainButtonTextStyle: {
     fontSize: ProportionateScreenSizeValue(16),
     lineHeight: ProportionateScreenSizeValue(16),
-    color: '#FFF',
+    color: '#FAFAFA',
   },
   mainButtonSeparatorStyle: {
     width: '100%',

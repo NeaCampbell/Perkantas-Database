@@ -47,7 +47,7 @@ const EntryDataMember = (props) => {
   const AKK_TYPE_COLLEGE = 'CLG';
   const AKK_TYPE_ALUMNI = 'ALM';
   const AKK_TYPE_ALL = 'ALL';
-  const enabledBackgroundColor = '#FFF';
+  const enabledBackgroundColor = '#FAFAFA';
   const disabledBackgroundColor = '#EFEFEF';
   const confirmNone = 'NONE';
   const confirmCity = 'CITY';
@@ -99,6 +99,7 @@ const EntryDataMember = (props) => {
   const [confirmType, setConfirmType] = useState(confirmNone);
   const [confirmMessage, setConfirmMessage] = useState('');
   const [showConfirmScreen, setShowConfirmScreen] = useState(false);
+  const [pageNum, setPageNum] = useState(1);
 
   useEffect(() => {
     if (!firstEntry)
@@ -757,6 +758,184 @@ const EntryDataMember = (props) => {
     />
   );
 
+  const firstPage = (
+    <>
+      <View style={formBodySectionStyle}>
+        {
+          (isUpdate) ?
+          (
+            <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+              placeholder="Nama Lengkap"
+              placeholderTextColor={PlaceholderTextColor}
+              value={name}
+              onChangeText={(value) => setName(value)}
+              onSubmitEditing={Keyboard.dismiss}
+              editable={isEnabled}
+              disabled={!isEnabled}
+              returnKeyType="next"
+            />
+          ) : (
+            <CustomInputButton
+              inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+              inputStyle={[globalFontStyle, dropdownInputStyle]}
+              resetContainerStyle={dropdownResetButtonContainerStyle}
+              resetButtonStyle={dropdownResetButtonStyle}
+              resetButtonTextStyle={dropdownResetButtonTextStyle}
+              buttonContainerStyle={dropdownButtonContainerStyle}
+              buttonStyle={dropdownButtonStyle}
+              buttonText="CARI"
+              disabled={(!isEnabled)}
+              placeholder="Nama Lengkap"
+              placeholderTextColor={PlaceholderTextColor}
+              enableTextInput={isEnabled}
+              onInputButtonClick={(value) => onNameOpen(value)}
+              onChangeText={(value) => onManualNameChange(value)}
+              onDeleteButtonClick={() => onNameChange(null, '')}
+              value={name}
+              returnKeyType="next"
+            />
+          )
+        }
+      </View>
+      <View style={formBodySectionStyle}>
+        <TextInput style={[globalFontStyle, inputStyle, formStyle, {
+            backgroundColor: !(!isEnabled || (user && (user.is_active === 1 || user.is_active === 3))) ? enabledBackgroundColor : disabledBackgroundColor,
+          }]}
+          placeholder="Email"
+          placeholderTextColor={PlaceholderTextColor}
+          value={email}
+          editable={(isEnabled && (!user || user.is_active === 0 || user.is_active === 2))}
+          onChangeText={(value) => setEmail(value)}
+          returnKeyType="next"
+        />
+      </View>
+      <View style={formBodySectionStyle}>
+        <CustomInputButton
+          inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+          inputStyle={[globalFontStyle, dropdownInputStyle]}
+          resetContainerStyle={dropdownResetButtonContainerStyle}
+          resetButtonStyle={dropdownResetButtonStyle}
+          resetButtonTextStyle={dropdownResetButtonTextStyle}
+          buttonContainerStyle={dropdownButtonContainerStyle}
+          buttonStyle={dropdownButtonStyle}
+          buttonText="CARI"
+          disabled={(!isEnabled)}
+          placeholder="Kota"
+          placeholderTextColor={PlaceholderTextColor}
+          showList={cityOpen}
+          onInputButtonClick={(value) => onCityOpen(value)}
+          onDeleteButtonClick={() => onCityChange(null, '')}
+          value={cityName}
+        />
+      </View>
+    </>
+  );
+
+  const secondPage = (
+    <>
+      <View style={formBodySectionStyle}>
+        <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+          placeholder="Alamat"
+          placeholderTextColor={PlaceholderTextColor}
+          value={address}
+          onChangeText={(value) => setAddress(value)}
+          editable={isEnabled}
+          disabled={!isEnabled}
+          returnKeyType="next"
+        />
+      </View>
+      <View style={formBodySectionStyle}>
+        <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+          placeholder="No. Handphone"
+          placeholderTextColor={PlaceholderTextColor}
+          value={mobilePhn}
+          onChangeText={(value) => setMobilePhn(value)}
+          editable={isEnabled}
+          disabled={!isEnabled}
+          returnKeyType="next"
+        />
+      </View>
+      <View style={formBodySectionStyle}>
+        <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+          placeholder="Tempat Lahir"
+          placeholderTextColor={PlaceholderTextColor}
+          value={birthPlace}
+          onChangeText={(value) => setBirthPlace(value)}
+          editable={isEnabled}
+          disabled={!isEnabled}
+          returnKeyType="next"
+        />
+      </View>
+      <View style={formBodySectionStyle}>
+        <CustomInputButton
+          inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+          inputStyle={[globalFontStyle, dropdownInputStyle]}
+          resetContainerStyle={dropdownResetButtonContainerStyle}
+          resetButtonStyle={dropdownResetButtonStyle}
+          resetButtonTextStyle={dropdownResetButtonTextStyle}
+          buttonContainerStyle={dropdownButtonContainerStyle}
+          buttonStyle={dropdownButtonStyle}
+          buttonText="PILIH"
+          disabled={(!isEnabled)}
+          placeholder="Tanggal Lahir (dd-MM-yyyy)"
+          placeholderTextColor={PlaceholderTextColor}
+          onInputButtonClick={(value) => onBirthDtPickerOpen(value)}
+          onDeleteButtonClick={() => onBirthDtPickerSelect(null)}
+          value={DateToString(birthDt) ?? ''}
+        />
+      </View>
+    </>
+  );
+
+  const thirdPage = (
+    <>
+      <View style={formBodySectionStyle}>
+        <CustomInputButton
+          inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+          inputStyle={[globalFontStyle, dropdownInputStyle]}
+          resetContainerStyle={dropdownResetButtonContainerStyle}
+          resetButtonStyle={dropdownResetButtonStyle}
+          resetButtonTextStyle={dropdownResetButtonTextStyle}
+          buttonContainerStyle={dropdownButtonContainerStyle}
+          buttonStyle={dropdownButtonStyle}
+          buttonText="CARI"
+          disabled={(!isEnabled)}
+          placeholder="Institusi"
+          placeholderTextColor={PlaceholderTextColor}
+          showList={instListOpen}
+          onInputButtonClick={(value) => onInstOpen(value)}
+          onDeleteButtonClick={() => onInstitutionChange(null, '')}
+          value={institutionName}
+        />
+      </View>
+      {
+        (selectedAKKType === AKK_TYPE_SCHOOL || selectedAKKType === AKK_TYPE_NONE) ?
+        null :
+        (
+          <View style={formBodySectionStyle}>
+            <CustomInputButton
+              inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+              inputStyle={[globalFontStyle, dropdownInputStyle]}
+              resetContainerStyle={dropdownResetButtonContainerStyle}
+              resetButtonStyle={dropdownResetButtonStyle}
+              resetButtonTextStyle={dropdownResetButtonTextStyle}
+              buttonContainerStyle={dropdownButtonContainerStyle}
+              buttonStyle={dropdownButtonStyle}
+              buttonText="CARI"
+              disabled={(!isEnabled)}
+              placeholder="Fakultas"
+              placeholderTextColor={PlaceholderTextColor}
+              showList={facListOpen}
+              onInputButtonClick={(value) => onFacOpen(value)}
+              onDeleteButtonClick={() => onFacultyChange(null, '')}
+              value={facultyName}
+            />
+          </View>
+        )
+      }
+    </>
+  );
+
   const child = (
     <View
       style={bodyContainerStyle}
@@ -803,168 +982,10 @@ const EntryDataMember = (props) => {
         style={[formSectionStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
         behavior="position"
       >
-        <View style={formBodySectionStyle}>
-          {
-            (isUpdate) ?
-            (
-              <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-                placeholder="Nama Lengkap"
-                placeholderTextColor={PlaceholderTextColor}
-                value={name}
-                onChangeText={(value) => setName(value)}
-                onSubmitEditing={Keyboard.dismiss}
-                editable={isEnabled}
-                disabled={!isEnabled}
-                returnKeyType="next"
-              />
-            ) : (
-              <CustomInputButton
-                inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-                inputStyle={[globalFontStyle, dropdownInputStyle]}
-                resetContainerStyle={dropdownResetButtonContainerStyle}
-                resetButtonStyle={dropdownResetButtonStyle}
-                resetButtonTextStyle={dropdownResetButtonTextStyle}
-                buttonContainerStyle={dropdownButtonContainerStyle}
-                buttonStyle={dropdownButtonStyle}
-                buttonText="CARI"
-                disabled={(!isEnabled)}
-                placeholder="Nama Lengkap"
-                placeholderTextColor={PlaceholderTextColor}
-                enableTextInput={isEnabled}
-                onInputButtonClick={(value) => onNameOpen(value)}
-                onChangeText={(value) => onManualNameChange(value)}
-                onDeleteButtonClick={() => onNameChange(null, '')}
-                value={name}
-                returnKeyType="next"
-              />
-            )
-          }
-        </View>
-        <View style={formBodySectionStyle}>
-          <TextInput style={[globalFontStyle, inputStyle, formStyle, {
-              backgroundColor: !(!isEnabled || (user && (user.is_active === 1 || user.is_active === 3))) ? enabledBackgroundColor : disabledBackgroundColor,
-            }]}
-            placeholder="Email"
-            placeholderTextColor={PlaceholderTextColor}
-            value={email}
-            editable={(isEnabled && (!user || user.is_active === 0 || user.is_active === 2))}
-            onChangeText={(value) => setEmail(value)}
-            returnKeyType="next"
-          />
-        </View>
-        <View style={formBodySectionStyle}>
-          <CustomInputButton
-            inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-            inputStyle={[globalFontStyle, dropdownInputStyle]}
-            resetContainerStyle={dropdownResetButtonContainerStyle}
-            resetButtonStyle={dropdownResetButtonStyle}
-            resetButtonTextStyle={dropdownResetButtonTextStyle}
-            buttonContainerStyle={dropdownButtonContainerStyle}
-            buttonStyle={dropdownButtonStyle}
-            buttonText="CARI"
-            disabled={(!isEnabled)}
-            placeholder="Kota"
-            placeholderTextColor={PlaceholderTextColor}
-            showList={cityOpen}
-            onInputButtonClick={(value) => onCityOpen(value)}
-            onDeleteButtonClick={() => onCityChange(null, '')}
-            value={cityName}
-          />
-        </View>
-        <View style={formBodySectionStyle}>
-          <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-            placeholder="Alamat"
-            placeholderTextColor={PlaceholderTextColor}
-            value={address}
-            onChangeText={(value) => setAddress(value)}
-            editable={isEnabled}
-            disabled={!isEnabled}
-            returnKeyType="next"
-          />
-        </View>
-        <View style={formBodySectionStyle}>
-          <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-            placeholder="No. Handphone"
-            placeholderTextColor={PlaceholderTextColor}
-            value={mobilePhn}
-            onChangeText={(value) => setMobilePhn(value)}
-            editable={isEnabled}
-            disabled={!isEnabled}
-            returnKeyType="next"
-          />
-        </View>
-        <View style={formBodySectionStyle}>
-          <TextInput style={[globalFontStyle, inputStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-            placeholder="Tempat Lahir"
-            placeholderTextColor={PlaceholderTextColor}
-            value={birthPlace}
-            onChangeText={(value) => setBirthPlace(value)}
-            editable={isEnabled}
-            disabled={!isEnabled}
-            returnKeyType="next"
-          />
-        </View>
-        <View style={formBodySectionStyle}>
-          <CustomInputButton
-            inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-            inputStyle={[globalFontStyle, dropdownInputStyle]}
-            resetContainerStyle={dropdownResetButtonContainerStyle}
-            resetButtonStyle={dropdownResetButtonStyle}
-            resetButtonTextStyle={dropdownResetButtonTextStyle}
-            buttonContainerStyle={dropdownButtonContainerStyle}
-            buttonStyle={dropdownButtonStyle}
-            buttonText="PILIH"
-            disabled={(!isEnabled)}
-            placeholder="Tanggal Lahir (dd-MM-yyyy)"
-            placeholderTextColor={PlaceholderTextColor}
-            onInputButtonClick={(value) => onBirthDtPickerOpen(value)}
-            onDeleteButtonClick={() => onBirthDtPickerSelect(null)}
-            value={DateToString(birthDt) ?? ''}
-          />
-        </View>
-        <View style={formBodySectionStyle}>
-          <CustomInputButton
-            inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-            inputStyle={[globalFontStyle, dropdownInputStyle]}
-            resetContainerStyle={dropdownResetButtonContainerStyle}
-            resetButtonStyle={dropdownResetButtonStyle}
-            resetButtonTextStyle={dropdownResetButtonTextStyle}
-            buttonContainerStyle={dropdownButtonContainerStyle}
-            buttonStyle={dropdownButtonStyle}
-            buttonText="CARI"
-            disabled={(!isEnabled)}
-            placeholder="Institusi"
-            placeholderTextColor={PlaceholderTextColor}
-            showList={instListOpen}
-            onInputButtonClick={(value) => onInstOpen(value)}
-            onDeleteButtonClick={() => onInstitutionChange(null, '')}
-            value={institutionName}
-          />
-        </View>
         {
-          (selectedAKKType === AKK_TYPE_SCHOOL || selectedAKKType === AKK_TYPE_NONE) ?
-          null :
-          (
-            <View style={formBodySectionStyle}>
-              <CustomInputButton
-                inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
-                inputStyle={[globalFontStyle, dropdownInputStyle]}
-                resetContainerStyle={dropdownResetButtonContainerStyle}
-                resetButtonStyle={dropdownResetButtonStyle}
-                resetButtonTextStyle={dropdownResetButtonTextStyle}
-                buttonContainerStyle={dropdownButtonContainerStyle}
-                buttonStyle={dropdownButtonStyle}
-                buttonText="CARI"
-                disabled={(!isEnabled)}
-                placeholder="Fakultas"
-                placeholderTextColor={PlaceholderTextColor}
-                showList={facListOpen}
-                onInputButtonClick={(value) => onFacOpen(value)}
-                onDeleteButtonClick={() => onFacultyChange(null, '')}
-                value={facultyName}
-              />
-            </View>
-          )
+          (pageNum === 1) ? firstPage :
+          (pageNum === 2 ? secondPage :
+          (pageNum === 3) ? thirdPage : null)
         }
       </View>
     </View>

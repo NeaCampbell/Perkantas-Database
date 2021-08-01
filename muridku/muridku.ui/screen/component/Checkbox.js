@@ -35,7 +35,7 @@ const Checkbox = (props) => {
           style={{
             fontSize: ProportionateScreenSizeValue(12),
             fontWeight: 'bold',
-            color: '#FFF',
+            color: '#FAFAFA',
           }}
         >
           ✔

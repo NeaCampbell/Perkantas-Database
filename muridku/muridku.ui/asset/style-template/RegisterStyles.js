@@ -30,7 +30,7 @@ export const RegisterStyles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAFAFA',
   },
   titleStyle: {
     color: '#000000',
@@ -56,7 +56,7 @@ export const RegisterStyles = StyleSheet.create({
   },
   formInputContainerStyle: {
     flexDirection: 'column',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAFAFA',
     width: '100%',
     height: '100%',
     justifyContent: 'flex-start',
@@ -83,7 +83,7 @@ export const RegisterStyles = StyleSheet.create({
   },
   customInputStyle: {
     color: '#000000',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAFAFA',
     width: '100%',
     fontSize: ProportionateScreenSizeValue(12),
     borderWidth: ProportionateScreenSizeValue(1),
@@ -127,16 +127,16 @@ export const RegisterStyles = StyleSheet.create({
     height: ProportionateScreenSizeValue(16),
     borderRadius: ProportionateScreenSizeValue(8),
     borderWidth: ProportionateScreenSizeValue(1),
-    borderColor: 'red',
+    borderColor: 'rgba(255, 0, 0, 1)',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
   },
   dropdownResetButtonTextStyle: {
     fontSize: ProportionateScreenSizeValue(10),
     lineHeight: ProportionateScreenSizeValue(12),
-    color: 'red',
+    color: 'rgba(255, 0, 0, 1)',
     fontWeight: 'bold',
   },
   dropdownButtonContainerStyle: {
@@ -154,7 +154,7 @@ export const RegisterStyles = StyleSheet.create({
   dropdownListMainSectionStyle: {
     width: '90%',
     height: ProportionateScreenSizeValue(300),
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
     justifyContent: 'center',
     alignItems: 'center',
     shadowOpacity: 0.5,
@@ -243,7 +243,7 @@ export const RegisterStyles = StyleSheet.create({
     backgroundColor: ButtonColor,
   },
   dropdownListButtonCancelStyle: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
     borderWidth: ProportionateScreenSizeValue(1),
     borderColor: ButtonColor,
   },
@@ -251,7 +251,7 @@ export const RegisterStyles = StyleSheet.create({
     fontSize: ProportionateScreenSizeValue(12),
   },
   dropdownListButtonSelectTextStyle: {
-    color: '#FFF',
+    color: '#FAFAFA',
   },
   dropdownListButtonCancelTextStyle: {
     fontSize: ProportionateScreenSizeValue(12),
@@ -262,7 +262,7 @@ export const RegisterStyles = StyleSheet.create({
     height: '100%',
     width: '80%',
     color: '#000000',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FAFAFA',
     paddingHorizontal: 0,
   },
   passwordButtonStyle: {
@@ -276,7 +276,7 @@ export const RegisterStyles = StyleSheet.create({
   },
   buttonContainerStyle: {
     height: '20%',
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
     width: '100%',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -297,7 +297,7 @@ export const RegisterStyles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonTextStyle: {
-    color: '#FFFFFF',
+    color: '#FAFAFA',
     paddingVertical: ProportionateScreenSizeValue(8),
     fontStyle: 'normal',
     fontSize: ProportionateScreenSizeValue(14),

@@ -59,12 +59,12 @@ export const ActivationStyles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent:'center',
-    backgroundColor: '#FFF',
+    backgroundColor: '#FAFAFA',
     // marginTop: ProportionateScreenSizeValue(15),
   },
   buttonFooterStyle: {
     backgroundColor: '#F59873',
-    color: '#FFFFFF',
+    color: '#FAFAFA',
     height: ProportionateScreenSizeValue(42),
     width: ProportionateScreenSizeValue(250),
     alignItems: 'center',
@@ -72,14 +72,14 @@ export const ActivationStyles = StyleSheet.create({
   },
   buttonFooterEnableStyle: {
     backgroundColor: '#F59873',
-    color: '#FFFFFF',
+    color: '#FAFAFA',
   },
   buttonFooterDisableStyle: {
     backgroundColor: 'rgba(245, 152, 115, 0.5)',
-    color: '#FFFFFF',
+    color: '#FAFAFA',
   },
   submitButtonTextStyle: {
-    color: '#FFFFFF',
+    color: '#FAFAFA',
     fontStyle: 'normal',
     fontSize: ProportionateScreenSizeValue(16),
     lineHeight: ProportionateScreenSizeValue(16),
