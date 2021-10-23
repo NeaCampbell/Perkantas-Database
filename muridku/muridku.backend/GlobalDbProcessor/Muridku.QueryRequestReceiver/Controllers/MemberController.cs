@@ -111,6 +111,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         () => ValidateParamInputString( new Tuple<string, string, int>( "email", data.email, 100 ),
                                         new Tuple<string, string, int>( "name", data.name, 100 ),
                                         new Tuple<string, string, int>( "address", data.address, 200 ) ),
+        () => ValidateStringLength( string.IsNullOrEmpty(data.gender) ? string.Empty : data.gender, 1, "gender" ),
         () => ValidateStringLength( string.IsNullOrEmpty(data.birth_place) ? string.Empty : data.birth_place, 100, "birth_place" ),
         () => ValidateStringLength( string.IsNullOrEmpty(data.mobile_phn) ? string.Empty : data.mobile_phn, 20, "mobile_phn" )
       };
@@ -126,6 +127,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         data.email,
         encryptedPassword,
         data.name,
+        data.gender,
         data.city_id.ToString(),
         data.address,
         data.birth_dt.HasValue ? data.birth_dt.Value.ToString( CommonFormat.YYYY_MM_DD ) : string.Empty,
@@ -153,6 +155,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         () => ValidateParamInputString( new Tuple<string, string, int>( "email", data.email, 100 ),
                                         new Tuple<string, string, int>( "name", data.name, 100 ),
                                         new Tuple<string, string, int>( "address", data.address, 200 ) ),
+        () => ValidateStringLength( string.IsNullOrEmpty(data.gender) ? string.Empty : data.gender, 1, "gender" ),
         () => ValidateStringLength( string.IsNullOrEmpty(data.birth_place) ? string.Empty : data.birth_place, 100, "birth_place" ),
         () => ValidateStringLength( string.IsNullOrEmpty(data.mobile_phn) ? string.Empty : data.mobile_phn, 20, "mobile_phn" )
       };
@@ -162,6 +165,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
         data.email,
         data.id.ToString(),
         data.name,
+        data.gender,
         data.city_id.ToString(),
         data.address,
         data.birth_dt.HasValue ? data.birth_dt.Value.ToString( CommonFormat.YYYY_MM_DD ) : string.Empty,

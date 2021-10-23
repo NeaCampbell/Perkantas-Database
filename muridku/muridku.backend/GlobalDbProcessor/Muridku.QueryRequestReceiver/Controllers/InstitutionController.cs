@@ -19,10 +19,16 @@ namespace Muridku.QueryRequestReceiver.Controllers
     }
 
     [HttpGet(QueryListKeyMap.GET_ALL_INSTITUTION)]
-    public QueryResult GetAllInstitution()
+    public Response<IList<Institution>> GetAllInstitution()
     {
       LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Empty);
-      return EnqueueRequest(logApi, null, ConstRequestType.GET, QueryListKeyMap.GET_ALL_INSTITUTION, QueryListKeyMap.GET_ALL_INSTITUTION);
+      QueryResult reqResult = ExecuteRequest<Institution>(logApi, null, ConstRequestType.GET,
+        QueryListKeyMap.GET_ALL_INSTITUTION, QueryListKeyMap.GET_ALL_INSTITUTION);
+
+      if (!reqResult.Succeed)
+        return GetResponseBlankMultiModels<Institution>(reqResult, reqResult.Succeed);
+
+      return GetResponseMultiModels<Institution>(reqResult);
     }
 
     [HttpGet(QueryListKeyMap.GET_INSTITUTION_BY_TYPE)]

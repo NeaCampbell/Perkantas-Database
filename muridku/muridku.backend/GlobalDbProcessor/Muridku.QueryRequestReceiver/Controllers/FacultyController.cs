@@ -36,10 +36,16 @@ namespace Muridku.QueryRequestReceiver.Controllers
     }
 
     [HttpGet(QueryListKeyMap.GET_ALL_FACULTY)]
-    public QueryResult GetAllFaculty()
+    public Response<IList<Faculty>> GetAllFaculty()
     {
       LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Empty);
-      return EnqueueRequest(logApi, null, ConstRequestType.GET, QueryListKeyMap.GET_ALL_FACULTY, QueryListKeyMap.GET_ALL_FACULTY);
+      QueryResult reqResult = ExecuteRequest<Faculty>(logApi, null, ConstRequestType.GET,
+        QueryListKeyMap.GET_ALL_FACULTY, QueryListKeyMap.GET_ALL_FACULTY);
+
+      if (!reqResult.Succeed)
+        return GetResponseBlankMultiModels<Faculty>(reqResult, reqResult.Succeed);
+
+      return GetResponseMultiModels<Faculty>(reqResult);
     }
 
     [HttpGet( QueryListKeyMap.GET_FACULTY_BY_INSTITUTION_ID )]

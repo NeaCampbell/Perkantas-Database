@@ -8,6 +8,7 @@ namespace Muridku.QueryRequestReceiver.Models.Dbs.Combined
     public long? member_id { get; set; }
     public string email { get; set; }
     public string name { get; set; }
+    public string gender { get; set; }
     public long city_id { get; set; }
     public string address { get; set; }
     public DateTime? birth_dt { get; set; }

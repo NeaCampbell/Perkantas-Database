@@ -22,7 +22,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
     }
 
     [HttpGet(QueryListKeyMap.GET_ALL_CITY)]
-    public Response<IList<City>> GetAllFaculty()
+    public Response<IList<City>> GetAllCity()
     {
       LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Empty);
       QueryResult reqResult = ExecuteRequest<Faculty>(logApi, null, ConstRequestType.GET,

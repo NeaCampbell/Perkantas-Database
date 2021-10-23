@@ -6,6 +6,7 @@ namespace Muridku.QueryRequestReceiver.Models.Dbs
   {
     public string name { get; set; }
     public string address { get; set; }
+    public string gender { get; set; }
     public DateTime? birth_dt { get; set; }
     public string birth_place { get; set; }
     public string mobile_phn { get; set; }

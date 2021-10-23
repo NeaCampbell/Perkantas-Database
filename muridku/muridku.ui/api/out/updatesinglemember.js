@@ -2,10 +2,11 @@
 import { URL, PORT, PUT, TOKEN, IS_HTTP } from '../apiconst';
 import { requesttemplate } from './requesttemplate';
 
-export const updatesinglemember = (email, id, fullname, city_id, address, birth_dt, birth_place, mobile_phn, inst_type, institution_id, faculty_id, usr, callback, errorHandler) => {
+export const updatesinglemember = (email, id, fullname, gender, city_id, address, birth_dt, birth_place, mobile_phn, inst_type, institution_id, faculty_id, usr, callback, errorHandler) => {
   const paraminput = JSON.stringify({
     id: id,
     name: fullname === '' ? null : fullname,
+    gender: gender === '' ? null : gender,
     email: email === '' ? null : email,
     city_id: city_id,
     address: address === '' ? null : address,

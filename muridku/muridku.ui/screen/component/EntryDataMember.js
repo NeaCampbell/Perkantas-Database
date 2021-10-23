@@ -54,6 +54,7 @@ const EntryDataMember = (props) => {
   const confirmBack = 'BACK';
   const isUpdate = props.Member ? true : false;
   const isUpdateSelf = props.Member && props.Member.member.id === props.User.member_id ? true : false;
+  const genderList = [{id: 'L', name: 'Laki-laki'}, {id: 'P', name: 'Perempuan'}];
   let member;
   let user;
   let institution;
@@ -75,6 +76,9 @@ const EntryDataMember = (props) => {
   const [cityId, setCityId] = useState(city ? city.id : null);
   const [cityName, setCityName] = useState(city ? city.name : '');
   const [cityOpen, setCityOpen] = useState(false);
+  const [genderId, setGenderId] = useState(member ? member.gender : null);
+  const [genderName, setGenderName] = useState(member ? (member.gender === 'L' ? 'Laki-laki' : (member.gender === 'P' ? 'Perempuan' : '')) : null);
+  const [genderOpen, setGenderOpen] = useState(false);
   const [selectedAKKType, setSelectedAKKType] = useState(member && member.inst_type ? member.inst_type : AKK_TYPE_NONE);
   const [isEnabled, setIsEnabled] = useState(member && member.inst_type ? true : false);
   const [name, setName] = useState(member ? member.name : '');
@@ -202,6 +206,10 @@ const EntryDataMember = (props) => {
     callback();
   };
 
+  const onPageChange = (value) => {
+    setPageNum(value);
+  };
+
   const onCityOpen = (value) => {
     setCityOpen(value);
   };
@@ -216,6 +224,22 @@ const EntryDataMember = (props) => {
 
   const onCityClose = () => {
     setCityOpen(false);
+  };
+
+  const onGenderOpen = (value) => {
+    setGenderOpen(value);
+  };
+
+  const onGenderChange = (id, gendername) => {
+    setGenderId(id);
+    setGenderName(gendername);
+
+    if (genderOpen)
+      setGenderOpen(false);
+  };
+
+  const onGenderClose = () => {
+    setGenderOpen(false);
   };
 
   const callbackNameOpen = (result, openValue) => {
@@ -501,6 +525,7 @@ const EntryDataMember = (props) => {
         email,
         member.id,
         name,
+        genderId,
         cityId,
         address,
         birthDtStr,
@@ -522,6 +547,7 @@ const EntryDataMember = (props) => {
       selectedInactiveMemberId,
       email,
       name,
+      genderId,
       cityId,
       address,
       birthDtStr,
@@ -582,6 +608,11 @@ const EntryDataMember = (props) => {
     formSectionStyle,
     formBodySectionStyle,
     formStyle,
+    formButtonContainerStyle,
+    buttonPageStyle,
+    buttonPageTextStyle,
+    buttonPageTextActiveStyle,
+    buttonPageActiveStyle,
     dropdownInputContainerStyle,
     dropdownInputStyle,
     dropdownResetButtonContainerStyle,
@@ -717,6 +748,32 @@ const EntryDataMember = (props) => {
       />
     );
 
+  if (genderOpen)
+    modalScreen = (
+      <ModalList
+        selectedId={genderId}
+        selectedName={genderName}
+        mainSectionStyle={dropdownListMainSectionStyle}
+        searchSectionStyle={dropdownListSearchSectionStyle}
+        searchSectionContainerStyle={dropdownListSearchSectionContainerStyle}
+        searchInputStyle={dropdownListSearchInputStyle}
+        searchButtonStyle={dropdownListSearchButtonStyle}
+        listSectionStyle={dropdownListViewSectionStyle}
+        listItemSectionStyle={dropdownListViewItemSectionStyle}
+        listItemTextSectionStyle={dropdownListViewItemTextSectionStyle}
+        listItemTextStyle={dropdownListViewItemTextStyle}
+        buttonSectionStyle={dropdownListButtonSectionStyle}
+        buttonStyle={dropdownListButtonStyle}
+        selectButtonStyle={[dropdownListButtonContentStyle, dropdownListButtonSelectStyle]}
+        cancelButtonStyle={[dropdownListButtonContentStyle, dropdownListButtonCancelStyle]}
+        selectTextStyle={[globalFontStyle, dropdownListButtonTextStyle, dropdownListButtonSelectTextStyle]}
+        cancelTextStyle={[globalFontStyle, dropdownListButtonTextStyle, dropdownListButtonCancelTextStyle]}
+        list={genderList}
+        onCancelClick={onGenderClose}
+        onSelectClick={onGenderChange}
+      />
+    );
+
   if (birthDtPickerOpen)
     modalScreen = (
       <ModalDatePicker
@@ -828,6 +885,25 @@ const EntryDataMember = (props) => {
           value={cityName}
         />
       </View>
+      <View style={formBodySectionStyle}>
+        <CustomInputButton
+          inputContainerStyle={[dropdownInputContainerStyle, formStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+          inputStyle={[globalFontStyle, dropdownInputStyle]}
+          resetContainerStyle={dropdownResetButtonContainerStyle}
+          resetButtonStyle={dropdownResetButtonStyle}
+          resetButtonTextStyle={dropdownResetButtonTextStyle}
+          buttonContainerStyle={dropdownButtonContainerStyle}
+          buttonStyle={dropdownButtonStyle}
+          buttonText="CARI"
+          disabled={(!isEnabled)}
+          placeholder="Gender"
+          placeholderTextColor={PlaceholderTextColor}
+          showList={genderOpen}
+          onInputButtonClick={(value) => onGenderOpen(value)}
+          onDeleteButtonClick={() => onGenderChange('')}
+          value={genderName}
+        />
+      </View>
     </>
   );
 
@@ -910,7 +986,7 @@ const EntryDataMember = (props) => {
       </View>
       {
         (selectedAKKType === AKK_TYPE_SCHOOL || selectedAKKType === AKK_TYPE_NONE) ?
-        null :
+        <View style={formBodySectionStyle} /> :
         (
           <View style={formBodySectionStyle}>
             <CustomInputButton
@@ -933,6 +1009,8 @@ const EntryDataMember = (props) => {
           </View>
         )
       }
+      <View style={formBodySectionStyle} />
+      <View style={formBodySectionStyle} />
     </>
   );
 
@@ -985,8 +1063,31 @@ const EntryDataMember = (props) => {
         {
           (pageNum === 1) ? firstPage :
           (pageNum === 2 ? secondPage :
-          (pageNum === 3) ? thirdPage : null)
+          (pageNum === 3 ? thirdPage : null))
         }
+        <View
+          style={[formButtonContainerStyle, {backgroundColor: isEnabled ? enabledBackgroundColor : disabledBackgroundColor}]}
+          behavior="position"
+        >
+          <TouchableOpacity
+            style={(pageNum === 1 ? buttonPageActiveStyle : buttonPageStyle)}
+            onPress={() => onPageChange(1)}
+          >
+            <Text style={(pageNum === 1 ? buttonPageTextActiveStyle : buttonPageTextStyle)} numberOfLines={1}>1</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={(pageNum === 2 ? buttonPageActiveStyle : buttonPageStyle)}
+            onPress={() => onPageChange(2)}
+          >
+            <Text style={(pageNum === 2 ? buttonPageTextActiveStyle : buttonPageTextStyle)} numberOfLines={1}>2</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={(pageNum === 3 ? buttonPageActiveStyle : buttonPageStyle)}
+            onPress={() => onPageChange(3)}
+          >
+            <Text style={(pageNum === 3 ? buttonPageTextActiveStyle : buttonPageTextStyle)} numberOfLines={1}>3</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
