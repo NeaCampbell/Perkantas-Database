@@ -4,6 +4,8 @@
   {
     public const string GET_VERSION_INFO = "getversioninfo";
     public const string SAVE_API_LOG = "saveapilog";
+    public const string VALIDATE_WEB_PASSWORD = "validatewebpassword";
+    public const string ENCRYPT_DATA = "encryptdata";
     public const string GET_ALL_USER = "getalluser";
     public const string REGISTER_MURIDKU_USER = "registermuridkuuser";
     public const string GET_INACTIVE_USERS = "getinactiveusers";

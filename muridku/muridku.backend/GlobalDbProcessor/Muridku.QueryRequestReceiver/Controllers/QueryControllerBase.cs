@@ -28,7 +28,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       public QueryResult Result { get; set; }
     }
 
-    private const string USER_SYSTEM = "SYSTEM";
+    protected const string USER_SYSTEM = "SYSTEM";
     private const string MSG_INVALID_USERNAME = "invalid username";
     private const string MSG_INVALID_REQUEST_CODE = "invalid request code";
     protected ILogger<QueryControllerBase> Logger { get; private set; }
@@ -493,7 +493,7 @@ namespace Muridku.QueryRequestReceiver.Controllers
       return "localhost";
     }
 
-    private ProcessType GetProcessType( string requestType )
+    protected ProcessType GetProcessType( string requestType )
     {
       switch( requestType.ToLower() )
       {

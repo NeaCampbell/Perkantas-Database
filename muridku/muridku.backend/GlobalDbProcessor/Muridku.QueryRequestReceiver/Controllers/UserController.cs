@@ -48,6 +48,58 @@ namespace Muridku.QueryRequestReceiver.Controllers
       }
     }
 
+    [HttpGet(QueryListKeyMap.VALIDATE_WEB_PASSWORD)]
+    public Response<User> ValidateWebPassword( string email, string password )
+    {
+      Logger.LogInformation("masuk");
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("email={0}&password={1}",
+        email, ""));
+
+      QueryResult result = ExecuteRequest<User>(logApi, new List<string>() { email },
+        ConstRequestType.GET, QueryListKeyMap.VALIDATE_WEB_PASSWORD, QueryListKeyMap.GET_USER_BY_EMAIL, isSingleRow: true);
+
+      if(!result.Succeed)
+        return GetResponseBlankSingleModel<User>(result, false, "invalid user");
+
+      Response<User> respUser = GetResponseSingleModel<User>(result);
+      User user = respUser.Result;
+      CheckParam chk = ValidatePassword(user, password, "invalid user/password");
+      user.password = null;
+      result.Result = JsonConvert.SerializeObject(user);
+
+      if (!chk.CheckResult)
+        return GetResponseBlankSingleModel<User>(result, false, chk.Message, false);
+
+      return GetResponseSingleModel<User>(result);
+    }
+
+    [HttpGet(QueryListKeyMap.ENCRYPT_DATA)]
+    public Response<Encrypt> EncryptData(string data)
+    {
+      LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("data={0}", data));
+      string requestId = string.Format("{0}_{1}_{2}_{3}", HttpContext.Session.Id, GetType().Name.ToString(), QueryListKeyMap.ENCRYPT_DATA, ProcessType.Select.ToString());
+      Encrypt encResult = new Encrypt()
+      {
+        EncryptedValue = CipherCentre.EncryptMD5(data, QueryOperatorManager.EncryptMD5HashFormat, QueryOperatorManager.EncryptMD5HashCultureInfo)
+      };
+
+      QueryResult result = new QueryResult(requestId, QueryListKeyMap.ENCRYPT_DATA, true, "", JsonConvert.SerializeObject(encResult));
+
+      try
+      {
+        SaveLogApi(logApi);
+      }
+      catch(Exception ex)
+      {
+        result.Result = null;
+        result.Succeed = false;
+        result.ErrorMessage = ex.Message;
+        return GetResponseBlankSingleModel<Encrypt>(result, false);
+      }
+
+      return GetResponseSingleModel<Encrypt>(result);
+    }
+
     [HttpGet( QueryListKeyMap.GET_ALL_USER )]
     public QueryResult GetAllUser()
     {

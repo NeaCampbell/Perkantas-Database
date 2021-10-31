@@ -1,0 +1,13 @@
+/* .main-navbar {
+    background-color: #A6C5F7 !important;
+} */
+
+.main-navbar-child {
+    border-style: 1px solid #CCC;
+    /* background-color: #BBD3FA !important; */
+    background-color: #FFF !important;
+}
+
+.main-navbar-child-divider {
+    border-top: 1px solid #000 !important;
+}
