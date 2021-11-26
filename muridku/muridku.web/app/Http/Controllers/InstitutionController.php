@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Institution;
+use App\Models\MemberInstitutionHist;
 
 class InstitutionController extends BaseController
 {
@@ -184,5 +185,30 @@ class InstitutionController extends BaseController
         $data->usr_upd = $user;
 
         return $data;
+    }
+
+    protected function GetDeleteValidation(Request $request, Model $data): array
+    {
+        try {
+            $memberCount = MemberInstitutionHist::where('faculty_id', $request->id)->count();
+        }
+        catch(Exception $e)
+        {
+            return [
+                'result' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+
+        if($memberCount > 0)
+            return [
+                'result' => false,
+                'message' => 'Data sudah digunakan pada data member.'
+            ];
+
+        return [
+            'result' => true,
+            'message' => ''
+        ];
     }
 }

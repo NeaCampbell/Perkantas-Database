@@ -6,7 +6,6 @@ function loadDatatable(basicurl, tableid, rowperpage, pagenum, datacolumns, data
     });
 
     let url = basicurl + "rowperpage=" + rowperpage + "&pagenum=" + pagenum;
-    console.log(url);
 
     var table = $(tableid).DataTable({
         processing: true,

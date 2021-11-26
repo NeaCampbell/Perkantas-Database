@@ -17,6 +17,11 @@
 @section('additional-scripts')
     <script type="text/javascript">
         $(document).ready( function () {
+            loadData();
+        });
+
+        function loadData()
+        {
             var rowperpage = $('#rowperpage').val();
             var pagenum = $('#pagenum').val();
             var columns = [
@@ -28,7 +33,7 @@
             var orders = [[0, 'asc']];
             var basicurl = "{{ url('/city/getcities?') }}";
             var table = loadDatatable(basicurl, '#main-table', rowperpage, pagenum, columns, orders);
-        });
+        }
 
         function editdata(id)
         {
@@ -37,7 +42,34 @@
 
         function deletedata(id)
         {
-            window.location.href = "{{url('/city/delete?id=')}}" + id;
+            if(!confirm("Apakah anda yakin data akan dihapus?"))
+                return;
+
+            $("#main-table_processing").show();
+            $.ajax({
+                url: "{{url('/city/delete?id=')}}" + id,
+                type: "DELETE",
+                success: function(result) {
+                    if(result.result)
+                    {
+                        location.reload();
+                        return;
+                    }
+
+                    $("#main-table_processing").hide();
+                    $("#error-delete").html(result.message);
+
+                    if($("#error-delete.d-none").length)
+                        $("#error-delete").toggleClass("d-none");
+                },
+                error: function(error) {
+                    $("#main-table_processing").hide();
+                    $("#error-delete").html(error.responseJSON.message);
+
+                    if($("#error-delete.d-none").length)
+                        $("#error-delete").toggleClass("d-none");
+                }
+            });
         }
     </script>
 @endsection

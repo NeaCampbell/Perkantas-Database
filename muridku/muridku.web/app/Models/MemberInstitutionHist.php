@@ -6,21 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class Material extends Model
+class MemberInstitutionHist extends Model
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'material';
+    protected $table = 'memberinstitutionhist';
     const CREATED_AT = 'dtm_crt';
     const UPDATED_AT = 'dtm_upd';
 
-    protected $fillable = [
-        'code',
-        'name',
-        'chapter_count',
-    ];
-
     protected $hidden = [
+        'member_id',
+        'institution_id',
+        'faculty_id',
         'dtm_crt',
         'usr_crt',
         'dtm_upd',

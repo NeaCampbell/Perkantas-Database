@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Member;
 use App\Models\User;
 use App\Models\City;
 use App\Models\Institution;
 use App\Models\Faculty;
+use App\Models\KtbMember;
 use App\Http\Controllers\ApiController;
 
 class MemberController extends BaseController
@@ -146,7 +148,18 @@ class MemberController extends BaseController
 
     protected function CustomInsertProcess(Request $request, Model $data)
     {
+        $member = Member::join('city', 'city.id', '=', 'member.city_id')
+                    ->join('user', 'user.member_id', '=', 'member.id')
+                    ->where('member.id', '=', $data->id)
+                    ->selectRaw('member.*, city.name as city_name, user.email')
+                    ->first();
 
+        $apiresult = ApiController::SaveToFinanceApp($member);
+        $data->alpha_member_id = $apiresult->id;
+
+        DB::transaction(function() use ($data) {
+            $data->save();
+        });
     }
 
     protected function GetSingleDataById(int $id, bool $forupdate): Model
@@ -207,5 +220,36 @@ class MemberController extends BaseController
     protected function CustomUpdateProcess(Request $request, Model $data)
     {
 
+    }
+
+    protected function GetDeleteValidation(Request $request, Model $data): array
+    {
+        try {
+            $ktbCount = KtbMember::where('member_id', $request->id)->count();
+        }
+        catch(Exception $e)
+        {
+            return [
+                'result' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+
+        if($ktbCount > 0)
+            return [
+                'result' => false,
+                'message' => 'Data sudah digunakan pada data KTB.'
+            ];
+
+        $user = User::where('member_id', $request->id)->first();
+
+        DB::transaction(function() use ($user) {
+            $user->delete();
+        });
+
+        return [
+            'result' => true,
+            'message' => ''
+        ];
     }
 }

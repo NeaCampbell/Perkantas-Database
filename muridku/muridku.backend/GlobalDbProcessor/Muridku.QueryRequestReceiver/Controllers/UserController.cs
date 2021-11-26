@@ -51,7 +51,6 @@ namespace Muridku.QueryRequestReceiver.Controllers
     [HttpGet(QueryListKeyMap.VALIDATE_WEB_PASSWORD)]
     public Response<User> ValidateWebPassword( string email, string password )
     {
-      Logger.LogInformation("masuk");
       LogApi logApi = CreateLogApiObj(GetCurrentMethod(), string.Format("email={0}&password={1}",
         email, ""));
 

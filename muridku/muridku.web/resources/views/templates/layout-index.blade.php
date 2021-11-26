@@ -34,6 +34,10 @@
         </div>
     @endif
 
+    <div class="alert alert-danger d-none" id="error-delete">
+
+    </div>
+
     <div class="card-body" style="width: 85vw;">
         <table id="main-table" class="table table-hover" style="table-layout: fixed; word-wrap: break-word;">
         <!-- <table id="main-table" class="table table-hover"> -->

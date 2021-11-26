@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\FacultyController;
+use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\MemberController;
 
 /*
@@ -53,6 +54,15 @@ Route::post('/faculty/save', [FacultyController::class, 'Store']);
 Route::get('/faculty/edit', [FacultyController::class, 'Edit']);
 Route::patch('/faculty/update', [FacultyController::class, 'Update']);
 Route::delete('/faculty/delete', [FacultyController::class, 'Destroy']);
+
+Route::get('/material', [MaterialController::class, 'Index']);
+Route::get('/material/getmaterials', [MaterialController::class, 'GetIndexData']);
+Route::get('/material/getmaterials-ref', [MaterialController::class, 'LazyGetActiveData']);
+Route::get('/material/add', [MaterialController::class, 'Create']);
+Route::post('/material/save', [MaterialController::class, 'Store']);
+Route::get('/material/edit', [MaterialController::class, 'Edit']);
+Route::patch('/material/update', [MaterialController::class, 'Update']);
+Route::delete('/material/delete', [MaterialController::class, 'Destroy']);
 
 Route::get('/member', [MemberController::class, 'Index']);
 Route::get('/member/getmembers', [MemberController::class, 'GetIndexData']);

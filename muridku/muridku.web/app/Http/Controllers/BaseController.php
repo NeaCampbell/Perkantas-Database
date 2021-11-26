@@ -24,6 +24,7 @@ abstract class BaseController extends Controller
     abstract protected function GetUpdateValidation(Request $request, Model $data): array;
     abstract protected function CustomUpdateValidation(Request $request, Model $data): array;
     abstract protected function SetUpdateData(Request $request, Model $data, string $user): Model;
+    abstract protected function GetDeleteValidation(Request $request, Model $data): array;
 
     protected function GetAdditionalList()
     {
@@ -273,6 +274,31 @@ abstract class BaseController extends Controller
 
     public function Destroy(Request $request)
     {
-        //
+        if(!Auth::check())
+            return back()->withErrors([
+                'error' => 'Authentication error.',
+            ]);
+
+        $idvalidation = $request->validate([
+            'id' => ['required', 'numeric']
+        ]);
+
+        $data = $this->GetSingleDataById($request->id, true);
+        $validation = $this->GetDeleteValidation($request, $data);
+
+        if(!$validation['result'])
+            return [
+                'result' => false,
+                'message' => $validation['message']
+            ];
+
+        DB::transaction(function() use ($data) {
+            $data->delete();
+        });
+
+        return [
+            'result' => true,
+            'message' => ''
+        ];
     }
 }

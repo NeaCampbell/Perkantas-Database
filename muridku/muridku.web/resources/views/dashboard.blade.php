@@ -3,7 +3,7 @@
     <div class="panel-body">
         @if ($errors->any())
             <div class="alert alert-danger">
-                There were <strong>some problems</strong> with your input.<br><br>
+                Ada <strong>kesalahan</strong> dalam input yang diberikan.<br><br>
                 <ul>
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>

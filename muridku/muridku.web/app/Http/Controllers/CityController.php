@@ -7,6 +7,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\City;
+use App\Models\Member;
 
 class CityController extends BaseController
 {
@@ -126,5 +127,21 @@ class CityController extends BaseController
         $data->usr_upd = $user;
 
         return $data;
+    }
+
+    protected function GetDeleteValidation(Request $request, Model $data): array
+    {
+        $memberCount = Member::where('city_id', $request->id)->count();
+
+        if($memberCount > 0)
+            return [
+                'result' => false,
+                'message' => 'Data sudah digunakan pada data member.'
+            ];
+
+        return [
+            'result' => true,
+            'message' => ''
+        ];
     }
 }

@@ -23,6 +23,8 @@ class Constants
     const MURIDKU_GENDER_MALE_NAME = 'Laki-laki';
     const MURIDKU_GENDER_FEMALE = 'P';
     const MURIDKU_GENDER_FEMALE_NAME = 'Perempuan';
+
+    const ALPHA_SOLUTION_API_ADDRESS = 'https://perkantas.alphasolution.id/api/';
 }
 
 ?>
