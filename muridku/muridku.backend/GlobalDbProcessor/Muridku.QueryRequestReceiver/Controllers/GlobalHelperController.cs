@@ -5,7 +5,9 @@ using Muridku.QueryRequestReceiver.Models.Dbs;
 using Muridku.QueryRequestReceiver.Models.Dbs.Combined;
 using QueryManager;
 using QueryOperator.QueryExecutor;
+using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Muridku.QueryRequestReceiver.Controllers
 {
@@ -131,6 +133,25 @@ namespace Muridku.QueryRequestReceiver.Controllers
       }
 
       return result;
+    }
+
+    public static string GeneratePassword(int length)
+    {
+      StringBuilder password = new StringBuilder();
+      Random random = new Random();
+
+      while (password.Length < length)
+      {
+        char c = (char)random.Next(32, 126);
+        password.Append(c);
+      }
+
+      password.Append((char)random.Next(33, 48));
+      password.Append((char)random.Next(48, 58));
+      password.Append((char)random.Next(97, 123));
+      password.Append((char)random.Next(65, 91));
+
+      return password.ToString();
     }
   }
 }

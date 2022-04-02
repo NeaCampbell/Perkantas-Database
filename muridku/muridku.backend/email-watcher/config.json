@@ -1,0 +1,10 @@
+{
+  "ConfigParameter": {
+    "ConnectionString": "server=localhost;port=3306;user=root;password=root;database=muridku",
+    "Host": "smtp.gmail.com",
+    "Port": 587,
+    "EnableSsl": true,
+    "DeliveryMethod": "Network",
+    "UseDefaultCredentials": false
+  }
+}

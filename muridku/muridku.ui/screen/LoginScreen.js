@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, createRef } from 'react';
+import React, { useState, createRef, useCallback } from 'react';
 import {
   ActivityIndicator,
   TextInput,
@@ -26,8 +26,10 @@ import {
   BackgroundColor,
 } from '../asset/style-template/LoginStyles';
 import Error from './component/Error';
+import Confirmation, { AlertMode } from './component/Confirmation';
 
 const loginapi = require('../api/out/login');
+const resetpasswordapi = require('../api/out/resetpassword');
 
 const LoginScreen = (props) => {
   const { navigation } = props;
@@ -36,6 +38,7 @@ const LoginScreen = (props) => {
   const [isStayLoggedIn, setIsStayLoggedIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorText, setErrorText] = useState('');
+  const [showConfirmScreen, setShowConfirmScreen] = useState(false);
   const emailInputRef = createRef();
   const passwordInputRef = createRef();
 
@@ -85,6 +88,26 @@ const LoginScreen = (props) => {
     loginapi.login(userEmail, userPassword, isStayLoggedIn ? 1 : 0, callback, errorHandler);
   };
 
+  const onResetPasswordConfirmed = useCallback(() => {
+    setShowConfirmScreen(false);
+    setLoading(true);
+
+    const callbackResetPassword = () => {
+      setLoading(false);
+    };
+
+    const errorHandler = (error) => {
+      setLoading(false);
+      setErrorText(error.message);
+    };
+
+    resetpasswordapi.resetpassword(userEmail, callbackResetPassword, errorHandler);
+  }, [userEmail]);
+
+  const onResetPasswordCancelled = () => {
+    setShowConfirmScreen(false);
+  };
+
   const {
     globalFontStyle,
     basicInputStyle,
@@ -131,6 +154,17 @@ const LoginScreen = (props) => {
         size={ProportionateScreenSizeValue(30)}
       />
     </View>
+  );
+
+  const confirmScreen = (
+    <Confirmation
+      confirmText="Apakah anda yakin akan mereset password? Password baru akan dikirim ke email anda."
+      firstButtonText="Ya"
+      secondButtonText="Tidak"
+      mode={AlertMode}
+      onFirstButtonClick={() => onResetPasswordConfirmed()}
+      onSecondButtonClick={() => onResetPasswordCancelled()}
+    />
   );
 
   const errorScreen = (
@@ -235,8 +269,7 @@ const LoginScreen = (props) => {
         <TouchableOpacity
           activeOpacity={0.5}
           onPress={() => {
-            resetState();
-            // navigation.navigate('UserScreen');
+            setShowConfirmScreen(true);
           }}
           >
           <Text
@@ -280,6 +313,7 @@ const LoginScreen = (props) => {
   return (
     <BodyBaseScreen
       loadingScreen={loading ? loadingScreen : null}
+      confirmScreen={showConfirmScreen ? confirmScreen : null}
       errorScreen={errorText ? errorScreen : null}
       items={baseScreenItems}
       statusBarColor={BackgroundColor}

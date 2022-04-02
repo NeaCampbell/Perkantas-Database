@@ -54,5 +54,6 @@
     public const string GET_FACULTY_BY_INSTITUTION_ID = "getfacultybyinstitutionid";
     public const string GET_FACULTY_BY_ID = "getfacultybyid";
     public const string GET_ALL_MATERIALS = "getallmaterials";
+    public const string SEND_EMAIL = "sendemail";
   }
 }
