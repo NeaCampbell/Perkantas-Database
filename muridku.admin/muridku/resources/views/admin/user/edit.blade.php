@@ -26,12 +26,12 @@
                 <p class="form-control">{{ $user->created_at->format('d/m/Y') }}</p>
             </div>
 
-            <form action="{{ url('admin/upadate-user/'.$user->id) }}" method="POST">
+            <form action="{{ url('admin/update-user/'.$user->id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="mb-3">
                     <label>Role</label>
-                    <select name="" class="form-control">
+                    <select name="role_as" class="form-control">
                         <option value="1" {{ $user->role_as == '1'? 'Selected':'' }}>Admin</option>
                         <option value="0" {{ $user->role_as == '0'? 'Selected':'' }}>User</option>
                     </select>
