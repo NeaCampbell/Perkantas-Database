@@ -29,7 +29,7 @@ class ReportController extends Controller
         $report = new Report;
         $report->name = $data['name'];
         $report->slug = $data['slug'];
-        $report->description = $data['description'];    
+        $report->description = $data['description'];
         if($request->hasFile('image')){
             $file = $request->file('image');
             $filename = time() . '.' . $file->getClientOriginalExtension();
@@ -62,7 +62,7 @@ class ReportController extends Controller
         $report = Report::find($report_id);
         $report->name = $data['name'];
         $report->slug = $data['slug'];
-        $report->description = $data['description'];    
+        $report->description = $data['description'];
         if($request->hasFile('image')){
             $destination = 'upload/report/'.$report->image;
             if(File::exists($destination)){

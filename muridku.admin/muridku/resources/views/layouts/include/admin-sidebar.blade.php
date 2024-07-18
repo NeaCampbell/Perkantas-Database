@@ -10,32 +10,27 @@
                 <div class="sb-sidenav-menu-heading">Interface</div>
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                     <div class="sb-nav-link-icon"><i class="fas fa-file"></i></div>
-                    Report
+                    Laporan
                     <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                 </a>
                 <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link" href="{{ url('admin/add-report') }}">Add Report</a>
-                        <a class="nav-link" href="{{ url('admin/report') }}">View Report</a>
+                        <a class="nav-link" href="{{ url('admin/add-report') }}">Tambah Laporan</a>
+                        <a class="nav-link" href="{{ url('admin/report') }}">Melihat Laporan</a>
                     </nav>
                 </div>
+                <a class="nav-link" href="{{ url('admin/city') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    Kota
+                </a>
                 <a class="nav-link" href="{{ url('admin/users') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-user-alt"></i></div>
-                    Users
-                </a>
-                <div class="sb-sidenav-menu-heading">Addons</div>
-                <a class="nav-link" href="charts.html">
-                    <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                    Charts
-                </a>
-                <a class="nav-link" href="tables.html">
-                    <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                    Tables
+                    Pengguna
                 </a>
             </div>
         </div>
         <div class="sb-sidenav-footer">
-            <div class="small">Logged in as:</div>
+            <div class="small">Masuk Sebagai:</div>
             {{ Auth::user()->name }}
         </div>
     </nav>
