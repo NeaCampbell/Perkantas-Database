@@ -22,8 +22,8 @@ class CityController extends Controller
         $data = $request->validated();
 
         $city = new City;
-        $city->code = $request->code;
-        $city->name = $request->name;
+        $city->code = $data['code'];
+        $city->name = $data['name'];
 
         if (Auth::check()) {
             $city->usr_crt = Auth::user()->name;
@@ -37,6 +37,30 @@ class CityController extends Controller
         $city->save();
 
         return redirect('admin/city')->with('message', 'City Added Successfully');
+    }
+
+    public function update(CityFormRequest $request, $city_id)
+    {
+        $data = $request->validated();
+
+        $city = City::find($city_id);
+        $city->code = $data['code'];
+        $city->name = $data['name'];
+        if (Auth::check()) {
+            $city->usr_upd = Auth::user()->name;
+        } else {
+            $city->usr_upd = 'Anonymous';
+        }
+        $city->dtm_upd = now();
+        $city->update();
+
+        return redirect('admin/city')->with('message', 'City Updated Successfully');
+    }
+
+    public function edit($city_id)
+    {
+        $city = City::find($city_id);
+        return view('admin.city.edit', compact('city'));
     }
 
     public function delete($city_id)

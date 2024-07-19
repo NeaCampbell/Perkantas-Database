@@ -1,13 +1,13 @@
 @extends('layouts.master')
 
-@section('title', 'Dashboard')
+@section('title', 'Laporan')
 
 @section('content')
 
 <div class="container-fluid px-4">
     <div class="card mt-4">
         <div class="card-header">
-            <h4 class="">Add Report</h4>
+            <h4 class="">Tambah Laporan</h4>
         </div>
         <div class="card-body">
 

@@ -30,4 +30,10 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('edit-city/{city_id}', [App\Http\Controllers\Admin\CityController::class, 'edit']);
     Route::put('update-city/{city_id}', [App\Http\Controllers\Admin\CityController::class, 'update']);
     Route::get('delete-city/{city_id}', [App\Http\Controllers\Admin\CityController::class, 'delete']);
+
+    Route::get('institution', [App\Http\Controllers\Admin\InstitutionController::class, 'index']);
+    Route::post('add-institution', [App\Http\Controllers\Admin\InstitutionController::class, 'store']);
+    Route::get('edit-institution/{institution_id}', [App\Http\Controllers\Admin\InstitutionController::class, 'edit']);
+    Route::put('update-institution/{institution_id}', [App\Http\Controllers\Admin\InstitutionController::class, 'update']);
+    Route::get('delete-institution/{institution_id}', [App\Http\Controllers\Admin\InstitutionController::class, 'delete']);
 });
