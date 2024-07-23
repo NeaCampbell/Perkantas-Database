@@ -63,7 +63,8 @@
                     @csrf
                     <div class="mb-3">
                         <label for="institution_id" class="form-label">Pilih Instansi</label>
-                        <select class="form-control select2" id="institution_id" name="institution_id" required>
+                        <br>
+                        <select class="form-select select2" id="institution_id" name="institution_id" required>
                             <option value="">-- Pilih Instansi --</option>
                             @foreach($institution as $institution)
                                 <option value="{{ $institution->id }}">{{ $institution->name }}</option>

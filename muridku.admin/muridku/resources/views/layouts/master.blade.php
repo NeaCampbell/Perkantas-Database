@@ -17,6 +17,7 @@
 
     <link rel="stylesheet" href="//cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
 
@@ -40,12 +41,23 @@
     <script>
         let table = new DataTable('#dataTable');
     </script>
-
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        $('.js-example-basic-single').select2({
-            placeholder: 'Select an option'
+        $(document).ready(function() {
+            // Periksa jika modal ada di halaman
+            if ($('#addFacultyModal').length) {
+                $('#institution_id').select2({
+                    theme: 'bootstrap',
+                    placeholder: "-- Pilih Instansi --",
+                    dropdownParent: $("#addFacultyModal")
+                });
+            } else {
+                $('#institution_id').select2({
+                    theme: 'bootstrap',
+                    placeholder: "-- Pilih Instansi --"
+                });
+            }
         });
-    </script>
+        </script>
 </body>
 </html>
