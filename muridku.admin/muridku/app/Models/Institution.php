@@ -18,4 +18,15 @@ class Institution extends Model
         'type',
         'address'
     ];
+
+    public function getTypeName()
+    {
+        $typename = [
+            'YYSN' => 'Yayasan',
+            'GRJ'  => 'Gereja',
+            'KMPS' => 'Kampus',
+        ];
+
+        return $typename[$this->type] ?? 'Tipe Tidak Diketahui';
+    }
 }

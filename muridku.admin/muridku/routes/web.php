@@ -36,4 +36,10 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('edit-institution/{institution_id}', [App\Http\Controllers\Admin\InstitutionController::class, 'edit']);
     Route::put('update-institution/{institution_id}', [App\Http\Controllers\Admin\InstitutionController::class, 'update']);
     Route::get('delete-institution/{institution_id}', [App\Http\Controllers\Admin\InstitutionController::class, 'delete']);
+
+    Route::get('faculty', [App\Http\Controllers\Admin\FacultyController::class, 'index']);
+    Route::post('add-faculty', [App\Http\Controllers\Admin\FacultyController::class, 'store']);
+    Route::get('edit-faculty/{faculty_id}', [App\Http\Controllers\Admin\FacultyController::class, 'edit']);
+    Route::put('update-faculty/{faculty_id}', [App\Http\Controllers\Admin\FacultyController::class, 'update']);
+    Route::get('delete-faculty/{faculty_id}', [App\Http\Controllers\Admin\FacultyController::class, 'delete']);
 });

@@ -25,8 +25,7 @@
                         <th>Nama</th>
                         <th>Tipe</th>
                         <th>Alamat</th>
-                        <th>Edit</th>
-                        <th>Hapus</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,12 +34,11 @@
                         <td>{{ $item->id }}</td>
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->name }}</td>
-                        <td>{{ $item->type }}</td>
+                        <td>{{ $item->getTypeName() }}</td>
                         <td>{{ $item->address }}</td>
                         <td>
                             <a href="{{ url('admin/edit-institution/'.$item->id) }}" class="btn btn-success"><i class="fas fa-edit"></i></a>
-                        </td>
-                        <td>
+                            <a href="#" class="btn btn-success"><i class="fas fa-toggle-on"></i></a>
                             <a href="{{ url('admin/delete-institution/'.$item->id) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
                         </td>
                     </tr>
@@ -68,7 +66,7 @@
                     @csrf
                     <div class="mb-3">
                         <label for="code" class="form-label">Kode Instansi</label>
-                        <input type="text" class="form-control" id="code" name="code" maxlength="3" required>
+                        <input type="text" class="form-control" id="code" name="code" maxlength="3" required placeholder="Masukkan kode dengan maksimal 3 karakter">
                     </div>
                     <div class="mb-3">
                         <label for="name" class="form-label">Nama Instansi</label>
@@ -76,7 +74,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="type" class="form-label">Tipe Instansi</label>
-                        <input type="text" class="form-control" id="type" name="type" maxlength="5" required>
+                        <select class="form-select" id="type" name="type" required>
+                            <option value="">Pilih Tipe Instansi</option>
+                            <option value="YYSN">Yayasan</option>
+                            <option value="GRJ">Gereja</option>
+                            <option value="KMPS">Kampus</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="address" class="form-label">Alamat Instansi</label>

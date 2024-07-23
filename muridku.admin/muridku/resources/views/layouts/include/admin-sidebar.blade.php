@@ -27,6 +27,10 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-landmark-alt"></i></div>
                     Instansi
                 </a>
+                <a class="nav-link" href="{{ url('admin/faculty') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap"></i></div>
+                    Falkutas
+                </a>
                 <a class="nav-link" href="{{ url('admin/users') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-user-alt"></i></div>
                     Pengguna

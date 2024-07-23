@@ -26,15 +26,20 @@
                 @method('PUT')
                 <div class="mb-3">
                     <label>Kode Instansi</label>
-                    <input type="text" name="code" value="{{ $institution->code }}" class="form-control" maxlength="3">
+                    <input type="text" name="code" value="{{ $institution->code }}" class="form-control" maxlength="3" placeholder="Masukkan kode dengan maksimal 3 karakter">
                 </div>
                 <div class="mb-3">
                     <label>Nama Instansi</label>
                     <input type="text" name="name" value="{{ $institution->name }}" class="form-control">
                 </div>
                 <div class="mb-3">
-                    <label>Tipe Instansi</label>
-                    <input type="text" name="type" value="{{ $institution->type }}" class="form-control" maxlength="5">
+                    <label for="type" class="form-label">Tipe Instansi</label>
+                    <select class="form-select" id="type" name="type" required>
+                        <option value="">Pilih Tipe Instansi</option>
+                        <option value="YYSN" {{ $institution->type == 'YYSN' ? 'selected' : '' }}>Yayasan</option>
+                        <option value="GRJ" {{ $institution->type == 'GRJ' ? 'selected' : '' }}>Gereja</option>
+                        <option value="KMPS" {{ $institution->type == 'KMPS' ? 'selected' : '' }}>Kampus</option>
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label>Alamat Instansi</label>
