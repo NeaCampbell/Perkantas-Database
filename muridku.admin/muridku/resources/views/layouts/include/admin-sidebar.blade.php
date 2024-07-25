@@ -7,7 +7,6 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                     Dashboard
                 </a>
-                <div class="sb-sidenav-menu-heading">Interface</div>
                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                     <div class="sb-nav-link-icon"><i class="fas fa-file"></i></div>
                     Laporan
@@ -19,6 +18,7 @@
                         <a class="nav-link" href="{{ url('admin/report') }}">Melihat Laporan</a>
                     </nav>
                 </div>
+                <div class="sb-sidenav-menu-heading">Master</div>
                 <a class="nav-link" href="{{ url('admin/city') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-map-marker-alt"></i></div>
                     Kota
@@ -30,6 +30,10 @@
                 <a class="nav-link" href="{{ url('admin/faculty') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-graduation-cap"></i></div>
                     Falkutas
+                </a>
+                <a class="nav-link" href="{{ url('admin/material') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-book"></i></div>
+                    Bahan KTB
                 </a>
                 <a class="nav-link" href="{{ url('admin/users') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-user-alt"></i></div>

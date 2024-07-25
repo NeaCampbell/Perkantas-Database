@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Users')
+@section('title', 'Pengguna')
 
 @section('content')
 
@@ -8,7 +8,7 @@
 
     <div class="card mt-4">
         <div class="card-header">
-            <h4>View Users</h4>
+            <h4>View Pengguna</h4>
         </div>
         <div class="card-body">
             @if (session('message'))
@@ -22,8 +22,7 @@
                         <th>Username</th>
                         <th>Email</th>
                         <th>Role</th>
-                        <th>Edit</th>
-                        <th>Delete</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,10 +33,8 @@
                         <td>{{ $item->email }}</td>
                         <td>{{ $item->role_as == '1' ? 'Admin':'User' }}</td>
                         <td>
-                            <a href="{{ url('admin/user/'.$item->id) }}" class="btn btn-success"><i class="fas fa-edit"></i></a>  
-                        </td>
-                        <td>
-                            <a href="{{ url('admin/user/'.$item->id) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>  
+                            <a href="{{ url('admin/user/'.$item->id) }}" class="btn btn-success"><i class="fas fa-edit"></i></a>
+                            <a href="{{ url('admin/user/'.$item->id) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
                         </td>
                     </tr>
                     @endforeach

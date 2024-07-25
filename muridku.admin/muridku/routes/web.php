@@ -42,4 +42,10 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('edit-faculty/{faculty_id}', [App\Http\Controllers\Admin\FacultyController::class, 'edit']);
     Route::put('update-faculty/{faculty_id}', [App\Http\Controllers\Admin\FacultyController::class, 'update']);
     Route::get('delete-faculty/{faculty_id}', [App\Http\Controllers\Admin\FacultyController::class, 'delete']);
+
+    Route::get('material', [App\Http\Controllers\Admin\MaterialController::class, 'index']);
+    Route::post('add-material', [App\Http\Controllers\Admin\MaterialController::class, 'store']);
+    Route::get('edit-material/{material_id}', [App\Http\Controllers\Admin\MaterialController::class, 'edit']);
+    Route::put('update-material/{material_id}', [App\Http\Controllers\Admin\MaterialController::class, 'update']);
+    Route::get('delete-material/{material_id}', [App\Http\Controllers\Admin\MaterialController::class, 'delete']);
 });

@@ -27,8 +27,8 @@ class UserController extends Controller
         {
             $user->role_as = $request->role_as;
             $user->update();
-            return redirect('admin/users')->with('message', 'Updated Successfully');
+            return redirect('admin/users')->with('message', 'Pengguna Berhasil di Ubah');
         }
-        return redirect('admin/users')->with('message', 'No User Found');
+        return redirect('admin/users')->with('message', 'Pengguna Tidak Ditemukan');
     }
 }

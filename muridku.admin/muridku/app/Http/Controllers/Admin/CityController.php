@@ -36,7 +36,7 @@ class CityController extends Controller
         $city->dtm_upd = now();
         $city->save();
 
-        return redirect('admin/city')->with('message', 'City Added Successfully');
+        return redirect('admin/city')->with('message', 'Berhasil di Tambah');
     }
 
     public function update(CityFormRequest $request, $city_id)
@@ -54,7 +54,7 @@ class CityController extends Controller
         $city->dtm_upd = now();
         $city->update();
 
-        return redirect('admin/city')->with('message', 'City Updated Successfully');
+        return redirect('admin/city')->with('message', 'City Berhasil di Ubah');
     }
 
     public function edit($city_id)

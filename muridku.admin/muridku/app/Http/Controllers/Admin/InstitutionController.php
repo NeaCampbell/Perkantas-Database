@@ -38,7 +38,7 @@ class InstitutionController extends Controller
         $institution->dtm_upd = now();
         $institution->save();
 
-        return redirect('admin/institution')->with('message', 'Institution Added Successfully');
+        return redirect('admin/institution')->with('message', 'Instansi Berhasil di Tambah');
     }
 
     public function update(InstitutionFormRequest $request, $institution_id)
@@ -58,7 +58,7 @@ class InstitutionController extends Controller
         $institution->dtm_upd = now();
         $institution->update();
 
-        return redirect('admin/institution')->with('message', 'Institution Updated Successfully');
+        return redirect('admin/institution')->with('message', 'Instansi Berhasil di Ubah');
     }
 
     public function edit($institution_id)
@@ -77,11 +77,11 @@ class InstitutionController extends Controller
                 File::delete($destination);
             }
             $institution->delete();
-            return redirect('admin/institution')->with('message', 'Kota Berhasil di Hapus');
+            return redirect('admin/institution')->with('message', 'Instansi Berhasil di Hapus');
         }
         else
         {
-            return redirect('admin/institution')->with('message', 'Kota Tidak Ditemukan');
+            return redirect('admin/institution')->with('message', 'Instansi Tidak Ditemukan');
         }
     }
 }
