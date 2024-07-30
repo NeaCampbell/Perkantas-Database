@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Report;
+use App\Models\Ktb;
+use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -13,7 +14,8 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $report = Report::all();
+        $member = Member::all();
+        $report = Ktb::all();
         return view('admin.report.index', compact('report'));
     }
 
