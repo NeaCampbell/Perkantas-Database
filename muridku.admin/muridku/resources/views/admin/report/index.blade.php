@@ -5,16 +5,13 @@
 @section('content')
 
 <div class="container-fluid px-4">
-
     <div class="card mt-4">
         <div class="card-header">
-            <h4>View Report
-                <a href="{{ url('admin/add-report') }}" class="btn btn-primary btn-sm float-end">Add Report</a>
-            </h4>
+            <h4>View Report</h4>
         </div>
         <div class="card-body">
             @if (session('message'))
-            <div class="alert alert-success">{{ session('message') }}</div>
+                <div class="alert alert-success">{{ session('message') }}</div>
             @endif
 
             <table class="table table-bordered">
@@ -30,11 +27,21 @@
                 <tbody>
                     @foreach ($report as $item)
                     <tr>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->last_meet_dt }}</td>
-                        <td>{{ $item->name }}</td>
+                        <td>
+                            {{ $item->name }}
+                        </td>
+                        <td>
+                            {{ $item->member_name }}
+                        </td>
+                        <td>
+                            {{ $item->institution_name }}
+                        </td>
+                        <td>
+                            {{ $item->last_meet_dt }}
+                        </td>
+                        <td>
+                            {{ $item->status }}
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>

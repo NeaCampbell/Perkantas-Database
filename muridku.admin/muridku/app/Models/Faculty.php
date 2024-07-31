@@ -17,9 +17,4 @@ class Faculty extends Model
         'code',
         'name'
     ];
-
-    public function institution()
-    {
-        return $this->belongsTo(Institution::class, 'institution_id');
-    }
 }

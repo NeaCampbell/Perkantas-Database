@@ -8,14 +8,38 @@ use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Admin\ReportFormRequest;
 
 class ReportController extends Controller
 {
     public function index()
     {
-        $member = Member::all();
-        $report = Ktb::all();
+        // $report = Ktb::with([
+        //     'member' => function($query) {
+        //         $query->join('memberinstitutionhist', 'member.id', '=', 'memberinstitutionhist.member_id')
+        //               ->select('member.id', 'member.name', 'memberinstitutionhist.institution_id');
+        //     },
+        //     'ktbHistory' => function($query) {
+        //         $query->latest('meet_dt');
+        //     }
+        // ])->get();
+
+        $report = Ktb::join('ktbmember', 'ktbmember.ktb_id', '=', 'ktb.id')
+            ->join('member', 'member.id', '=', 'ktbmember.member_id')
+            ->leftJoin('institution', 'institution.id', '=', 'member.institution_id')
+            ->leftJoin('ktbhistory', 'ktbhistory.ktb_id', '=', 'ktb.id')
+            ->select('ktbmember.member_id', 'ktb.name', 'member.name as member_name', 'institution.name as institution_name',
+                DB::raw('MAX(ktbhistory.meet_dt) as last_meet_dt'),
+                DB::raw('CASE
+                    WHEN DATEDIFF(CURRENT_DATE(), MAX(ktbhistory.meet_dt)) > 6 THEN "Mati"
+                    WHEN DATEDIFF(CURRENT_DATE(), MAX(ktbhistory.meet_dt)) BETWEEN 4 AND 6 THEN "Vakum"
+                    WHEN DATEDIFF(CURRENT_DATE(), MAX(ktbhistory.meet_dt)) <= 3 THEN "Aktif"
+                    ELSE "undefined"
+                END AS status'))
+            ->groupBy('ktbmember.member_id', 'ktb.name', 'member.name', 'institution.name')
+            ->get();
+
         return view('admin.report.index', compact('report'));
     }
 
