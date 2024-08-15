@@ -19,8 +19,8 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::put('update-user/{user_id}', [App\Http\Controllers\Admin\UserController::class, 'update']);
 
     Route::get('report', [App\Http\Controllers\Admin\ReportController::class, 'index']);
-    Route::get('add-report', [App\Http\Controllers\Admin\ReportController::class, 'create']);
-    Route::post('add-report', [App\Http\Controllers\Admin\ReportController::class, 'store']);
+    Route::get('filter-periode', [App\Http\Controllers\Admin\ReportController::class, 'filter_periode']);
+    Route::post('filter-tanggal', [App\Http\Controllers\Admin\ReportController::class, 'filter_tanggal']);
     Route::get('edit-report/{report_id}', [App\Http\Controllers\Admin\ReportController::class, 'edit']);
     Route::put('update-report/{report_id}', [App\Http\Controllers\Admin\ReportController::class, 'update']);
     Route::get('delete-report/{report_id}', [App\Http\Controllers\Admin\ReportController::class, 'delete']);

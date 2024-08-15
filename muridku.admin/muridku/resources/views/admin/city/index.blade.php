@@ -17,29 +17,31 @@
             <div class="alert alert-success">{{ session('message') }}</div>
             @endif
 
-            <table id="dataTable" class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Kode</th>
-                        <th>Nama</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($city as $item)
-                    <tr>
-                        <td>{{ $item->id }}</td>
-                        <td>{{ $item->code }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>
-                            <a href="{{ url('admin/edit-city/'.$item->id) }}" class="btn btn-success"><i class="fas fa-edit"></i></a>
-                            <a href="{{ url('admin/delete-city/'.$item->id) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table id="dataTable" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Kode</th>
+                            <th>Nama</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($city as $item)
+                        <tr>
+                            <td>{{ $item->id }}</td>
+                            <td>{{ $item->code }}</td>
+                            <td>{{ $item->name }}</td>
+                            <td>
+                                <a href="{{ url('admin/edit-city/'.$item->id) }}" class="btn btn-success"><i class="fas fa-edit"></i></a>
+                                <a href="{{ url('admin/delete-city/'.$item->id) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

@@ -16,6 +16,7 @@
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="//cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
 </head>
@@ -38,8 +39,34 @@
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/scripts.js') }}"></script>
     <script src="//cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script>
-        let table = new DataTable('#dataTable');
+        $(document).ready(function() {
+            var table = $('#dataTableWithFilters').DataTable({
+                // responsive: true,
+                initComplete: function() {
+                    var api = this.api();
+                    api.columns().every(function() {
+                        var column = this;
+                        var title = $(column.header()).text();
+                        var input = $('<input type="text" placeholder="Search ' + title + '" />')
+                            .appendTo($(column.header()).empty())
+                            .on('keyup change clear', function() {
+                                // Get the search term
+                                if (column.search() !== this.value) {
+                                    column.search(this.value).draw();
+                                }
+                            });
+                        $(input).click(function(e) {
+                            e.stopPropagation();
+                        });
+                    });
+                }
+            });
+            var dataTableWithoutFilters = $('#dataTable').DataTable({
+                responsive: true,
+            });
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
@@ -58,6 +85,6 @@
                 });
             }
         });
-        </script>
+    </script>
 </body>
 </html>
