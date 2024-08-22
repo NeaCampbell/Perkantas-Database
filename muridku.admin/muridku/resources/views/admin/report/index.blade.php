@@ -14,8 +14,29 @@
                 <div class="alert alert-success">{{ session('message') }}</div>
             @endif
 
-            <a href="{{ url('admin/filter-periode') }}" class="btn btn-primary btn-sm">Filter Periode</a>
-            <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#filterTanggalModal">Filter Tanggal</a>
+            <form action="{{ url('admin/filter-tanggal') }}" method="POST" enctype="multipart/form-data">
+                <div class="row align-items-end">
+                    @csrf
+                    <!-- Bagian Pilih Tahun -->
+                    <div class="col-md-3">
+                        <label for="year">Pilih Tahun:</label>
+                        <select id="year" name="year" class="form-control">
+                            <!-- Opsi tahun akan ditambahkan di sini -->
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="start_date">Tanggal Awal:</label>
+                        <input type="date" id="start_date" name="start_date" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="end_date">Tanggal Akhir:</label>
+                        <input type="date" id="end_date" name="end_date" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                    </div>
+                </div>
+            </form>
 
             <div class="table-responsive">
                 <table id="dataTableWithFilters" class="table table-bordered">
@@ -57,41 +78,6 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- The Modal -->
-<div class="modal fade" id="filterTanggalModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">Filter Tanggal</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <!-- Modal Body -->
-            <div class="modal-body">
-                <form action="{{ url('admin/filter-tanggal') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="col-md-3">
-                        <label> Tanggal Awal: </label>
-                        <input type="date" name="start_date" class="form-control">
-                    </div>
-                    <div class="col-md-3">
-                        <label> Tanggal Akhir: </label>
-                        <input type="date" name="end_date" class="form-control">
-                    </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                </form>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>

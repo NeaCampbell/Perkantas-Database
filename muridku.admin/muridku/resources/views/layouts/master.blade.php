@@ -43,7 +43,6 @@
     <script>
         $(document).ready(function() {
             var table = $('#dataTableWithFilters').DataTable({
-                // responsive: true,
                 initComplete: function() {
                     var api = this.api();
                     api.columns().every(function() {
@@ -52,7 +51,6 @@
                         var input = $('<input type="text" placeholder="Search ' + title + '" />')
                             .appendTo($(column.header()).empty())
                             .on('keyup change clear', function() {
-                                // Get the search term
                                 if (column.search() !== this.value) {
                                     column.search(this.value).draw();
                                 }
@@ -61,7 +59,21 @@
                             e.stopPropagation();
                         });
                     });
-                }
+                },
+                "searching": false,
+                "columnDefs": [
+                    { className: "dt-head-left", "targets": "_all" },
+                    {
+                        "targets": 3, // Assuming the date is in the fourth column (0-indexed)
+                        "render": function(data, type, row) {
+                            var date = new Date(data);
+                            var day = date.getDate();
+                            var month = date.getMonth() + 1; // January is 0
+                            var year = date.getFullYear();
+                            return (day < 10 ? '0' + day : day) + '-' + (month < 10 ? '0' + month : month) + '-' + year;
+                        }
+                    }
+                ]
             });
             var dataTableWithoutFilters = $('#dataTable').DataTable({
                 responsive: true,
@@ -85,6 +97,41 @@
                 });
             }
         });
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const yearSelect = document.getElementById('year');
+        const currentYear = new Date().getFullYear();
+        // Mengisi pilihan tahun dari tahun saat ini sampai 10 tahun yang lalu
+        for (let year = currentYear; year >= currentYear - 10; year--) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+        }
+        lockYear(); // Panggil fungsi untuk mengatur tahun secara otomatis setelah pilihan diisi
+
+        // Menambahkan event listener untuk perubahan tahun
+        yearSelect.addEventListener('change', function() {
+            lockYear(); // Fungsi ini dipanggil setiap kali tahun berubah
+        });
+    });
+
+    function lockYear() {
+        const year = document.getElementById('year').value;
+        const startDate = document.getElementById('start_date');
+        const endDate = document.getElementById('end_date');
+
+        startDate.value = ''; // Kosongkan nilai saat ini
+        endDate.value = ''; // Kosongkan nilai saat ini
+
+        startDate.min = year + '-01-01'; // Setel tanggal minimum
+        startDate.max = year + '-12-31'; // Setel tanggal maksimum
+
+        endDate.min = year + '-01-01'; // Setel tanggal minimum
+        endDate.max = year + '-12-31'; // Setel tanggal maksimum
+    }
     </script>
 </body>
 </html>

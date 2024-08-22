@@ -15,16 +15,6 @@ class ReportController extends Controller
 {
     public function index()
     {
-        // $report = Ktb::with([
-        //     'member' => function($query) {
-        //         $query->join('memberinstitutionhist', 'member.id', '=', 'memberinstitutionhist.member_id')
-        //               ->select('member.id', 'member.name', 'memberinstitutionhist.institution_id');
-        //     },
-        //     'ktbHistory' => function($query) {
-        //         $query->latest('meet_dt');
-        //     }
-        // ])->get();
-
         $report = Ktb::join('ktbmember', 'ktbmember.ktb_id', '=', 'ktb.id')
             ->join('member', 'member.id', '=', 'ktbmember.member_id')
             ->leftJoin('institution', 'institution.id', '=', 'member.institution_id')
