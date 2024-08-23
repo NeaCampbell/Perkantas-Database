@@ -15,8 +15,7 @@
     <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet">
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="//cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/2.1.4/css/dataTables.dataTables.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
 </head>
@@ -38,8 +37,25 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="crossorigin="anonymous"></script>
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/scripts.js') }}"></script>
-    <script src="//cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="//cdn.datatables.net/2.1.4/js/dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Periksa jika modal ada di halaman
+            if ($('#addFacultyModal').length) {
+                $('#institution_id').select2({
+                    theme: 'bootstrap',
+                    placeholder: "-- Pilih Instansi --",
+                    dropdownParent: $("#addFacultyModal")
+                });
+            } else {
+                $('#institution_id').select2({
+                    theme: 'bootstrap',
+                    placeholder: "-- Pilih Instansi --"
+                });
+            }
+        });
+    </script>
     <script>
         $(document).ready(function() {
             var table = $('#dataTableWithFilters').DataTable({
@@ -60,7 +76,7 @@
                         });
                     });
                 },
-                "searching": false,
+                scrollX: true,
                 "columnDefs": [
                     { className: "dt-head-left", "targets": "_all" },
                     {
@@ -73,32 +89,13 @@
                             return (day < 10 ? '0' + day : day) + '-' + (month < 10 ? '0' + month : month) + '-' + year;
                         }
                     }
-                ]
+                ],
             });
             var dataTableWithoutFilters = $('#dataTable').DataTable({
-                responsive: true,
+                // responsive: true,
             });
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Periksa jika modal ada di halaman
-            if ($('#addFacultyModal').length) {
-                $('#institution_id').select2({
-                    theme: 'bootstrap',
-                    placeholder: "-- Pilih Instansi --",
-                    dropdownParent: $("#addFacultyModal")
-                });
-            } else {
-                $('#institution_id').select2({
-                    theme: 'bootstrap',
-                    placeholder: "-- Pilih Instansi --"
-                });
-            }
-        });
-    </script>
-
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const yearSelect = document.getElementById('year');
