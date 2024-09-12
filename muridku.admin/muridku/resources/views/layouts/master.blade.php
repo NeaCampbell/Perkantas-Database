@@ -58,7 +58,7 @@
     </script>
     <script>
         $(document).ready(function() {
-            var table = $('#dataTableWithFilters').DataTable({
+            var table = $('#dataTableWithFilter').DataTable({
                 initComplete: function() {
                     var api = this.api();
                     api.columns().every(function() {
@@ -76,6 +76,7 @@
                         });
                     });
                 },
+                // "bFilter": false,
                 scrollX: true,
                 "columnDefs": [
                     { className: "dt-head-left", "targets": "_all" },

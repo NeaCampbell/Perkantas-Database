@@ -38,7 +38,7 @@
                 </div>
             </form>
 
-            <table id="dataTableWithFilters" class="table table-bordered">
+            <table id="dataTableWithFilter" class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Nama KTB</th>
