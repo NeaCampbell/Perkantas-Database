@@ -10,12 +10,13 @@
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
     <!-- Styles -->
     <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet">
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-
-    <link rel="stylesheet" href="//cdn.datatables.net/2.1.4/css/dataTables.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.6/css/dataTables.dataTables.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/rowreorder/1.5.0/css/rowReorder.dataTables.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.3/css/responsive.dataTables.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
 </head>
@@ -34,11 +35,14 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="crossorigin="anonymous"></script>
-    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/scripts.js') }}"></script>
-    <script src="//cdn.datatables.net/2.1.4/js/dataTables.min.js"></script>
+    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.1.6/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/rowreorder/1.5.0/js/dataTables.rowReorder.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script>
         $(document).ready(function() {
             // Periksa jika modal ada di halaman
@@ -59,6 +63,10 @@
     <script>
         $(document).ready(function() {
             var table = $('#dataTableWithFilter').DataTable({
+                responsive: true,
+                rowReorder: {
+                    selector: 'td:nth-child(2)'
+                },
                 initComplete: function() {
                     var api = this.api();
                     api.columns().every(function() {
@@ -71,13 +79,8 @@
                                     column.search(this.value).draw();
                                 }
                             });
-                        $(input).click(function(e) {
-                            e.stopPropagation();
-                        });
                     });
                 },
-                // "bFilter": false,
-                scrollX: true,
                 "columnDefs": [
                     { className: "dt-head-left", "targets": "_all" },
                     {
@@ -93,27 +96,23 @@
                 ],
             });
             var dataTableWithoutFilters = $('#dataTable').DataTable({
-                // responsive: true,
+                responsive: true,
+                rowReorder: {
+                    selector: 'td:nth-child(2)'
+                },
             });
         });
     </script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const yearSelect = document.getElementById('year');
-        const currentYear = new Date().getFullYear();
-        // Mengisi pilihan tahun dari tahun saat ini sampai 10 tahun yang lalu
-        for (let year = currentYear; year >= currentYear - 10; year--) {
-            const option = document.createElement('option');
-            option.value = year;
-            option.textContent = year;
-            yearSelect.appendChild(option);
-        }
-        lockYear(); // Panggil fungsi untuk mengatur tahun secara otomatis setelah pilihan diisi
-
-        // Menambahkan event listener untuk perubahan tahun
-        yearSelect.addEventListener('change', function() {
-            lockYear(); // Fungsi ini dipanggil setiap kali tahun berubah
-        });
+            const yearSelect = document.getElementById('year');
+            const currentYear = new Date().getFullYear();
+            for (let year = currentYear; year >= currentYear - 10; year--) {
+                let option = new Option(year, year);
+                yearSelect.add(option);
+            }
+            lockYear();
+            yearSelect.addEventListener('change', lockYear);
     });
 
     function lockYear() {

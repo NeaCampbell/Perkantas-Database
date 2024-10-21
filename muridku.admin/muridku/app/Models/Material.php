@@ -17,4 +17,14 @@ class Material extends Model
         'name',
         'chapter_count'
     ];
+
+    public function getTypeKTB()
+    {
+        $typename = [
+            '0' => 'Pra-KTB',
+            '1'  => 'KTB',
+        ];
+
+        return $typename[$this->is_pra_ktb] ?? 'Tipe Tidak Diketahui';
+    }
 }

@@ -24,6 +24,7 @@
                         <th>Kode</th>
                         <th>Nama</th>
                         <th>Jumlah Bab</th>
+                        <th>Pra-KTB/KTB</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -34,6 +35,7 @@
                         <td>{{ $item->code }}</td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->chapter_count }}</td>
+                        <td>{{ $item->getTypeKTB() }}</td>
                         <td>
                             <a href="{{ url('admin/edit-material/'.$item->id) }}" class="btn btn-success"><i class="fas fa-edit"></i></a>
                             <a href="{{ url('admin/delete-material/'.$item->id) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
