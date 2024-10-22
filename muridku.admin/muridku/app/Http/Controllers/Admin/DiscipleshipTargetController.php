@@ -50,6 +50,7 @@ class DiscipleshipTargetController extends Controller
         $data = $request->validated();
 
         $discipleship_target = DiscipleshipTarget::find($discipleship_target_id);
+        $discipleship_target->city_id = $data['city_id'];
         $discipleship_target->period_year = $data['period_year'];
         $discipleship_target->evangelism_target = $data['evangelism_target'];
         $discipleship_target->evangelism_movement_target = $data['evangelism_movement_target'];
@@ -70,7 +71,8 @@ class DiscipleshipTargetController extends Controller
     public function edit($discipleship_target_id)
     {
         $discipleship_target = DiscipleshipTarget::find($discipleship_target_id);
-        return view('admin.discipleship_target.edit', compact('discipleship_target'));
+        $city = City::all();
+        return view('admin.discipleship_target.edit', compact('discipleship_target', 'city'));
     }
 
     public function delete($discipleship_target_id)
