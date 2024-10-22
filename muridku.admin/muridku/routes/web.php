@@ -48,4 +48,10 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('edit-material/{material_id}', [App\Http\Controllers\Admin\MaterialController::class, 'edit']);
     Route::put('update-material/{material_id}', [App\Http\Controllers\Admin\MaterialController::class, 'update']);
     Route::get('delete-material/{material_id}', [App\Http\Controllers\Admin\MaterialController::class, 'delete']);
+
+    Route::get('discipleship_target', [App\Http\Controllers\Admin\DiscipleshipTargetController::class, 'index']);
+    Route::post('add-discipleship_target', [App\Http\Controllers\Admin\DiscipleshipTargetController::class, 'store']);
+    Route::get('edit-discipleship_target/{discipleship_target_id}', [App\Http\Controllers\Admin\DiscipleshipTargetController::class, 'edit']);
+    Route::put('update-discipleship_target/{discipleship_target_id}', [App\Http\Controllers\Admin\DiscipleshipTargetController::class, 'update']);
+    Route::get('delete-discipleship_target/{discipleship_target_id}', [App\Http\Controllers\Admin\DiscipleshipTargetController::class, 'delete']);
 });

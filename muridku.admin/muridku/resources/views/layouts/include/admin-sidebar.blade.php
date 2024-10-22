@@ -28,6 +28,10 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-book"></i></div>
                     Bahan KTB
                 </a>
+                <a class="nav-link" href="{{ url('admin/discipleship_target') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-people-group"></i></div>
+                    Target Pemuridan
+                </a>
                 <a class="nav-link" href="{{ url('admin/users') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-user-alt"></i></div>
                     Pengguna
