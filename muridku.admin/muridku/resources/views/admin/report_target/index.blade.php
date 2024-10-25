@@ -1,20 +1,20 @@
 @extends('layouts.master')
 
-@section('title', 'Laporan')
+@section('title', 'Laporan Target Pemuridan')
 
 @section('content')
 
 <div class="container-fluid px-4">
     <div class="card mt-4">
         <div class="card-header">
-            <h4>Laporan KTB</h4>
+            <h4>Laporan Target Pemuridan</h4>
         </div>
         <div class="card-body">
             @if (session('message'))
                 <div class="alert alert-success">{{ session('message') }}</div>
             @endif
 
-            <form action="{{ url('admin/filter-tanggal') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ url('admin/filter-periode') }}" method="POST" enctype="multipart/form-data">
                 <div class="row align-items-end">
                     @csrf
                     <!-- Bagian Pilih Tahun -->
@@ -25,14 +25,6 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label for="start_date">Tanggal Awal:</label>
-                        <input type="date" id="start_date" name="start_date" class="form-control">
-                    </div>
-                    <div class="col-md-3">
-                        <label for="end_date">Tanggal Akhir:</label>
-                        <input type="date" id="end_date" name="end_date" class="form-control">
-                    </div>
-                    <div class="col-md-3">
                         <button type="submit" class="btn btn-primary">Filter</button>
                     </div>
                 </div>
@@ -41,37 +33,32 @@
             <table id="dataTableWithFilter" class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Nama KTB</th>
-                        <th>Nama Peserta KTB</th>
-                        <th>Instansi Peserta KTB</th>
-                        <th>Tanggal Pertemuan Terakhir</th>
-                        <th>Status Keaktifan</th>
+                        <th>ID Kota</th>
+                        <th>Nama Kota</th>
+                        <th>Jumlah P-KTB</th>
+                        <th>Target P-KTB</th>
                     </tr>
                     <tr>
-                        <th>Nama KTB</th>
-                        <th>Nama Peserta KTB</th>
-                        <th>Instansi Peserta KTB</th>
-                        <th>Tanggal Pertemuan Terakhir</th>
-                        <th>Status Keaktifan</th>
+                        <th>ID Kota</th>
+                        <th>Nama Kota</th>
+                        <th>Jumlah P-KTB</th>
+                        <th>Target P-KTB</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($report as $item)
+                    @foreach ($report_target as $item)
                     <tr>
                         <td>
-                            {{ $item->name }}
+                            {{ $item->city_id }}
                         </td>
                         <td>
-                            {{ $item->member_name }}
+                            {{ $item->city_name }}
                         </td>
                         <td>
-                            {{ $item->institution_name }}
+                            {{ $item->new_pktb_count }}
                         </td>
                         <td>
-                            {{ $item->last_meet_dt }}
-                        </td>
-                        <td>
-                            {{ $item->status }}
+                            {{ $item->ktb_leader_target }}
                         </td>
                     </tr>
                     @endforeach

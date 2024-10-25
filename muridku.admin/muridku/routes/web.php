@@ -25,6 +25,9 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::put('update-report/{report_id}', [App\Http\Controllers\Admin\ReportController::class, 'update']);
     Route::get('delete-report/{report_id}', [App\Http\Controllers\Admin\ReportController::class, 'delete']);
 
+    Route::get('report_target', [App\Http\Controllers\Admin\ReportTargetController::class, 'index']);
+    Route::post('filter-periode', [App\Http\Controllers\Admin\ReportTargetController::class, 'filter_periode']);
+
     Route::get('city', [App\Http\Controllers\Admin\CityController::class, 'index']);
     Route::post('add-city', [App\Http\Controllers\Admin\CityController::class, 'store']);
     Route::get('edit-city/{city_id}', [App\Http\Controllers\Admin\CityController::class, 'edit']);
