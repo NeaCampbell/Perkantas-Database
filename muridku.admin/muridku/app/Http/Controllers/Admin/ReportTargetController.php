@@ -17,32 +17,68 @@ class ReportTargetController extends Controller
 {
     public function index()
     {
-        $filterTahunPeriode = $filterTahunPeriode ?? date('Y');;
+        $filterTahunPeriode = $filterTahunPeriode ?? date('Y');
+        $report_target = Ktb::from("ktb")
+        ->join('ktbmember', 'ktbmember.ktb_id', '=', 'ktb.id')
+        ->join('member', 'member.id', '=', 'ktbmember.member_id')
+        ->join('discipleship_target', 'discipleship_target.city_id', '=', 'member.city_id')
+        ->join('city', 'city.id', '=', 'member.city_id')
+        ->join(DB::raw("(select ktb_id, MIN(meet_dt) as first_meet_dt from ktbhistory group by ktb_id) as ktbhistory"), 'ktbhistory.ktb_id', '=', 'ktb.id')
+        ->where(DB::raw('YEAR(ktbhistory.first_meet_dt)'), "=", $filterTahunPeriode)
+        ->where('ktbmember.is_pktb', '=', 1)
+        ->where('discipleship_target.period_year', '=', $filterTahunPeriode)
+        ->select(
+            'city.id as city_id',
+            'city.name as city_name',
+            DB::raw('count(*) as new_pktb_count'),
+            DB::raw('COALESCE(discipleship_target.ktb_leader_target, 0) as ktb_leader_target')
+        )
+        ->groupBy('city.id', 'city.name', DB::raw('COALESCE(discipleship_target.ktb_leader_target, 0)'))
+        ->get();
 
-        $report_target = Ktb::leftJoin('ktbhistory', 'ktbhistory.ktb_id', '=', 'ktb.id')
-            ->whereRaw('YEAR(ktbhistory.meet_dt) = ?', [$filterTahunPeriode])
-            ->join('ktbmember', 'ktbmember.ktb_id', '=', 'ktb.id')
-                ->where('ktbmember.is_pktb', '=', 1)
-                // ->where('ktbmember.is_active', '=', 1)
-            ->join('member', 'member.id', '=', 'ktbmember.member_id')
-            ->join('discipleship_target', 'discipleship_target.city_id', '=', 'member.city_id')
-                ->where('discipleship_target.period_year', '=', $filterTahunPeriode)
-            ->join('city', 'city.id', '=', 'member.city_id')
-            ->select('city.id as city_id', 'city.name as city_name', DB::raw('count(*) as new_pktb_count'), 'discipleship_target.ktb_leader_target as ktb_leader_target')
-            ->groupBy('city.id', 'city.name', 'discipleship_target.ktb_leader_target')
-            ->get();
+        $old_new_ktb = Ktb::from("ktb")
+        ->join('ktbmember', function($join) {
+            $join->on('ktbmember.ktb_id', '=', 'ktb.id')
+                 ->where('ktbmember.is_pktb', '=', 1)
+                 ->where('ktbmember.is_active', '=', 1);
+        })
+        ->join('member', 'member.id', '=', 'ktbmember.member_id')
+        ->join('discipleship_target as dt', function($join) use ($filterTahunPeriode) {
+            $join->on('dt.city_id', '=', 'member.city_id')
+                 ->where('dt.period_year', '=', $filterTahunPeriode);
+        })
+        ->join('city', 'city.id', '=', 'member.city_id')
+        ->leftJoin(DB::raw("
+            (select ktb_id, MIN(meet_dt) as first_meet_dt
+             from ktbhistory
+             group by ktb_id
+             having MIN(YEAR(meet_dt)) = $filterTahunPeriode
+            ) as ktb_history_new"), 'ktb_history_new.ktb_id', '=', 'ktb.id')
+        ->leftJoin(DB::raw("
+            (select ktb_id, MIN(meet_dt) as first_meet_dt
+             from ktbhistory
+             group by ktb_id
+             having MIN(YEAR(meet_dt)) < $filterTahunPeriode
+            ) as ktb_history_old"), 'ktb_history_old.ktb_id', '=', 'ktb.id')
+        ->select(
+            'city.id as city_id',
+            'city.name as city_name',
+            DB::raw('SUM(case when ktb_history_new.ktb_id is not null then 1 else 0 end) as new_pktb'),
+            DB::raw('SUM(case when ktb_history_old.ktb_id is not null then 1 else 0 end) as old_pktb')
+        )
+        ->groupBy('city.id', 'city.name')
+        ->get();
 
-        return view('admin.report_target.index', compact('report_target'));
+        return view('admin.report_target.index', compact('report_target', 'old_new_ktb'));
     }
 
     public function filter_periode(Request $request)
     {
         $validatedData = $request->validate([
-            'year' => 'nullable|integer',
+            'year' => 'required|string',
         ]);
 
         $filterTahunPeriode = $validatedData['year'];
-
 
         $report_target = Ktb::leftJoin('ktbhistory', 'ktbhistory.ktb_id', '=', 'ktb.id')
         ->whereRaw('YEAR(ktbhistory.meet_dt) = ?', [$filterTahunPeriode])

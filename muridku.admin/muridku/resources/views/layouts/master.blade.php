@@ -95,6 +95,27 @@
                     }
                 ],
             });
+
+            var table = $('table[id^="dataTableReportTarget"]').DataTable({
+                responsive: true,
+                rowReorder: {
+                    selector: 'td:nth-child(2)'
+                },
+                initComplete: function() {
+                    var api = this.api();
+                    api.columns().every(function() {
+                        var column = this;
+                        var title = $(column.header()).text();
+                        var input = $('<input type="text" placeholder="Search ' + title + '" />')
+                            .appendTo($(column.header()).empty())
+                            .on('keyup change clear', function() {
+                                if (column.search() !== this.value) {
+                                    column.search(this.value).draw();
+                                }
+                            });
+                    });
+                }
+            });
             var dataTableWithoutFilters = $('#dataTable').DataTable({
                 responsive: true,
                 rowReorder: {

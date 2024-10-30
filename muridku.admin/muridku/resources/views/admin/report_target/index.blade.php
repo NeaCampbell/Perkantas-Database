@@ -30,7 +30,7 @@
                 </div>
             </form>
 
-            <table id="dataTableWithFilter" class="table table-bordered">
+            <table id="dataTableReportTarget_1" class="table table-bordered">
                 <thead>
                     <tr>
                         <th>ID Kota</th>
@@ -59,6 +59,42 @@
                         </td>
                         <td>
                             {{ $item->ktb_leader_target }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+
+            <table id="dataTableReportTarget_2" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID Kota</th>
+                        <th>Nama Kota</th>
+                        <th>Jumlah P-KTB Baru</th>
+                        <th>Target P-KTB Lama</th>
+                    </tr>
+                    <tr>
+                        <th>ID Kota</th>
+                        <th>Nama Kota</th>
+                        <th>Jumlah P-KTB Baru</th>
+                        <th>Target P-KTB Lama</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($old_new_ktb as $item)
+                    <tr>
+                        <td>
+                            {{ $item->city_id }}
+                        </td>
+                        <td>
+                            {{ $item->city_name }}
+                        </td>
+                        <td>
+                            {{ $item->new_pktb }}
+                        </td>
+                        <td>
+                            {{ $item->old_pktb }}
                         </td>
                     </tr>
                     @endforeach
