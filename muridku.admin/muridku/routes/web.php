@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    if (auth()->check()) {
+        return auth()->user()->isAdmin() ? redirect('/admin/dashboard') : redirect('/home');
+    }
     return view('welcome');
 });
 

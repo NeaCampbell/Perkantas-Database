@@ -19,9 +19,9 @@
     <!-- Styles -->
     <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet">
 </head>
-<body>
-    <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+<body class="d-flex flex-column min-vh-100">
+    <div id="app" class="flex-grow-1">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
@@ -79,6 +79,14 @@
             @yield('content')
         </main>
     </div>
+
+    <footer class="py-4 bg-light mt-auto">
+        <div class="container-fluid px-4">
+            <div class="d-flex align-items-center justify-content-center small">
+                <div class="text-muted">COPYRIGHT &copy; 2024. ALL RIGHT RESERVED BY PERKANTAS JAWA TIMUR.</div>
+            </div>
+        </div>
+    </footer>
 
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
 </body>

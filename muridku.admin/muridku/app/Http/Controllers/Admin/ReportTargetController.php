@@ -18,6 +18,8 @@ class ReportTargetController extends Controller
     public function index()
     {
         $filterTahunPeriode = $filterTahunPeriode ?? date('Y');
+
+        // Tabel Jumlah Realisasi PKK 2024
         $report_target = Ktb::from("ktb")
         ->join('ktbmember', 'ktbmember.ktb_id', '=', 'ktb.id')
         ->join('member', 'member.id', '=', 'ktbmember.member_id')
@@ -36,6 +38,7 @@ class ReportTargetController extends Controller
         ->groupBy('city.id', 'city.name', DB::raw('COALESCE(discipleship_target.ktb_leader_target, 0)'))
         ->get();
 
+        // Tabel Jumlah Realisasi KTB 2024
         $old_new_ktb = Ktb::from("ktb")
         ->join('ktbmember', function($join) {
             $join->on('ktbmember.ktb_id', '=', 'ktb.id')
@@ -68,6 +71,9 @@ class ReportTargetController extends Controller
         )
         ->groupBy('city.id', 'city.name')
         ->get();
+
+        // Tabel Jumlah Realisasi PKK Baru di Tahun 2023 dan Yang Masih Bertahan Hingga 2024
+        // $new_pkk_2023_to_2024 =
 
         return view('admin.report_target.index', compact('report_target', 'old_new_ktb'));
     }
