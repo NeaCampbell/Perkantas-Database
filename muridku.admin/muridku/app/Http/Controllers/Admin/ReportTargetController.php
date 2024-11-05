@@ -73,9 +73,31 @@ class ReportTargetController extends Controller
         ->get();
 
         // Tabel Jumlah Realisasi PKK Baru di Tahun 2023 dan Yang Masih Bertahan Hingga 2024
-        // $new_pkk_2023_to_2024 =
+        $new_pkk_before_to_now = Ktb::from('ktb')
+        ->join('ktbmember', function ($join) {
+            $join->on('ktbmember.ktb_id', '=', 'ktb.id')
+                ->where('ktbmember.is_pktb', '=', 1)
+                ->where('ktbmember.is_active', '=', 1);
+        })
+        ->join('member', 'member.id', '=', 'ktbmember.member_id')
+        ->join('discipleship_target as dt', function ($join) use ($filterTahunPeriode) {
+            $join->on('dt.city_id', '=', 'member.city_id')
+                ->where('dt.period_year', '=', $filterTahunPeriode);
+        })
+        ->join('city', 'city.id', '=', 'member.city_id')
+        ->join(DB::raw("(select ktb_id, MIN(meet_dt) as first_meet_dt, MAX(meet_dt) as last_meet_dt from ktbhistory group by ktb_id) as ktbhistory"), 'ktbhistory.ktb_id', '=', 'ktb.id')
+        ->where(DB::raw('YEAR(ktbhistory.first_meet_dt)'), '=', $filterTahunPeriode - 1)
+        ->where(DB::raw("DATEDIFF(CONCAT($filterTahunPeriode, '-12-31'), ktbhistory.last_meet_dt)"), '<', 360)
+        ->select(
+            'city.id as city_id',
+            'city.name as city_name',
+            DB::raw('count(*) as new_pktb_count'),
+            DB::raw('COALESCE(dt.ktb_leader_target, 0) as ktb_leader_target')
+        )
+        ->groupBy('city.id', 'city.name', DB::raw('COALESCE(dt.ktb_leader_target, 0)'))
+        ->get();
 
-        return view('admin.report_target.index', compact('report_target', 'old_new_ktb'));
+        return view('admin.report_target.index', compact('report_target', 'old_new_ktb', '$new_pkk_before_to_now'));
     }
 
     public function filter_periode(Request $request)

@@ -65,20 +65,19 @@
                 </tbody>
             </table>
 
-
             <table id="dataTableReportTarget_2" class="table table-bordered">
                 <thead>
                     <tr>
                         <th>ID Kota</th>
                         <th>Nama Kota</th>
                         <th>Jumlah P-KTB Baru</th>
-                        <th>Target P-KTB Lama</th>
+                        <th>Jumlah P-KTB Lama</th>
                     </tr>
                     <tr>
                         <th>ID Kota</th>
                         <th>Nama Kota</th>
                         <th>Jumlah P-KTB Baru</th>
-                        <th>Target P-KTB Lama</th>
+                        <th>Jumlah P-KTB Lama</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -95,6 +94,41 @@
                         </td>
                         <td>
                             {{ $item->old_pktb }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <table id="dataTableReportTarget_3" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID Kota</th>
+                        <th>Nama Kota</th>
+                        <th>Jumlah P-KTB Baru</th>
+                        <th>Target P-KTB Baru</th>
+                    </tr>
+                    <tr>
+                        <th>ID Kota</th>
+                        <th>Nama Kota</th>
+                        <th>Jumlah P-KTB Baru</th>
+                        <th>Target P-KTB Baru</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($new_pkk_before_to_now as $item)
+                    <tr>
+                        <td>
+                            {{ $item->city_id }}
+                        </td>
+                        <td>
+                            {{ $item->city_name }}
+                        </td>
+                        <td>
+                            {{ $item->new_pktb_count }}
+                        </td>
+                        <td>
+                            {{ $item->ktb_leader_target }}
                         </td>
                     </tr>
                     @endforeach
