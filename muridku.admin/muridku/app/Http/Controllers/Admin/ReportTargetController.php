@@ -97,7 +97,7 @@ class ReportTargetController extends Controller
         ->groupBy('city.id', 'city.name', DB::raw('COALESCE(dt.ktb_leader_target, 0)'))
         ->get();
 
-        return view('admin.report_target.index', compact('report_target', 'old_new_ktb', '$new_pkk_before_to_now'));
+        return view('admin.report_target.index', compact('report_target', 'old_new_ktb', 'new_pkk_before_to_now'));
     }
 
     public function filter_periode(Request $request)
