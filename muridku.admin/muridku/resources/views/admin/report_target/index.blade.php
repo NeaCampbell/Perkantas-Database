@@ -30,6 +30,7 @@
                 </div>
             </form>
 
+            <h3>Jumlah Realisasi PKK 2024</h3>
             <table id="dataTableReportTarget_1" class="table table-bordered">
                 <thead>
                     <tr>
@@ -65,6 +66,7 @@
                 </tbody>
             </table>
 
+            <h3>Jumlah Realisasi KTB 2024</h3>
             <table id="dataTableReportTarget_2" class="table table-bordered">
                 <thead>
                     <tr>
@@ -100,19 +102,20 @@
                 </tbody>
             </table>
 
+            <h3>Jumlah Realisasi PKK Baru Tahun 2023 Yang Masih Bertahan Hingga 2024</h3>
             <table id="dataTableReportTarget_3" class="table table-bordered">
                 <thead>
                     <tr>
                         <th>ID Kota</th>
                         <th>Nama Kota</th>
-                        <th>Jumlah P-KTB Baru</th>
-                        <th>Target P-KTB Baru</th>
+                        <th>Jumlah P-KTB 2023</th>
+                        <th>Target P-KTB 2023</th>
                     </tr>
                     <tr>
                         <th>ID Kota</th>
                         <th>Nama Kota</th>
-                        <th>Jumlah P-KTB Baru</th>
-                        <th>Target P-KTB Baru</th>
+                        <th>Jumlah P-KTB 2023</th>
+                        <th>Target P-KTB 2023</th>
                     </tr>
                 </thead>
                 <tbody>

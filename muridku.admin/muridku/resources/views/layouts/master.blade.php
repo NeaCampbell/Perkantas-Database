@@ -62,6 +62,22 @@
     </script>
     <script>
         $(document).ready(function() {
+            // //error
+            // const urllist = $('#dataTable').attr('class').split(' ')
+            // const urlraw = urllist.filter(u=>u.includes('data-'))[0]
+            // const urlfixlist = urlraw.split('-');
+            // let urlfix = '';
+
+            // for (let i = 1; i < urlfixlist.length; i++) {
+            //     urlfix += urlfixlist[i];
+            //     if (i < urlfixlist.length - 1) urlfix += '/';
+            // }
+            // const urlfunc = '{{route("dummy")}}';
+            // const url = urlfunc.replace('dummy', urlfix);
+            // // console.log({urllist, urlraw, urlfix, urlfunc, url});
+            // var pagenumber = 0;
+            // var pagesize = 10;
+
             var table = $('#dataTableWithFilter').DataTable({
                 responsive: true,
                 rowReorder: {
@@ -116,12 +132,38 @@
                     });
                 }
             });
+
             var dataTableWithoutFilters = $('#dataTable').DataTable({
                 responsive: true,
+                processing:true,
+                serverSide: true,
                 rowReorder: {
                     selector: 'td:nth-child(2)'
                 },
+                // //error
+                // ajax: {
+                //     url: url,
+                //     type: "GET",
+                //     data: function (data) {
+                //         // data.search = $('input[type="search"]').val();
+                //         console.log({data});
+                //     }
+                // },
+                columns: [
+                    { data: 'id', name: 'id' },
+                    { data: 'code', name: 'code' },
+                    { data: 'name', name: 'name' },
+                    { data: 'created_at', name: 'created_at' },
+                    { data: 'updated_at', name: 'updated_at' },
+                    { data: 'action', name: 'action', orderable: false, searchable: false }
+                ]
             });
+            // $('#dataTable').on('page.dt', function () {
+            //     const info = dataTableWithoutFilters.page.info();
+            //     console.log({info});
+            //     pagenumber = info.page;
+            //     pagesize = info.length;
+            // })
         });
     </script>
     <script>

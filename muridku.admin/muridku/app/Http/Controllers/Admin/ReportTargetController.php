@@ -82,16 +82,14 @@ class ReportTargetController extends Controller
         ->join('member', 'member.id', '=', 'ktbmember.member_id')
         ->join('discipleship_target as dt', function ($join) use ($filterTahunPeriode) {
             $join->on('dt.city_id', '=', 'member.city_id')
-                ->where('dt.period_year', '=', $filterTahunPeriode);
+                ->where('dt.period_year', '=', $filterTahunPeriode - 1);
         })
         ->join('city', 'city.id', '=', 'member.city_id')
-        ->join(DB::raw("(select ktb_id, MIN(meet_dt) as first_meet_dt, MAX(meet_dt) as last_meet_dt from ktbhistory group by ktb_id) as ktbhistory"), 'ktbhistory.ktb_id', '=', 'ktb.id')
-        ->where(DB::raw('YEAR(ktbhistory.first_meet_dt)'), '=', $filterTahunPeriode - 1)
-        ->where(DB::raw("DATEDIFF(CONCAT($filterTahunPeriode, '-12-31'), ktbhistory.last_meet_dt)"), '<', 360)
+        ->leftJoin(DB::raw("(select ktb_id, MIN(meet_dt) as first_meet_dt, MAX(meet_dt) as last_meet_dt from ktbhistory group by ktb_id having DATEDIFF(CONCAT('".$filterTahunPeriode."', '-12-31'), MAX(meet_dt)) < 360 AND YEAR(MIN(meet_dt)) = ".$filterTahunPeriode." - 1) as ktbhistory"), 'ktbhistory.ktb_id', '=', 'ktb.id')
         ->select(
             'city.id as city_id',
             'city.name as city_name',
-            DB::raw('count(*) as new_pktb_count'),
+            DB::raw('SUM(case when ktbhistory.first_meet_dt is not null then 1 else 0 end) as new_pktb_count'),
             DB::raw('COALESCE(dt.ktb_leader_target, 0) as ktb_leader_target')
         )
         ->groupBy('city.id', 'city.name', DB::raw('COALESCE(dt.ktb_leader_target, 0)'))
