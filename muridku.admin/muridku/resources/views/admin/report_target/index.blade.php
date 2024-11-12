@@ -137,6 +137,47 @@
                     @endforeach
                 </tbody>
             </table>
+
+            <h3>Jumlah Distribusi PKK 2024</h3>
+            <table id="dataTableReportTarget_4" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID Kota</th>
+                        <th>Nama Kota</th>
+                        <th>Jumlah P-KTB SMA</th>
+                        <th>Jumlah P-KTB Kuliah</th>
+                        <th>Target P-KTB Kerja</th>
+                    </tr>
+                    <tr>
+                        <th>ID Kota</th>
+                        <th>Nama Kota</th>
+                        <th>Jumlah P-KTB SMA</th>
+                        <th>Jumlah P-KTB Kuliah</th>
+                        <th>Target P-KTB Kerja</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($new_pkk_before_to_now as $item)
+                    <tr>
+                        <td>
+                            {{ $item->city_id }}
+                        </td>
+                        <td>
+                            {{ $item->city_name }}
+                        </td>
+                        <td>
+                            {{ $item->pktb_shs }}
+                        </td>
+                        <td>
+                            {{ $item->pktb_col }}
+                        </td>
+                        <td>
+                            {{ $item->pktb_work }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

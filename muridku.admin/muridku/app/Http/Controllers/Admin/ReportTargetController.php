@@ -95,6 +95,89 @@ class ReportTargetController extends Controller
         ->groupBy('city.id', 'city.name', DB::raw('COALESCE(dt.ktb_leader_target, 0)'))
         ->get();
 
+        // Tabel Distribusi PKK 2024
+        $distributed_pktb = Ktb::from('ktb')
+        ->join('ktbmember', function ($join) {
+            $join->on('ktbmember.ktb_id', '=', 'ktb.id')
+                ->where('ktbmember.is_pktb', '=', 1)
+                ->where('ktbmember.is_active', '=', 1);
+        })
+        ->join('member', 'member.id', '=', 'ktbmember.member_id')
+        ->join('city', 'city.id', '=', 'member.city_id')
+        // Join untuk SHS
+        ->leftJoin(DB::raw("
+            (select ktbhistory.ktb_id
+            from ktbhistory
+            join ktbmember on ktbmember.ktb_id = ktbhistory.ktb_id and ktbmember.is_pktb = 1
+            join member on member.id = ktbmember.member_id
+            join institution on institution.id = member.institution_id and institution.type = 'SHS'
+            group by ktbhistory.ktb_id
+            having MIN(ktbhistory.meet_dt) = {$filterTahunPeriode}
+            ) as ktb_history_shs
+        "), 'ktb_history_shs.ktb_id', '=', 'ktb.id')
+        ->leftJoin(DB::raw("
+            (select ktbhistory.ktb_id
+            from ktbhistory
+            join ktbmember on ktbmember.ktb_id = ktbhistory.ktb_id and ktbmember.is_pktb = 1
+            join member on member.id = ktbmember.member_id
+            join institution on institution.id = member.institution_id and institution.type = 'SHS'
+            group by ktbhistory.ktb_id
+            having MIN(ktbhistory.meet_dt) < {$filterTahunPeriode} and MAX(ktbhistory.meet_dt) = {$filterTahunPeriode}
+            ) as ktb_history_shs_old
+        "), 'ktb_history_shs_old.ktb_id', '=', 'ktb.id')
+        // Join untuk COL
+        ->leftJoin(DB::raw("
+            (select ktbhistory.ktb_id
+            from ktbhistory
+            join ktbmember on ktbmember.ktb_id = ktbhistory.ktb_id and ktbmember.is_pktb = 1
+            join member on member.id = ktbmember.member_id
+            join institution on institution.id = member.institution_id and institution.type = 'COL'
+            group by ktbhistory.ktb_id
+            having MIN(ktbhistory.meet_dt) = {$filterTahunPeriode}
+            ) as ktb_history_col
+        "), 'ktb_history_col.ktb_id', '=', 'ktb.id')
+        ->leftJoin(DB::raw("
+            (select ktbhistory.ktb_id
+            from ktbhistory
+            join ktbmember on ktbmember.ktb_id = ktbhistory.ktb_id and ktbmember.is_pktb = 1
+            join member on member.id = ktbmember.member_id
+            join institution on institution.id = member.institution_id and institution.type = 'COL'
+            group by ktbhistory.ktb_id
+            having MIN(ktbhistory.meet_dt) < {$filterTahunPeriode} and MAX(ktbhistory.meet_dt) = {$filterTahunPeriode}
+            ) as ktb_history_col_old
+        "), 'ktb_history_col_old.ktb_id', '=', 'ktb.id')
+        // Join untuk WORK
+        ->leftJoin(DB::raw("
+            (select ktbhistory.ktb_id
+            from ktbhistory
+            join ktbmember on ktbmember.ktb_id = ktbhistory.ktb_id and ktbmember.is_pktb = 1
+            join member on member.id = ktbmember.member_id
+            join institution on institution.id = member.institution_id and institution.type = 'WORK'
+            group by ktbhistory.ktb_id
+            having MIN(ktbhistory.meet_dt) = {$filterTahunPeriode}
+            ) as ktb_history_work
+        "), 'ktb_history_work.ktb_id', '=', 'ktb.id')
+        ->leftJoin(DB::raw("
+            (select ktbhistory.ktb_id
+            from ktbhistory
+            join ktbmember on ktbmember.ktb_id = ktbhistory.ktb_id and ktbmember.is_pktb = 1
+            join member on member.id = ktbmember.member_id
+            join institution on institution.id = member.institution_id and institution.type = 'WORK'
+            group by ktbhistory.ktb_id
+            having MIN(ktbhistory.meet_dt) < {$filterTahunPeriode} and MAX(ktbhistory.meet_dt) = {$filterTahunPeriode}
+            ) as ktb_history_work_old
+        "), 'ktb_history_work_old.ktb_id', '=', 'ktb.id')
+        ->select(
+            'city.id as city_id',
+            'city.name as city_name',
+            DB::raw('SUM(case when ktb_history_shs.ktb_id is not null then 1 else 0 end) + SUM(case when ktb_history_shs_old.ktb_id is not null then 1 else 0 end) as pktb_shs'),
+            DB::raw('SUM(case when ktb_history_col.ktb_id is not null then 1 else 0 end) + SUM(case when ktb_history_col_old.ktb_id is not null then 1 else 0 end) as pktb_col'),
+            DB::raw('SUM(case when ktb_history_work.ktb_id is not null then 1 else 0 end) + SUM(case when ktb_history_work_old.ktb_id is not null then 1 else 0 end) as pktb_work')
+        )
+        ->groupBy('city.id', 'city.name')
+        ->get();
+
+
         return view('admin.report_target.index', compact('report_target', 'old_new_ktb', 'new_pkk_before_to_now'));
     }
 
