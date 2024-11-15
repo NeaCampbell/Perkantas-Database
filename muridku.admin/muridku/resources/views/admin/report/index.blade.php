@@ -14,23 +14,21 @@
                 <div class="alert alert-success">{{ session('message') }}</div>
             @endif
 
-            <form action="{{ url('admin/filter-tanggal') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ url('admin/filter-tanggal') }}" method="GET">
                 <div class="row align-items-end">
-                    @csrf
-                    <!-- Bagian Pilih Tahun -->
                     <div class="col-md-3">
                         <label for="year">Pilih Tahun:</label>
                         <select id="year" name="year" class="form-control">
-                            <!-- Opsi tahun akan ditambahkan di sini -->
+                            <!-- Opsi tahun akan diisi oleh JavaScript -->
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label for="start_date">Tanggal Awal:</label>
-                        <input type="date" id="start_date" name="start_date" class="form-control">
+                        <input type="date" id="start_date" name="start_date" class="form-control" value="{{ request('start_date') }}">
                     </div>
                     <div class="col-md-3">
                         <label for="end_date">Tanggal Akhir:</label>
-                        <input type="date" id="end_date" name="end_date" class="form-control">
+                        <input type="date" id="end_date" name="end_date" class="form-control" value="{{ request('end_date') }}">
                     </div>
                     <div class="col-md-3">
                         <button type="submit" class="btn btn-primary">Filter</button>

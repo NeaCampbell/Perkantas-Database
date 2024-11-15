@@ -80,6 +80,7 @@
 
             var table = $('#dataTableWithFilter').DataTable({
                 responsive: true,
+                autowitdh: true,
                 rowReorder: {
                     selector: 'td:nth-child(2)'
                 },
@@ -89,7 +90,7 @@
                         var column = this;
                         var title = $(column.header()).text();
                         var input = $('<input type="text" placeholder="Search ' + title + '" />')
-                            .appendTo($(column.header()).empty())
+                            .appendTo($(column.header()))
                             .on('keyup change clear', function() {
                                 if (column.search() !== this.value) {
                                     column.search(this.value).draw();
@@ -167,31 +168,46 @@
         });
     </script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             const yearSelect = document.getElementById('year');
-            const currentYear = new Date().getFullYear();
+            const startDateInput = document.getElementById('start_date');
+            const endDateInput = document.getElementById('end_date');
+
+            // Mengambil tahun saat ini dari PHP menggunakan Blade
+            const currentYear = {{ date('Y') }};
+            const selectedYear = "{{ request('year') ?? date('Y') }}"; // Mengambil tahun dari query parameter atau gunakan tahun saat ini
+
+            // Mengisi opsi tahun dari 10 tahun terakhir hingga tahun saat ini
             for (let year = currentYear; year >= currentYear - 10; year--) {
-                let option = new Option(year, year);
+                const option = new Option(year, year);
                 yearSelect.add(option);
             }
-            lockYear();
-            yearSelect.addEventListener('change', lockYear);
-    });
 
-    function lockYear() {
-        const year = document.getElementById('year').value;
-        const startDate = document.getElementById('start_date');
-        const endDate = document.getElementById('end_date');
+            // Mengatur opsi yang dipilih di dropdown year
+            yearSelect.value = selectedYear;
 
-        startDate.value = ''; // Kosongkan nilai saat ini
-        endDate.value = ''; // Kosongkan nilai saat ini
+            // Mengatur tanggal awal dan akhir berdasarkan tahun yang dipilih
+            yearSelect.addEventListener('change', function() {
+                const selectedYear = yearSelect.value;
+                if (selectedYear) {
+                    startDateInput.value = `${selectedYear}-01-01`;
+                    endDateInput.value = `${selectedYear}-12-31`;
+                    startDateInput.min = `${selectedYear}-01-01`;
+                    startDateInput.max = `${selectedYear}-12-31`;
+                    endDateInput.min = `${selectedYear}-01-01`;
+                    endDateInput.max = `${selectedYear}-12-31`;
+                }
+            });
 
-        startDate.min = year + '-01-01'; // Setel tanggal minimum
-        startDate.max = year + '-12-31'; // Setel tanggal maksimum
-
-        endDate.min = year + '-01-01'; // Setel tanggal minimum
-        endDate.max = year + '-12-31'; // Setel tanggal maksimum
-    }
+            // Mengatur batas tanggal awal dan akhir saat halaman dimuat
+            if (selectedYear) {
+                startDateInput.min = `${selectedYear}-01-01`;
+                startDateInput.max = `${selectedYear}-12-31`;
+                endDateInput.min = `${selectedYear}-01-01`;
+                endDateInput.max = `${selectedYear}-12-31`;
+            }
+        });
     </script>
+
 </body>
 </html>
