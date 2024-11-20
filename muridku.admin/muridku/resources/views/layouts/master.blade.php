@@ -80,38 +80,42 @@
 
             var table = $('#dataTableWithFilter').DataTable({
                 responsive: true,
-                autowitdh: true,
+                autowidth: true,
                 rowReorder: {
                     selector: 'td:nth-child(2)'
                 },
+                headerCallback: function(thead, data, start, end, display) {
+                    // Mengambil judul kolom hanya dari baris pertama
+                    $(thead).find('tr.search-row').hide(); // Sembunyikan baris pencarian di header responsif
+                },
                 initComplete: function() {
                     var api = this.api();
+
+                    // Menambahkan input pencarian pada baris kedua (search-row)
                     api.columns().every(function() {
                         var column = this;
-                        var title = $(column.header()).text();
-                        var input = $('<input type="text" placeholder="Search ' + title + '" />')
-                            .appendTo($(column.header()))
-                            .on('keyup change clear', function() {
-                                if (column.search() !== this.value) {
-                                    column.search(this.value).draw();
-                                }
-                            });
+                        $('input', $('.search-row th').eq(column.index())).on('keyup change clear', function() {
+                            if (column.search() !== this.value) {
+                                column.search(this.value).draw();
+                            }
+                        });
                     });
                 },
                 "columnDefs": [
                     { className: "dt-head-left", "targets": "_all" },
                     {
-                        "targets": 3, // Assuming the date is in the fourth column (0-indexed)
+                        "targets": 3, // Kolom tanggal
                         "render": function(data, type, row) {
                             var date = new Date(data);
                             var day = date.getDate();
-                            var month = date.getMonth() + 1; // January is 0
+                            var month = date.getMonth() + 1;
                             var year = date.getFullYear();
                             return (day < 10 ? '0' + day : day) + '-' + (month < 10 ? '0' + month : month) + '-' + year;
                         }
                     }
                 ],
             });
+
 
             var table = $('table[id^="dataTableReportTarget"]').DataTable({
                 responsive: true,

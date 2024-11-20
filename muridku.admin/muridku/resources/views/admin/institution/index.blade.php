@@ -76,9 +76,9 @@
                         <label for="type" class="form-label">Tipe Instansi</label>
                         <select class="form-select" id="type" name="type" required>
                             <option value="">Pilih Tipe Instansi</option>
-                            <option value="YYSN">Yayasan</option>
-                            <option value="GRJ">Gereja</option>
-                            <option value="KMPS">Kampus</option>
+                            <option value="SHS">SMA</option>
+                            <option value="COL">Kampus</option>
+                            <option value="WORK">Kerja</option>
                         </select>
                     </div>
                     <div class="mb-3">

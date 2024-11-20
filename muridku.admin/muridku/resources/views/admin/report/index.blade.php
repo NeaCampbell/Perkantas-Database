@@ -45,32 +45,22 @@
                         <th>Tanggal Pertemuan Terakhir</th>
                         <th>Status Keaktifan</th>
                     </tr>
-                    <tr>
-                        <th>Nama KTB</th>
-                        <th>Nama Peserta KTB</th>
-                        <th>Instansi Peserta KTB</th>
-                        <th>Tanggal Pertemuan Terakhir</th>
-                        <th>Status Keaktifan</th>
+                    <tr class="search-row">
+                        <th><input type="text" placeholder="Search Nama KTB"></th>
+                        <th><input type="text" placeholder="Search Nama Peserta KTB"></th>
+                        <th><input type="text" placeholder="Search Instansi Peserta"></th>
+                        <th><input type="text" placeholder="Search Tanggal Pertemuan"></th>
+                        <th><input type="text" placeholder="Search Status"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($report as $item)
                     <tr>
-                        <td>
-                            {{ $item->name }}
-                        </td>
-                        <td>
-                            {{ $item->member_name }}
-                        </td>
-                        <td>
-                            {{ $item->institution_name }}
-                        </td>
-                        <td>
-                            {{ $item->last_meet_dt }}
-                        </td>
-                        <td>
-                            {{ $item->status }}
-                        </td>
+                        <td>{{ $item->name }}</td>
+                        <td>{{ $item->member_name }}</td>
+                        <td>{{ $item->institution_name }}</td>
+                        <td>{{ $item->last_meet_dt }}</td>
+                        <td>{{ $item->status }}</td>
                     </tr>
                     @endforeach
                 </tbody>

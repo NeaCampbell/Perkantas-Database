@@ -36,9 +36,9 @@
                     <label for="type" class="form-label">Tipe Instansi</label>
                     <select class="form-select" id="type" name="type" required>
                         <option value="">Pilih Tipe Instansi</option>
-                        <option value="YYSN" {{ $institution->type == 'YYSN' ? 'selected' : '' }}>Yayasan</option>
-                        <option value="GRJ" {{ $institution->type == 'GRJ' ? 'selected' : '' }}>Gereja</option>
-                        <option value="KMPS" {{ $institution->type == 'KMPS' ? 'selected' : '' }}>Kampus</option>
+                        <option value="SHS" {{ $institution->type == 'SHS' ? 'selected' : '' }}>Yayasan</option>
+                        <option value="COL" {{ $institution->type == 'COL' ? 'selected' : '' }}>Gereja</option>
+                        <option value="WORK" {{ $institution->type == 'WORK' ? 'selected' : '' }}>Kampus</option>
                     </select>
                 </div>
                 <div class="mb-3">

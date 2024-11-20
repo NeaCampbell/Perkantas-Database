@@ -22,9 +22,9 @@ class Institution extends Model
     public function getTypeName()
     {
         $typename = [
-            'YYSN' => 'Yayasan',
-            'GRJ'  => 'Gereja',
-            'KMPS' => 'Kampus',
+            'SHS' => 'SMA',
+            'COL'  => 'Kampus',
+            'WORK' => 'Kerja',
         ];
 
         return $typename[$this->type] ?? 'Tipe Tidak Diketahui';
