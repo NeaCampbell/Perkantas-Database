@@ -157,7 +157,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($new_pkk_before_to_now as $item)
+                    @foreach ($distributed_pktb as $item)
                     <tr>
                         <td>
                             {{ $item->city_id }}
@@ -173,6 +173,42 @@
                         </td>
                         <td>
                             {{ $item->pktb_work }}
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <h3>Jumlah Realisasi KTB 2024</h3>
+            <table id="dataTableReportTarget_5" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID Kota</th>
+                        <th>Nama Kota</th>
+                        <th>Jumlah Realisasi KTB</th>
+                        <th>Jumlah Target KTB</th>
+                    </tr>
+                    <tr>
+                        <th>ID Kota</th>
+                        <th>Nama Kota</th>
+                        <th>Jumlah Realisasi KTB</th>
+                        <th>Jumlah Target KTB</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($ktb_realization as $item)
+                    <tr>
+                        <td>
+                            {{ $item->city_id }}
+                        </td>
+                        <td>
+                            {{ $item->city_name }}
+                        </td>
+                        <td>
+                            {{ $item->ktb_group_realization }}
+                        </td>
+                        <td>
+                            {{ $item->ktb_group_target }}
                         </td>
                     </tr>
                     @endforeach

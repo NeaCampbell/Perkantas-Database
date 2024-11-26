@@ -18,7 +18,7 @@
             @endif
 
             <div class="table-responsive">
-                <table id="dataTable" class="data-admin-city table table-bordered">
+                <table id="dataTable" class="table table-bordered">
                     <thead>
                         <tr>
                             <th>ID</th>

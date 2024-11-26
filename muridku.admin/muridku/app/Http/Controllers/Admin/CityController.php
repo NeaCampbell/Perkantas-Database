@@ -11,15 +11,9 @@ use App\Http\Requests\Admin\CityFormRequest;
 
 class CityController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        // //error
-        // if ($request->ajax()) {
-        //     $city = City::query();
-        //     return DataTables::of($city)
-        //         ->addIndexColumn()
-        //         ->make(true);
-        // }
+        $city = City::all();
         return view('admin.city.index', compact('city'));
     }
 

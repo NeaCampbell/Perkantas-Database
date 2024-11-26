@@ -38,7 +38,7 @@
                         <td>{{ $item->address }}</td>
                         <td>
                             <a href="{{ url('admin/edit-institution/'.$item->id) }}" class="btn btn-success"><i class="fas fa-edit"></i></a>
-                            <a href="#" class="btn btn-success"><i class="fas fa-toggle-on"></i></a>
+                            {{-- <a href="#" class="btn btn-success"><i class="fas fa-toggle-on"></i></a> --}}
                             <a href="{{ url('admin/delete-institution/'.$item->id) }}" class="btn btn-danger"><i class="fas fa-trash"></i></a>
                         </td>
                     </tr>
