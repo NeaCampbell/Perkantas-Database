@@ -30,7 +30,7 @@
                 </div>
             </form>
 
-            <h3>Jumlah Realisasi PKK 2024</h3>
+            <h3>Jumlah Realisasi PKK {{ $filterTahunPeriode }}</h3>
             <table id="dataTableReportTarget_1" class="table table-bordered">
                 <thead>
                     <tr>
@@ -66,7 +66,7 @@
                 </tbody>
             </table>
 
-            <h3>Jumlah Realisasi KTB 2024</h3>
+            <h3>Jumlah Realisasi KTB {{ $filterTahunPeriode }}</h3>
             <table id="dataTableReportTarget_2" class="table table-bordered">
                 <thead>
                     <tr>
@@ -102,20 +102,20 @@
                 </tbody>
             </table>
 
-            <h3>Jumlah Realisasi PKK Baru Tahun 2023 Yang Masih Bertahan Hingga 2024</h3>
+            <h3>Jumlah Realisasi PKK Baru Tahun {{ $filterTahunPeriode - 1}} Yang Masih Bertahan Hingga {{ $filterTahunPeriode }}</h3>
             <table id="dataTableReportTarget_3" class="table table-bordered">
                 <thead>
                     <tr>
                         <th>ID Kota</th>
                         <th>Nama Kota</th>
-                        <th>Jumlah P-KTB 2023</th>
-                        <th>Target P-KTB 2023</th>
+                        <th>Jumlah P-KTB {{ $filterTahunPeriode - 1}}</th>
+                        <th>Target P-KTB {{ $filterTahunPeriode - 1}}</th>
                     </tr>
                     <tr>
                         <th>ID Kota</th>
                         <th>Nama Kota</th>
-                        <th>Jumlah P-KTB 2023</th>
-                        <th>Target P-KTB 2023</th>
+                        <th>Jumlah P-KTB {{ $filterTahunPeriode - 1}}</th>
+                        <th>Target P-KTB {{ $filterTahunPeriode - 1}}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -138,7 +138,7 @@
                 </tbody>
             </table>
 
-            <h3>Jumlah Distribusi PKK 2024</h3>
+            <h3>Jumlah Distribusi PKK {{ $filterTahunPeriode }}</h3>
             <table id="dataTableReportTarget_4" class="table table-bordered">
                 <thead>
                     <tr>
@@ -179,7 +179,7 @@
                 </tbody>
             </table>
 
-            <h3>Jumlah Realisasi KTB 2024</h3>
+            <h3>Jumlah Realisasi KTB {{ $filterTahunPeriode }}</h3>
             <table id="dataTableReportTarget_5" class="table table-bordered">
                 <thead>
                     <tr>

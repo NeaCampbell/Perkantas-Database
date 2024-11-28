@@ -23,13 +23,12 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
 
     Route::get('report', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.report.index');
     Route::get('filter-tanggal', [App\Http\Controllers\Admin\ReportController::class, 'filter_tanggal'])->name('filter_tanggal');
-    // Route::get('filter-periode', [App\Http\Controllers\Admin\ReportController::class, 'filter_periode']);
     Route::get('edit-report/{report_id}', [App\Http\Controllers\Admin\ReportController::class, 'edit']);
     Route::put('update-report/{report_id}', [App\Http\Controllers\Admin\ReportController::class, 'update']);
     Route::get('delete-report/{report_id}', [App\Http\Controllers\Admin\ReportController::class, 'delete']);
 
-    Route::get('report_target', [App\Http\Controllers\Admin\ReportTargetController::class, 'index']);
-    Route::post('filter-periode', [App\Http\Controllers\Admin\ReportTargetController::class, 'filter_periode']);
+    Route::get('report_target', [App\Http\Controllers\Admin\ReportTargetController::class, 'index'])->name('admin.report_target.index');
+    Route::post('filter-periode', [App\Http\Controllers\Admin\ReportTargetController::class, 'filter_periode'])->name('filter_periode');
 
     Route::get('city', [App\Http\Controllers\Admin\CityController::class, 'index']);
     Route::post('add-city', [App\Http\Controllers\Admin\CityController::class, 'store']);

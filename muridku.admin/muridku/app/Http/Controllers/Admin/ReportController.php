@@ -64,32 +64,6 @@ class ReportController extends Controller
         return view('admin.report.index', compact('report', 'startDate', 'endDate', 'year'));
     }
 
-
-    // public function filter_periode()
-    // {
-    //     $currentYear = date('Y');
-    //     $startDate = $currentYear . '-01-01';
-    //     $endDate = date('Y-m-d');
-
-    //     $report = Ktb::join('ktbmember', 'ktbmember.ktb_id', '=', 'ktb.id')
-    //         ->join('member', 'member.id', '=', 'ktbmember.member_id')
-    //         ->leftJoin('institution', 'institution.id', '=', 'member.institution_id')
-    //         ->leftJoin('ktbhistory', 'ktbhistory.ktb_id', '=', 'ktb.id')
-    //         ->whereBetween('ktbhistory.meet_dt', [$startDate, $endDate])
-    //         ->select('ktbmember.member_id', 'ktb.name', 'member.name as member_name', 'institution.name as institution_name',
-    //             DB::raw('MAX(ktbhistory.meet_dt) as last_meet_dt'),
-    //             DB::raw('CASE
-    //                 WHEN TIMESTAMPDIFF(MONTH, MAX(ktbhistory.meet_dt), CURRENT_DATE()) > 6 THEN "Mati"
-    //                 WHEN TIMESTAMPDIFF(MONTH, MAX(ktbhistory.meet_dt), CURRENT_DATE()) > 3 AND TIMESTAMPDIFF(MONTH, MAX(ktbhistory.meet_dt), CURRENT_DATE()) <= 6 THEN "Vakum"
-    //                 WHEN TIMESTAMPDIFF(MONTH, MAX(ktbhistory.meet_dt), CURRENT_DATE()) <= 3 THEN "Aktif"
-    //                 ELSE "undefined"
-    //             END AS status'))
-    //         ->groupBy('ktbmember.member_id', 'ktb.name', 'member.name', 'institution.name')
-    //         ->get();
-
-    //     return view('admin.report.index', compact('report'));
-    // }
-
     public function create()
     {
         return view('admin.report.create');

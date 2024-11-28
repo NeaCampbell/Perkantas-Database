@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\DB;
 
 class ReportTargetController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $filterTahunPeriode = $filterTahunPeriode ?? date('Y');
+        $filterTahunPeriode = $request->get('year', date('Y'));
 
         // Tabel Jumlah Realisasi PKK 2024
         $report_target = DB::table('city')
@@ -213,7 +213,7 @@ class ReportTargetController extends Controller
         ->get();
 
 
-        return view('admin.report_target.index', compact('report_target', 'old_new_ktb', 'new_pkk_before_to_now', 'distributed_pktb', 'ktb_realization'));
+        return view('admin.report_target.index', compact('report_target', 'old_new_ktb', 'new_pkk_before_to_now', 'distributed_pktb', 'ktb_realization', 'filterTahunPeriode'));
     }
 
     public function filter_periode(Request $request)
@@ -224,6 +224,6 @@ class ReportTargetController extends Controller
 
         $filterTahunPeriode = $validatedData['year'];
 
-        return $this->index($filterTahunPeriode);
+        return redirect()->route('admin.report_target.index', ['year' => $filterTahunPeriode]);
     }
 }
