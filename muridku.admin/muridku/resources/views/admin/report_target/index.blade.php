@@ -39,12 +39,6 @@
                         <th>Jumlah P-KTB</th>
                         <th>Target P-KTB</th>
                     </tr>
-                    <tr>
-                        <th>ID Kota</th>
-                        <th>Nama Kota</th>
-                        <th>Jumlah P-KTB</th>
-                        <th>Target P-KTB</th>
-                    </tr>
                 </thead>
                 <tbody>
                     @foreach ($report_target as $item)
@@ -75,12 +69,6 @@
                         <th>Jumlah P-KTB Baru</th>
                         <th>Jumlah P-KTB Lama</th>
                     </tr>
-                    <tr>
-                        <th>ID Kota</th>
-                        <th>Nama Kota</th>
-                        <th>Jumlah P-KTB Baru</th>
-                        <th>Jumlah P-KTB Lama</th>
-                    </tr>
                 </thead>
                 <tbody>
                     @foreach ($old_new_ktb as $item)
@@ -105,12 +93,6 @@
             <h3>Jumlah Realisasi PKK Baru Tahun {{ $filterTahunPeriode - 1}} Yang Masih Bertahan Hingga {{ $filterTahunPeriode }}</h3>
             <table id="dataTableReportTarget_3" class="table table-bordered">
                 <thead>
-                    <tr>
-                        <th>ID Kota</th>
-                        <th>Nama Kota</th>
-                        <th>Jumlah P-KTB {{ $filterTahunPeriode - 1}}</th>
-                        <th>Target P-KTB {{ $filterTahunPeriode - 1}}</th>
-                    </tr>
                     <tr>
                         <th>ID Kota</th>
                         <th>Nama Kota</th>
@@ -148,13 +130,6 @@
                         <th>Jumlah P-KTB Kuliah</th>
                         <th>Target P-KTB Kerja</th>
                     </tr>
-                    <tr>
-                        <th>ID Kota</th>
-                        <th>Nama Kota</th>
-                        <th>Jumlah P-KTB SMA</th>
-                        <th>Jumlah P-KTB Kuliah</th>
-                        <th>Target P-KTB Kerja</th>
-                    </tr>
                 </thead>
                 <tbody>
                     @foreach ($distributed_pktb as $item)
@@ -182,12 +157,6 @@
             <h3>Jumlah Realisasi KTB {{ $filterTahunPeriode }}</h3>
             <table id="dataTableReportTarget_5" class="table table-bordered">
                 <thead>
-                    <tr>
-                        <th>ID Kota</th>
-                        <th>Nama Kota</th>
-                        <th>Jumlah Realisasi KTB</th>
-                        <th>Jumlah Target KTB</th>
-                    </tr>
                     <tr>
                         <th>ID Kota</th>
                         <th>Nama Kota</th>

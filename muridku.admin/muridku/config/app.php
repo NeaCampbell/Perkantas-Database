@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Muridku'),
+    'name' => env('APP_NAME', 'Perkantas Database'),
 
     /*
     |--------------------------------------------------------------------------

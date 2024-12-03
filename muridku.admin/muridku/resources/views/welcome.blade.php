@@ -17,6 +17,6 @@
     </style>
 
     <div class="full-height center-content">
-        <h1 class="text-gray-700 text-4xl font-bold">Selamat Datang di MuridKu</h1>
+        <h1 class="text-gray-700 text-4xl font-bold">Selamat Datang di Perkantas Database</h1>
     </div>
 @endsection

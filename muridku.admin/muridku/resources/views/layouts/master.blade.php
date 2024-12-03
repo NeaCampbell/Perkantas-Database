@@ -64,26 +64,28 @@
         $(document).ready(function() {
             var table = $('#dataTableWithFilter').DataTable({
                 responsive: true,
-                autowidth: true,
                 rowReorder: {
                     selector: 'td:nth-child(2)'
                 },
-                headerCallback: function(thead, data, start, end, display) {
-                    // Mengambil judul kolom hanya dari baris pertama
-                    $(thead).find('tr.search-row').hide(); // Sembunyikan baris pencarian di header responsif
-                },
                 initComplete: function() {
                     var api = this.api();
-
-                    // Menambahkan input pencarian pada baris kedua (search-row)
                     api.columns().every(function() {
                         var column = this;
-                        $('input', $('.search-row th').eq(column.index())).on('keyup change clear', function() {
-                            if (column.search() !== this.value) {
-                                column.search(this.value).draw();
-                            }
-                        });
+                        var title = $(column.header()).text();
+                        var input = $('<input type="text" placeholder="Search ' + title + '" />')
+                            .appendTo($(column.header()))
+                            .on('keyup change clear', function() {
+                                if (column.search() !== this.value) {
+                                    column.search(this.value).draw();
+                                }
+                            });
                     });
+                },
+                headerCallback: function(thead) {
+                    $(thead).find('th').css('text-align', 'left');
+                },
+                createdRow: function(row, data, dataIndex) {
+                    $(row).find('td').css('text-align', 'left');
                 },
                 "columnDefs": [
                     { className: "dt-head-left", "targets": "_all" },
@@ -112,13 +114,19 @@
                         var column = this;
                         var title = $(column.header()).text();
                         var input = $('<input type="text" placeholder="Search ' + title + '" />')
-                            .appendTo($(column.header()).empty())
+                            .appendTo($(column.header()))
                             .on('keyup change clear', function() {
                                 if (column.search() !== this.value) {
                                     column.search(this.value).draw();
                                 }
                             });
                     });
+                },
+                headerCallback: function(thead) {
+                    $(thead).find('th').css('text-align', 'left');
+                },
+                createdRow: function(row, data, dataIndex) {
+                    $(row).find('td').css('text-align', 'left');
                 }
             });
 

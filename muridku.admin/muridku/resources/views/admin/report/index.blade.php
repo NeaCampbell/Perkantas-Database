@@ -45,13 +45,6 @@
                         <th>Tanggal Pertemuan Terakhir</th>
                         <th>Status Keaktifan</th>
                     </tr>
-                    <tr class="search-row">
-                        <th><input type="text" placeholder="Search Nama KTB"></th>
-                        <th><input type="text" placeholder="Search Nama Peserta KTB"></th>
-                        <th><input type="text" placeholder="Search Instansi Peserta"></th>
-                        <th><input type="text" placeholder="Search Tanggal Pertemuan"></th>
-                        <th><input type="text" placeholder="Search Status"></th>
-                    </tr>
                 </thead>
                 <tbody>
                     @foreach ($report as $item)
