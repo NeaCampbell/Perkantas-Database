@@ -21,7 +21,7 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
     <div id="app" class="flex-grow-1">
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
+        <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}

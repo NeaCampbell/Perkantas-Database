@@ -10,12 +10,12 @@
         margin: 0;
     }
     .full-height {
-        height: 70vh; /* 100% of the viewport height */
+        height: 70vh;
     }
     .center-content {
         display: flex;
-        align-items: center; /* Aligns vertically center */
-        justify-content: center; /* Aligns horizontally center */
+        align-items: center;
+        justify-content: center;
     }
 </style>
 
