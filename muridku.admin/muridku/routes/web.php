@@ -59,4 +59,10 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('edit-discipleship_target/{discipleship_target_id}', [App\Http\Controllers\Admin\DiscipleshipTargetController::class, 'edit']);
     Route::put('update-discipleship_target/{discipleship_target_id}', [App\Http\Controllers\Admin\DiscipleshipTargetController::class, 'update']);
     Route::get('delete-discipleship_target/{discipleship_target_id}', [App\Http\Controllers\Admin\DiscipleshipTargetController::class, 'delete']);
+
+    Route::get('event', [App\Http\Controllers\Admin\EventController::class, 'index']);
+    Route::post('add-event', [App\Http\Controllers\Admin\EventController::class, 'store']);
+    Route::get('edit-event/{event_id}', [App\Http\Controllers\Admin\EventController::class, 'edit']);
+    Route::put('update-event/{event_id}', [App\Http\Controllers\Admin\EventController::class, 'update']);
+    Route::get('delete-event/{event_id}', [App\Http\Controllers\Admin\EventController::class, 'delete']);
 });

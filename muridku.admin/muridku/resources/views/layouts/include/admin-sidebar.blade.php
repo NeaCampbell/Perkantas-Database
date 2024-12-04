@@ -36,6 +36,10 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-people-group"></i></div>
                     Target Pemuridan
                 </a>
+                <a class="nav-link" href="{{ url('admin/event') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-calendar"></i></div>
+                    Acara
+                </a>
                 <a class="nav-link" href="{{ url('admin/users') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-user-alt"></i></div>
                     Pengguna
