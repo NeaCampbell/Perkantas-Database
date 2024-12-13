@@ -65,7 +65,7 @@
                         <label for="institution_id" class="form-label">Pilih Instansi</label>
                         <br>
                         <select class="form-select select2" id="institution_id" name="institution_id" required>
-                            <option value="">-- Pilih Instansi --</option>
+                            <option value="">Pilih Instansi</option>
                             @foreach($institution as $institution)
                                 <option value="{{ $institution->id }}">{{ $institution->name }}</option>
                             @endforeach

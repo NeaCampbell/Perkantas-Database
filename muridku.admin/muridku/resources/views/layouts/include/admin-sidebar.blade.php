@@ -40,8 +40,12 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-calendar"></i></div>
                     Acara
                 </a>
-                <a class="nav-link" href="{{ url('admin/users') }}">
+                <a class="nav-link" href="{{ url('admin/member') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-user-alt"></i></div>
+                    Binaan
+                </a>
+                <a class="nav-link" href="{{ url('admin/users') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-user-gear"></i></div>
                     Pengguna
                 </a>
             </div>

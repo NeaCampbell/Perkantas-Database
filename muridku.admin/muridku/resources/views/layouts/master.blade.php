@@ -45,23 +45,6 @@
 
     <script>
         $(document).ready(function() {
-            // Periksa jika modal ada di halaman
-            if ($('#addFacultyModal').length) {
-                $('#institution_id').select2({
-                    theme: 'bootstrap',
-                    placeholder: "-- Pilih Instansi --",
-                    dropdownParent: $("#addFacultyModal")
-                });
-            } else {
-                $('#institution_id').select2({
-                    theme: 'bootstrap',
-                    placeholder: "-- Pilih Instansi --"
-                });
-            }
-        });
-    </script>
-    <script>
-        $(document).ready(function() {
             var table = $('#dataTableWithFilter').DataTable({
                 responsive: true,
                 rowReorder: {

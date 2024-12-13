@@ -71,7 +71,7 @@
                         <label for="city_id" class="form-label">Pilih Kota</label>
                         <br>
                         <select class="form-select select2" id="city_id" name="city_id" required>
-                            <option value="">-- Pilih Kota --</option>
+                            <option value="">Pilih Kota</option>
                             @foreach($city as $city)
                                 <option value="{{ $city->id }}">{{ $city->name }}</option>
                             @endforeach
