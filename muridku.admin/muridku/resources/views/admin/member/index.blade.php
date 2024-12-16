@@ -131,7 +131,6 @@
                         </select>
                     </div>
 
-                    <!-- Instansi -->
                     <div class="mb-3">
                         <label for="institution_id" class="form-label">Instansi</label>
                         <select class="form-select" id="institution_id" name="institution_id" required>
@@ -142,14 +141,10 @@
                         </select>
                     </div>
 
-                    <!-- Fakultas -->
                     <div class="mb-3">
                         <label for="faculty_id" class="form-label">Fakultas</label>
                         <select class="form-select" id="faculty_id" name="faculty_id" required>
                             <option value="">Pilih Fakultas</option>
-                            @foreach($faculty as $faculty)
-                                <option value="{{ $faculty->id }}">{{ $faculty->name }}</option>
-                            @endforeach
                         </select>
                     </div>
             </div>

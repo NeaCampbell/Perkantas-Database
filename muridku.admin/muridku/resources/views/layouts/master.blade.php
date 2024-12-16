@@ -162,5 +162,33 @@
             }
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const institutionDropdown = document.getElementById('institution_id');
+            const facultyDropdown = document.getElementById('faculty_id');
+
+            institutionDropdown.addEventListener('change', function() {
+                const institutionId = this.value;
+                facultyDropdown.innerHTML = '<option value="">Loading...</option>';
+
+                if (institutionId) {
+                    fetch(`/admin/get-faculties/${institutionId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            facultyDropdown.innerHTML = '<option value="">Pilih Fakultas</option>';
+                            data.forEach(faculty => {
+                                const option = document.createElement('option');
+                                option.value = faculty.id;
+                                option.textContent = faculty.name;
+                                facultyDropdown.appendChild(option);
+                            });
+                        })
+                        .catch(error => console.error('Error fetching faculties:', error));
+                } else {
+                    facultyDropdown.innerHTML = '<option value="">Pilih Fakultas</option>';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

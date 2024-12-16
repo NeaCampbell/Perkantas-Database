@@ -85,9 +85,14 @@ class MemberController extends Controller
 
     public function edit($member_id)
     {
-        $member = Member::find($member_id);
-        return view('admin.member.edit', compact('member'));
+        $member = Member::findOrFail($member_id);
+        $city = City::all();
+        $institution = Institution::all();
+        $faculty = Faculty::where('institution_id', $member->institution_id)->get();
+
+        return view('admin.member.edit', compact('member', 'city', 'institution', 'faculty'));
     }
+
 
     public function delete($member_id)
     {
@@ -105,5 +110,11 @@ class MemberController extends Controller
         {
             return redirect('admin/member')->with('message', 'Anggota Tidak Ditemukan');
         }
+    }
+
+    public function getFaculties($institution_id)
+    {
+        $faculties = Faculty::where('institution_id', $institution_id)->get();
+        return response()->json($faculties);
     }
 }
