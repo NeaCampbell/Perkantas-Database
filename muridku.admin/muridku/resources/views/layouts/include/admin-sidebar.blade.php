@@ -11,6 +11,10 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-file"></i></div>
                     Laporan
                 </a>
+                <a class="nav-link" href="{{ url('admin/report_event') }}">
+                    <div class="sb-nav-link-icon"><i class="fas fa-file"></i></div>
+                    Laporan Acara
+                </a>
                 <div class="sb-sidenav-menu-heading">Master</div>
                 <a class="nav-link" href="{{ url('admin/city') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-map-marker-alt"></i></div>
