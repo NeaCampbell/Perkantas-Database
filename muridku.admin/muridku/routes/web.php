@@ -29,6 +29,7 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
 
     Route::get('report_event', [App\Http\Controllers\Admin\ReportEventController::class, 'index'])->name('admin.report_event.index');
     Route::get('filter-event', [App\Http\Controllers\Admin\ReportEventController::class, 'filter'])->name('admin.report_event.filter');
+    Route::post('import-event-participants', [App\Http\Controllers\Admin\ReportEventController::class, 'importEventParticipants'])->name('admin.report_event.import');
 
     Route::get('city', [App\Http\Controllers\Admin\CityController::class, 'index']);
     Route::post('add-city', [App\Http\Controllers\Admin\CityController::class, 'store']);

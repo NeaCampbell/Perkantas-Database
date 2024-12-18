@@ -36,7 +36,7 @@
                 </div>
             </form>
 
-            <table id="dataTableReport class="table table-bordered">
+            <table id="dataTableReport" class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Nama KTB</th>

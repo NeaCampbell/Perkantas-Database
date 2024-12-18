@@ -7,10 +7,6 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                     Dashboard
                 </a>
-                <a class="nav-link" href="{{ url('admin/report') }}">
-                    <div class="sb-nav-link-icon"><i class="fas fa-file"></i></div>
-                    Laporan
-                </a>
                 <a class="nav-link" href="{{ url('admin/report_event') }}">
                     <div class="sb-nav-link-icon"><i class="fas fa-file"></i></div>
                     Laporan Acara
