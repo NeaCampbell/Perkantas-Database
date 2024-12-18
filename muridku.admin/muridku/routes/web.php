@@ -72,4 +72,5 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::put('update-member/{member_id}', [App\Http\Controllers\Admin\MemberController::class, 'update']);
     Route::get('delete-member/{member_id}', [App\Http\Controllers\Admin\MemberController::class, 'delete']);
     Route::get('get-faculties/{institution_id}', [App\Http\Controllers\Admin\MemberController::class, 'getFaculties']);
+    Route::post('import-member', [App\Http\Controllers\Admin\MemberController::class, 'importMembers'])->name('import');
 });

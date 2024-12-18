@@ -10,7 +10,10 @@ use App\Models\Faculty;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\Admin\MemberFormRequest;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\MembersImport;
 
 class MemberController extends Controller
 {
@@ -116,5 +119,28 @@ class MemberController extends Controller
     {
         $faculties = Faculty::where('institution_id', $institution_id)->get();
         return response()->json($faculties);
+    }
+
+    public function importMembers(Request $request)
+    {
+        Log::info('importMembers function executed.');
+    
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+
+        if ($request->hasFile('file')) {
+            Log::info('File received: ' . $request->file('file')->getClientOriginalName());
+        } else {
+            Log::error('No file received.');
+        }
+    
+        try {
+            Excel::import(new MembersImport, $request->file('file'));
+            return redirect()->back()->with('message', 'Data berhasil diimport.');
+        } catch (\Exception $e) {
+            Log::error('Error in importMembers: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 }

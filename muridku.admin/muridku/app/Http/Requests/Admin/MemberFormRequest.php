@@ -27,60 +27,61 @@ class MemberFormRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
-                'max:100'
+                'max:100',
             ],
             'address' => [
                 'nullable',
                 'string',
-                'max:200'
+                'max:200',
             ],
             'gender' => [
                 'nullable',
                 'string',
-                'in:M,F'
+                'in:L,P',
             ],
             'birth_dt' => [
                 'nullable',
                 'date',
-                'before:today'
+                'before:today',
             ],
             'birth_place' => [
                 'nullable',
                 'string',
-                'max:100'
+                'max:100',
             ],
             'mobile_phn' => [
                 'nullable',
                 'string',
                 'max:20',
-                'regex:/^[0-9+()-]*$/'
+                'regex:/^[0-9+\(\)\s\-]*$/',
             ],
             'status' => [
                 'required',
                 'integer',
-                'in:0,1'
+                'in:0,1',
             ],
             'inst_type' => [
                 'nullable',
                 'string',
-                'max:5'
+                'in:SHS,COL,WORK',
             ],
             'city_id' => [
                 'required',
-                'exists:city,id'
+                'exists:city,id',
             ],
             'institution_id' => [
                 'nullable',
-                'exists:institution,id'
+                'exists:institution,id',
             ],
             'faculty_id' => [
                 'nullable',
-                'exists:faculty,id'
+                'exists:faculty,id',
             ],
             'alpha_member_id' => [
                 'nullable',
-                'integer'
-            ]
+                'string', 
+                'max:50',
+            ],
         ];
 
         return $rules;

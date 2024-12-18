@@ -24,7 +24,11 @@ class Member extends Model
         'city_id',
         'institution_id',
         'faculty_id',
-        'alpha_member_id'
+        'alpha_member_id',
+        'usr_crt', 
+        'dtm_crt', 
+        'usr_upd', 
+        'dtm_upd',
     ];
 
     public function getTypeName()
